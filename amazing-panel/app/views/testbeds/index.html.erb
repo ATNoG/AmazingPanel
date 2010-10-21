@@ -1,0 +1,29 @@
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Description</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @testbeds.each do |testbed| %>
+  <tr>
+    <td><%= link_to testbed.name, testbed %></td>
+    <td><%= testbed.description %></td>
+    <% if is_user_leader(testbed, current_user) %>
+    <td><%= link_to 'Assign', assign_testbed_path(testbed) %></td>
+    <td><%= link_to 'Edit', edit_testbed_path(testbed) %></td>
+    <td><%= link_to 'Destroy', testbed, :confirm => 'Are you sure?', :method => :delete %></td>
+    <% else %>
+    <td></td>
+    <td></td>
+    <td></td>    
+    <% end %>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Testbed', new_testbed_path %>

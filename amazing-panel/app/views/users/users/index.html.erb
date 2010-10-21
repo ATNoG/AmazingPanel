@@ -1,0 +1,15 @@
+<% @users.each do | user | %>
+  <%= gravatar_for user, :size => 50 %>
+  <%= link_to user.name+" ("+user.username+")", user %>
+  <% if current_user.admin? %>
+    | <%= link_to "delete", user, :method => :delete, :confirm => "You sure?",
+                                  :title => "Delete #{user.name}" %>
+    <% if user.activated? %>  
+    | <%= link_to "deactivate", user_activate_path(:user_id => user.id), :method => :put %>
+    <% else %>
+    | <%= link_to "activate", user_activate_path(:user_id => user.id), :method => :put %>
+    <% end %>
+  <% end %>
+  <br/>
+<% end %>
+

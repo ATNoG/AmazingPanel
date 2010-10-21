@@ -1,0 +1,28 @@
+<% if @testbed.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@testbed.errors.count, "error") %> prohibited this testbed from being saved:</h2>
+
+      <ul>
+      <% @testbed.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+<% end %>
+
+<p>
+  <b>Name:</b>
+  <%= @testbed.name %>
+</p>
+
+<% if testbed_users_empty?(@testbed) == false %>
+  <%= render :partial => 'users', :locals => { :title => "Assigned Users:", :with_assignment_check => false, 
+             :disabled => false, :make_leader => true, :assign => false, :unassign => true, :users => @testbed.users } %>
+<% end %>
+
+<% if @users.empty?  == false %>
+  <%= render :partial => 'users', :locals => { :title => "Users:", :with_assignment_check => true, 
+             :disabled => false, :make_leader => false, :assign => true, :unassign => false, :users => @users } %>
+<% end %>
+
+<%= link_to 'Back', testbed_path(@testbed) %>

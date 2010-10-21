@@ -1,0 +1,17 @@
+<p>
+  <b>Name:</b>
+  <%= @testbed.name %>
+</p>
+
+<p>
+  <b>Description:</b>
+  <%= @testbed.description %>
+</p>
+
+<%= render :partial => 'users', :locals => { :title => "Users", :with_assignment_check => false, :disabled => true, :make_leader => true, :users => @testbed.users } %>
+
+<% if is_user_leader(@testbed, current_user) %>
+  <%= link_to 'Assign', assign_testbed_path(@testbed) %> |
+  <%= link_to 'Edit', edit_testbed_path(@testbed) %> |
+  <%= link_to 'Back', testbeds_path %>
+<% end %>
