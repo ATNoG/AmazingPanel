@@ -15,7 +15,7 @@ class Users::UsersController < ApplicationController
   
   def activate
     user = User.find(params[:user_id]);
-    activated = user.activated ? 'f' : 't';
+    activated = user.activated ? true : false;
     if user.update_attributes({:activated => activated })
       redirect_to users_path
     end

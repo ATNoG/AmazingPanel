@@ -33,7 +33,7 @@
 	<div id="nav-container">
 	  <ul id="menu-global">
 	      <li class="top-item-root home-item"><a href="/"></a></li>
-	      <li class="top-item <%= top_is_active_by_controller("testbeds") %>"><a href="<%= testbeds_path %>">Testbeds</a></li>
+	      <!--<li class="top-item <%= top_is_active_by_controller("testbeds") %>"><a href="<%= testbeds_path %>">Testbeds</a></li>-->
 	      <li class="top-item <%= top_is_active("library/library","index") %>"><a href="/library">Library</a></li>
 	    <% if current_user.admin? %>
 	      <li class="top-item <%= top_is_active("users/users","index") %>"><a href="/users">Users</a></li>
