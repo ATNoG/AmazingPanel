@@ -1,0 +1,19 @@
+$(document).ready(function(){    
+  <% if (@c == "library/eds") and (@a == "show" or @a =="edit") %>
+  setTimeout( function(){    
+    CodeMirror.fromTextArea('code', {
+      parserfile: ["../tokenizeruby.js", "../parseruby.js"],
+      stylesheet: "/stylesheets/codemirror/rubycolors.css",
+      path: "/javascripts/codemirror/base/",
+      lineNumbers: true,
+      textWrapping: false,
+      indentUnit: 2,
+      parserConfig: {},
+      readOnly: <%= (@a == "edit") ? false : true %>,
+      height: "67%",
+      width: "68%",
+    }, 0);  
+  });
+  <% end %>
+});
+

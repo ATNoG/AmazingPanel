@@ -2,11 +2,11 @@
 <html>
 <head>
   <title>AMazINg Panel</title>
-  <%= stylesheet_link_tag :all %>
-  <%= stylesheet_link_tag 'custom', :media => 'screen' %>
-  <!--<%= stylesheet_link_tag 'blueprint/screen', :media => 'screen' %>
-  <%= stylesheet_link_tag 'blueprint/print',  :media => 'print' %>-->
+  <%= stylesheet_link_tag :all %>  
   <%= javascript_include_tag :defaults %>
+    
+  <%= yield :head %>
+
   <%= csrf_meta_tag %>
 </head>
 <body>
@@ -16,7 +16,7 @@
       <div id="omni-box" class="fixed-width">
 	  <ul id="omni-global">
 	    <% if user_signed_in? %>
-	      <li class="omni-item-root omni-item <%= omni_is_active("users/users","show") %>">
+	      <li class="omni-item-root omni-item <%= current_user_page() %>">
 		  <a href="<%= user_path(current_user.id) %>"><%= gravatar_for current_user %>Profile</a>
 	      </li>	      
 	      <li class="omni-item <%= omni_is_active("users/sessions","destroy") %>"><%= link_to "Sign Out", destroy_user_session_path %></li>
@@ -34,7 +34,9 @@
 	  <ul id="menu-global">
 	      <li class="top-item-root home-item"><a href="/"></a></li>
 	      <!--<li class="top-item <%= top_is_active_by_controller("testbeds") %>"><a href="<%= testbeds_path %>">Testbeds</a></li>-->
-	      <li class="top-item <%= top_is_active("library/library","index") %>"><a href="/library">Library</a></li>
+	      <li class="top-item <%= top_is_active_by_controllers(["library/library", "library/eds", "library/sys_images"]) %>">
+		<a href="/library">Library</a>
+	      </li>
 	    <% if current_user.admin? %>
 	      <li class="top-item <%= top_is_active("users/users","index") %>"><a href="/users">Users</a></li>
 	    <% end%>
@@ -48,12 +50,13 @@
 	<% flash.each do |key, value| %>
 	  <p class="<%= key %>"><%= value %></p>
 	<% end %>
+	<%= yield(:main_content) %>
 	<%= yield %>
       </div>  
     </div>
     
     <div id="footer">
     </div>
-  
+    <%= yield(:footer) %>
 </body>
 </html>

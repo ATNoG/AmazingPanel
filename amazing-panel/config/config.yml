@@ -1,0 +1,8 @@
+development:
+  inventory: /home/jon/Developer/Projects/it/amazing/code/amazing-panel/git/amazing-panel/inventory
+
+test:  
+  inventory: /home/jon/Developer/Projects/it/amazing/code/amazing-panel/git/amazing-panel/inventory
+
+production:
+  inventory: /var/amazing-panel/inventory

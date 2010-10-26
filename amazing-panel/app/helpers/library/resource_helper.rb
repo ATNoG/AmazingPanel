@@ -1,0 +1,2 @@
+module Library::ResourceHelper
+end

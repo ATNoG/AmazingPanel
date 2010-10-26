@@ -1,0 +1,19 @@
+<% content_for :content do %>
+  <p>
+    <b>Name:</b>
+    <%= @ed.name %>
+  </p>
+
+  <p>
+    <b>Description:</b>
+    <%= @ed.description %>
+  </p>    
+  
+  <p>    
+  <%= text_area_tag :code, @content.readlines, :cols => 40, :rows => 30 %> 
+  </p>    
+<% end %>
+
+<% content_for :actions do %>
+  <%= add_action 'Edit', edit_ed_path(@ed) %>
+<% end %>

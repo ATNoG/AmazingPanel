@@ -1,0 +1,15 @@
+<% content_for :content do %>
+  <p>
+    <b>Name:</b>
+    <%= @sys_image.name %>
+  </p>
+
+  <p>
+    <b>Description:</b>
+    <%= @sys_image.description %>
+  </p>
+<% end %>
+
+<% content_for :actions do %>
+  <%= add_action 'Edit', edit_sys_image_path(@sys_image) %>
+<% end %>

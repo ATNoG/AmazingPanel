@@ -1,3 +1,5 @@
+require 'fileutils'
+
 class Users::RegistrationsController < Devise::RegistrationsController
   prepend_before_filter :authenticate_scope!, :only => [:edit, :update, :destroy, :index]
 
@@ -6,6 +8,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     build_resource
 
     if resource.save
+      #puts Rails.root.class
       set_flash_message :notice, "Your account has been created! Wait until further activation."
       redirect_to(:root)
     else

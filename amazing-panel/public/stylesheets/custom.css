@@ -303,3 +303,65 @@ hr.space {
   color:#fff;
   visibility:hidden;
 }
+
+/**
+  * Custom CSS
+  *
+  * @category = Library
+ */
+
+.ul-action {
+  float:right;  
+}
+
+.file-item .ul-action {
+  float:right;
+  visibility: hidden;
+}
+.file-item:hover .ul-action {
+  visibility: visible;
+}
+
+div#library-sidebar {
+  float:left;
+  width: 20%;
+  border: 1px solid #A4A4A4;
+}
+
+ul#resource-list > li {
+  list-style: none;
+}
+
+li.file-item {
+  list-style: none;
+  padding-left: 10px;
+}
+
+ul#action-list {
+  border: 1px solid #A4A4A4;
+  border-bottom: none;
+  border-right: none;
+  border-left: none;
+}
+ul#action-list > li {
+  list-style: none;
+  float: left;
+}
+
+#file-show {
+  margin-left:20px;
+  float:left;
+  width: 65%;
+}
+
+.CodeMirror-line-numbers {
+  width: 2.2em;
+  color: #000;
+  background-color: #d1d1d1;
+  text-align: right;
+  padding: .4em;
+  margin: 0;
+  font-size: 9pt;
+  line-height: 1.1em;
+  font-family: consolas, monospace;
+}

@@ -1,10 +1,15 @@
 class PagesController < ApplicationController
   
-  respond_to :html, :js
+  respond_to :html, :js, :css
   def index
-    %w{ models controllers }.each do |dir|
-      path = File.join(File.dirname(__FILE__), 'app', dir)      
-      puts path
-    end
+  end
+  
+  def application
+    @c = params[:c]
+    @a = params[:a]
+    @p= params[:p]
+  end
+  
+  def custom
   end
 end

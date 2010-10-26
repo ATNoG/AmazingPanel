@@ -10,7 +10,13 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101020161026) do
+ActiveRecord::Schema.define(:version => 20101024223326) do
+
+  create_table "base_sys_images", :force => true do |t|
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "device_kinds", :force => true do |t|
     t.integer "inventory_id",               :null => false
@@ -38,6 +44,14 @@ ActiveRecord::Schema.define(:version => 20101020161026) do
     t.string  "address",        :limit => 18, :null => false
     t.string  "mac",            :limit => 17
     t.string  "canonical_name", :limit => 64
+  end
+
+  create_table "eds", :force => true do |t|
+    t.integer  "user_id"
+    t.string   "name"
+    t.string   "description"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "inventories", :force => true do |t|
@@ -89,6 +103,14 @@ ActiveRecord::Schema.define(:version => 20101020161026) do
     t.integer "id"
     t.string  "image_name",        :limit => 64
     t.string  "short_description", :limit => 128
+  end
+
+  create_table "sys_images", :force => true do |t|
+    t.string   "name"
+    t.string   "description"
+    t.integer  "base_sys_image_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "testbeds", :force => true do |t|

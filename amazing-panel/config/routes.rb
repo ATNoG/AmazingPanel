@@ -17,7 +17,17 @@ AmazingPanel::Application.routes.draw do
 #      delete 'unassign_user/:id', :action => "testbeds#unassign_user"
     end
   end
-    # The priority is based upon order of creation:
+  
+  scope :module => "library" do
+    resources :library, :only => [:index]
+    resources :sys_images
+    resources :eds
+  end
+  
+  match 'javascripts/application.js' => 'pages#application'
+  match 'stylesheets/custom.css' => 'pages#custom'
+  root :to => "pages#index"
+  # The priority is based upon order of creation:
   # first created -> highest priority.
 
   # Sample of regular route:
@@ -66,7 +76,7 @@ AmazingPanel::Application.routes.draw do
 
   # You can have the root of your site routed with "root"
   # just remember to delete public/index.html.
-  root :to => "pages#index"
+  
 
   # See how all your routes lay out with "rake routes"
 

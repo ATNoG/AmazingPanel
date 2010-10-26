@@ -1,0 +1,13 @@
+<% content_for :head do %>
+  <%= javascript_include_tag 'codemirror/base/codemirror' %>
+  <%= stylesheet_link_tag 'codemirror/rubycolors', :media => 'screen' %>  
+<% end %>
+
+<% content_for :content do %>
+  <%= render :partial => 'form', :locals => { :target => ed_path, :multipart => false, :remote => false }  %>
+<% end %>
+
+<% content_for :actions do %>
+  <%= add_action'Show', ed_path(:id => @ed.id) %>
+  <%= add_action'Back', ed_path(:id => @ed.id) %>
+<% end %>

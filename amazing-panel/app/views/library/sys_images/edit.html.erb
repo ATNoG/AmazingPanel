@@ -1,0 +1,8 @@
+<% content_for :content do %>  
+  <%= render :partial => 'form', :locals => { :target => sys_images_path, :multipart => false, :remote => false }  %>
+<% end %>
+
+<% content_for :actions do %>
+  <%= add_action 'Show', @sys_image %>
+  <%= add_action 'Back', sys_images_path %>
+<% end %>
