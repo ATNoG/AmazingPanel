@@ -1,4 +1,12 @@
+<% creator = User.find(@sys_image.user_id) %>
+<% render 'sidebar' %>
+
 <% content_for :content do %>
+  <p>
+    <b>Creator:</b>
+    <%= link_to creator.name, user_path(:id => creator.id) %>
+  </p>
+
   <p>
     <b>Name:</b>
     <%= @sys_image.name %>
@@ -8,6 +16,29 @@
     <b>Description:</b>
     <%= @sys_image.description %>
   </p>
+  
+  <p>
+    <b>Kernel Version / Operating System:</b>
+    <%= @sys_image.kernel_version_os %>
+  </p>
+
+  <p>
+    <b>Size (bytes):</b>
+    <%= @sys_image.size %>
+  </p>
+
+  <p>
+    <b>Is a baseline Image? </b>
+    <%= @sys_image.baseline ? "Yes." : "No." %>
+  </p>
+
+  <% if @sys_image.sys_image_id.nil? == false %>
+  <p>
+    <b>Baseline Image: </b>
+    <%= link_to SysImage.find(@sys_image.sys_image_id).name, sys_image_path(:id => @sys_image.sys_image_id) %>
+  </p>
+  <% end %>
+
 <% end %>
 
 <% content_for :actions do %>

@@ -15,11 +15,12 @@
       <%= label_tag :code %><br />      
       <%= text_area_tag :code, @content.readlines, :cols => 60, :rows => 30 %> 
     </div>
-  <% elsif multipart == true %>
+  <% end %>
+  <% if multipart == true %>
     <div class="field">
-    <%= label_tag :file %><br />
-    <%= file_field_tag :file %>
-  </div>
+      <%= label_tag :file %>
+      <%= file_field_tag :file %>
+    </div>
   <% end %>
 
   <div class="actions">

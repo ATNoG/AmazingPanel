@@ -1,6 +1,15 @@
 class Library::ResourceController < ApplicationController
-  layout 'library'  
+  layout 'library'
+   
+  def resource_find_all
+  end
+
+  def resource_find(id)
+  end
   
+  def resource_new(model = nil)
+  end
+
   def get_path_for_library_resource(username, resource, filename)
     return Pathname.new(APP_CONFIG['inventory']).join(resource, filename);
   end

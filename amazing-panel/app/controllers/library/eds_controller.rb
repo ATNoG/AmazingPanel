@@ -1,5 +1,22 @@
 class Library::EdsController < Library::ResourceController
-
+  before_filter :authenticate
+  
+  def resource_find_all()
+    return Ed.all
+  end
+  
+  def resource_find(id)
+    return Ed.find(id)
+  end
+  
+  def resource_new(model=nil)
+    if model.nil?
+      return Ed.new
+    else
+      return Ed.new(model)
+    end
+  end
+  
   # GET /eds
   # GET /eds.xml
   def index
@@ -9,7 +26,7 @@ class Library::EdsController < Library::ResourceController
   # GET /eds/1
   # GET /eds/1.xml
   def show
-    @ed = Ed.find(params[:id]);    
+    @ed = resource_find(params[:id]);    
     path = get_ed_by_user(current_user.username, @ed.name);
     @content = File.open(path, 'r')
   end
@@ -22,7 +39,7 @@ class Library::EdsController < Library::ResourceController
 
   # GET /eds/1/edit
   def edit
-    @ed = Ed.find(params[:id]);
+    @ed = resource_find(params[:id]);
     path = get_ed_by_user(current_user.username, @ed.name);
     @content = File.open(path, 'r')
   end
@@ -30,7 +47,7 @@ class Library::EdsController < Library::ResourceController
   # POST /eds
   # POST /eds.xml
   def create
-    @ed = Ed.new(params[:ed])
+    @ed = resource_new(params[:ed])
     @ed.user_id = current_user.id
     uploaded_io = params[:file]
     path = get_ed_by_user(current_user.username, params[:ed][:name]);
@@ -51,7 +68,7 @@ class Library::EdsController < Library::ResourceController
   # PUT /eds/1.xml
   def update
     user_id = current_user.id
-    @ed = Ed.find(params[:id])
+    @ed = resource_find(params[:id])
     path = get_ed_by_user(current_user.username, params[:ed][:name]);
     File.open(path, 'w') do |file|
       file.write(params[:code])
@@ -68,7 +85,7 @@ class Library::EdsController < Library::ResourceController
   # DELETE /eds/1
   # DELETE /eds/1.xml
   def destroy
-    @ed = Ed.find(params[:id])
+    @ed = resource_find(params[:id])
     path = get_ed_by_user(current_user.username, @ed.name);
     path.delete
     @ed.destroy

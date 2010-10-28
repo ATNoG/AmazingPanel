@@ -56,7 +56,7 @@ a:visited {
 }
 
 a:link {
-  /*color: #004BAD;*/
+  color: #3E5C6B;
   text-decoration: none;
 }
 #nav-global {
@@ -227,7 +227,6 @@ ul#menu-global {
   color: #1e1e1e;
 }
 
-
 ul#omni-menu {
   background-color:transparent;
   margin:0;
@@ -309,7 +308,6 @@ hr.space {
   *
   * @category = Library
  */
-
 .ul-action {
   float:right;  
 }
@@ -332,16 +330,29 @@ ul#resource-list > li {
   list-style: none;
 }
 
+li.file-item:hover {
+  background-color: #F0F0F0;
+}
 li.file-item {
   list-style: none;
   padding-left: 10px;
 }
 
+li.file-item > a:visited {
+  color:#3E5C6B;
+}
+
+ul.file-list-action, li.file-list-action {
+  list-style: none;  
+}
+
+.file-list-action:hover {
+  background-color: #f7f7f7;
+}
+
 ul#action-list {
-  border: 1px solid #A4A4A4;
-  border-bottom: none;
-  border-right: none;
-  border-left: none;
+  border-top: 1px solid #d1d1d1;
+  height: 34px;
 }
 ul#action-list > li {
   list-style: none;
@@ -356,12 +367,45 @@ ul#action-list > li {
 
 .CodeMirror-line-numbers {
   width: 2.2em;
-  color: #000;
-  background-color: #d1d1d1;
+  color: #fff;
+  background-color: #000;
   text-align: right;
   padding: .4em;
   margin: 0;
   font-size: 9pt;
   line-height: 1.1em;
   font-family: consolas, monospace;
+}
+
+#toolbar {  
+  border: 1px solid #A4A4A4;
+  background-color: #F0F0F0;
+  height: 34px;
+}
+
+ul#toolbar-action-list > li.action {
+  list-style: none;
+  float:left;
+}
+
+.simple-sidebar {
+  border: 1px solid #d1d1d1;
+  width: 200px;
+  float:left;
+}
+.admin-list-action {
+    float:right;
+}
+
+.action-name {
+  text-decoration: underline;
+}
+
+.profile > * {
+  float:left;
+}
+
+.profile > .sidebar {
+  margin-left: 10px;
+  padding-left: 10px;
 }

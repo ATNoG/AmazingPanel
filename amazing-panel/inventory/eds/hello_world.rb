@@ -1,4 +1,4 @@
-# Edited 
+#Edited
 
 defGroup('Sender', "omf.nicta.node28") do |node|
   node.addApplication("test:app:otg2") do |app|

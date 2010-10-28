@@ -1,0 +1,34 @@
+<%= form_for(@sys_image, :as => :sys_image, :url => target, :html => {:multipart => multipart, :remote => remote}) do |f| %>
+  <%= render 'shared/error_messages', :object => f.object %>
+
+  <div class="field">
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+  </div>
+
+  <div class="field">
+    <%= f.label :kernel_version_os %><br />
+    <%= f.text_field :kernel_version_os %>
+  </div>
+
+  <div class="field">
+    <%= f.label("Is baseline?")%>
+    <%= f.check_box :baseline %>
+  </div>  
+
+  <div class="field">
+    <%= f.label :description %><br />
+    <%= f.text_area :description %>
+  </div>
+
+  <% if multipart == true %>
+    <div class="field">
+      <%= label_tag 'System Image' %><br />
+      <%= file_field_tag :file %>
+    </div> 
+  <% end %> 
+  
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

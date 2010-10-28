@@ -4,7 +4,6 @@ class CreateEds < ActiveRecord::Migration
       t.references :user
       t.string :name
       t.string :description
-
       t.timestamps
     end
   end

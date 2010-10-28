@@ -1,0 +1,20 @@
+<% content_for :main_content do %> 
+  <div id="toolbar">
+    <ul id="toolbar-action-list">
+        <%= add_admin_action 'Users', admin_users_path %>
+	<%= add_admin_action 'Baseline Images', admin_sys_images_path %>
+    </ul>
+  </div>
+
+  <br/>
+  <div class="simple-sidebar">
+    <%= yield :sidebar %>
+  </div>
+  
+  <div id="file-show">
+    <%= yield :content %>
+  </div>
+  <div class="clear"></div>
+<% end %>
+
+<%= render :template => 'layouts/application' %>

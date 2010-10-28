@@ -1,0 +1,18 @@
+<% content_for :sidebar do %>
+  <ul resource="sys_images">	
+    <li class="file-list-action">
+      <%= link_to "New Baseline", new_admin_sys_image_path, :class => "action-name" %>
+      <%= link_to(new_admin_sys_image_path, :class => "admin-list-action") do %>
+	<%= image_tag "add.png", {:height => 16, :width => 16} %>
+      <% end %>  
+    </li>
+    <% SysImage.where(:baseline => true).each do |sys_image| %>
+      <li id="<%= sys_image.id %>" class="file-item">
+	<%= link_to sys_image.name, admin_sys_image_path(:id => sys_image.id) %>
+	<%= link_to(admin_sys_image_path(sys_image), :class => "ul-action", :method => "delete") do %>	
+	  <%= image_tag "remove.png", {:height => 16, :width => 16} %>
+	<% end %>  
+      </li>
+    <% end %>	      
+  </ul>
+<% end %>

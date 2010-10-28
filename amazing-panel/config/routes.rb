@@ -2,9 +2,7 @@ AmazingPanel::Application.routes.draw do
   devise_for :users, :controllers => { :sessions => "users/sessions", :registrations => "users/registrations" }    
   
   scope :module => "users" do
-    resources :users, :only => [:index, :show, :destroy] do
-      put '/activate', :action => "activate", :as => "activate"
-    end    
+    resources :users, :only => [:index, :show, :destroy]
   end
   
   resources :testbeds do
@@ -20,12 +18,22 @@ AmazingPanel::Application.routes.draw do
   
   scope :module => "library" do
     resources :library, :only => [:index]
-    resources :sys_images
+    resources :sys_images    
     resources :eds
+  end
+  
+  scope :module => "admin", :as => "admin" do
+    resources :admin, :path => "admin", :only => [:index]
+    devise_for :users , :path => "admin/users", :controllers => { :registrations => "admin/registrations" }    
+    resources :users, :path => "admin/users", :only => [:index, :show, :destroy] do
+      put '/activate', :action => "activate"
+    end    
+    resources :sys_images, :path => "admin/sys_images"  
   end
   
   match 'javascripts/application.js' => 'pages#application'
   match 'stylesheets/custom.css' => 'pages#custom'
+  
   root :to => "pages#index"
   # The priority is based upon order of creation:
   # first created -> highest priority.

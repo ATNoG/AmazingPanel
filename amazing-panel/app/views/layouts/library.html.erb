@@ -5,52 +5,28 @@
 <% end %>
 
 <% content_for :main_content do %>
-  <div id="library-sidebar" class="sidebar">
-    <ul id="resource-list">
-      <li class="resource-type">
-	<%= link_to "Experiment Definitions", eds_path %>
-	<%= link_to(new_ed_path, :class => "ul-action") do %>	
-	  <%= image_tag "add.png", {:height => 16, :width => 16} %>
-	<% end %>  
-	<ul class="file-list" resource="eds">
-	  <% if is_active_by_controller?('library/eds') %>
-	    <% Ed.all.each do |ed| %>
-	      <li id="<%= ed.id %>" class="file-item">
-		<%= link_to ed.name, ed_path(:id => ed.id) %>
-		<%= link_to(ed_path(ed), :class => "ul-action", :method => "delete") do %>	
-		  <%= image_tag "remove.png", {:height => 16, :width => 16} %>
-		<% end %>  
-	      </li>
-	    <% end %>
-	  <% end %>
-	</ul>
-      </li>
-      <li class="resource-type">
-	<%= link_to "System Images", sys_images_path %>
-	<%= link_to(new_sys_image_path, :class => "ul-action") do %>	
-	  <%= image_tag "add.png", {:height => 16, :width => 16} %>
-	<% end %>  
-	<ul class="file-list" resource="sys_images">
-	<% if is_active_by_controller?('library/sys_images') %>
-	  <% SysImage.all.each do |sys_image| %>
-	    <li id="<%= sys_image.id %>" class="file-item">
-	      <%= link_to sys_image.name, sys_image_path(:id => sys_image.id) %>
-	      <%= link_to(sys_image_path(sys_image), :class => "ul-action", :method => "delete") do %>	
-		<%= image_tag "remove.png", {:height => 16, :width => 16} %>
-	      <% end %>  
-	    </li>
-	  <% end %>
-	<% end %>
-	</ul>
-      </li>
-      <ul id="action-list">
-	<%= yield :actions %>
-      </ul>
+  <div id="toolbar">
+    <ul id="toolbar-action-list">
+        <%= add_action 'Experiment Definitions', eds_path %>
+	<%= add_action 'System Images', sys_images_path %>
     </ul>
   </div>
-  <div id="file-show">
-  <%= yield :content %>
+  
+  <br />
+  
+  <div class="simple-sidebar">
+    <ul id="resource-list">
+      <%= yield :resources %>           
+    </ul>
+    <ul id="action-list">
+	<%= yield :actions %>
+    </ul>
   </div>
+
+  <div id="file-show">
+    <%= yield :content %>
+  </div>
+
   <div class="clear"></div>
 <% end %>
 

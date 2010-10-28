@@ -7,8 +7,24 @@
   </div>
 
   <div class="field">
+    <%= f.label :kernel_version_os %><br />
+    <%= f.text_field :kernel_version_os %>
+  </div>
+
+  <div class="field">
+    <%= f.label("Is baseline?")%>
+    <%= f.check_box :baseline %>
+  </div>  
+  
+  <div class="field">
+    <%= f.label("Choose a Baseline:")%><br/>
+    <%= f.select(:sys_image_id, options_for_select(@baselines)) %>
+  </div>  
+  
+  
+  <div class="field">
     <%= f.label :description %><br />
-    <%= f.text_field :description %>
+    <%= f.text_area :description %>
   </div>
 
   <% if multipart == true %>

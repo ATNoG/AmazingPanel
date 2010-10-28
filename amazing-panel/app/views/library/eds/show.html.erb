@@ -1,4 +1,12 @@
+<% creator = User.find(@ed.user_id) %>
+<% render 'sidebar' %>
+
 <% content_for :content do %>
+  <p>
+    <b>Creator:</b>
+    <%= link_to creator.name, user_path(:id => creator.id) %>
+  </p>
+
   <p>
     <b>Name:</b>
     <%= @ed.name %>
@@ -7,8 +15,8 @@
   <p>
     <b>Description:</b>
     <%= @ed.description %>
-  </p>    
-  
+  </p>        
+
   <p>    
   <%= text_area_tag :code, @content.readlines, :cols => 40, :rows => 30 %> 
   </p>    

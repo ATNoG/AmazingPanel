@@ -12,12 +12,6 @@
 
 ActiveRecord::Schema.define(:version => 20101024223326) do
 
-  create_table "base_sys_images", :force => true do |t|
-    t.string   "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
   create_table "device_kinds", :force => true do |t|
     t.integer "inventory_id",               :null => false
     t.string  "bus",          :limit => 16
@@ -106,9 +100,13 @@ ActiveRecord::Schema.define(:version => 20101024223326) do
   end
 
   create_table "sys_images", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "sys_image_id"
+    t.integer  "size"
+    t.string   "kernel_version_os"
     t.string   "name"
     t.string   "description"
-    t.integer  "base_sys_image_id"
+    t.boolean  "baseline"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

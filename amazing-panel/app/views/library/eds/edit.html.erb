@@ -3,8 +3,10 @@
   <%= stylesheet_link_tag 'codemirror/rubycolors', :media => 'screen' %>  
 <% end %>
 
+<% render 'sidebar' %>
+
 <% content_for :content do %>
-  <%= render :partial => 'form', :locals => { :target => ed_path, :multipart => false, :remote => false }  %>
+  <%= render :partial => 'form', :locals => { :target => ed_path, :multipart => true, :remote => false }  %>
 <% end %>
 
 <% content_for :actions do %>

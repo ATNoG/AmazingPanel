@@ -38,7 +38,7 @@
 		<a href="/library">Library</a>
 	      </li>
 	    <% if current_user.admin? %>
-	      <li class="top-item <%= top_is_active("users/users","index") %>"><a href="/users">Users</a></li>
+	      <li class="top-item <%= top_is_active_by_controllers(["admin/admin", "admin/users", "admin/eds", "admin/sys_images"]) %>"><a href="/admin">Admin</a></li>
 	    <% end%>
 	  </ul>
 	</div>

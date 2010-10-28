@@ -1,3 +1,5 @@
+<% render 'sidebar' %>
+
 <% content_for :content do %>
   <%= render :partial => 'form', :locals => { :target => eds_path, :multipart => true, :remote => false} %> 
 <% end %>
