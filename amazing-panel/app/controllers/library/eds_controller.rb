@@ -51,7 +51,7 @@ class Library::EdsController < Library::ResourceController
     @ed.user_id = current_user.id
     uploaded_io = params[:file]
     path = get_ed_by_user(current_user.username, params[:ed][:name]);
-    #path = Rails.root.join(APP_CONFIG['inventory'], current_user.username, 'ed', params[:ed][:name])
+    
     File.open(path, 'w') do |file|
       file.write(uploaded_io.read)
     end
@@ -69,10 +69,19 @@ class Library::EdsController < Library::ResourceController
   def update
     user_id = current_user.id
     @ed = resource_find(params[:id])
-    path = get_ed_by_user(current_user.username, params[:ed][:name]);
-    File.open(path, 'w') do |file|
-      file.write(params[:code])
-    end    
+    @username = User.find(:id => @ed.user_id)
+    path = get_ed_by_user(@username, params[:ed][:name]);
+    if params[:file].nil? 
+      File.open(path, 'w') do |file|
+	file.write(params[:code])
+      end    
+    else
+      uploaded_io = params[:file]
+      path = get_ed_by_user(current_user.username, params[:ed][:name]);    
+      File.open(path, 'w') do |file|
+	file.write(uploaded_io.read)
+      end
+    end
     respond_to do |format|
       if @ed.update_attributes(params[:ed])        
         format.html { redirect_to(ed_path(@ed.id), :notice => 'Ed was successfully updated.') }
@@ -86,8 +95,9 @@ class Library::EdsController < Library::ResourceController
   # DELETE /eds/1.xml
   def destroy
     @ed = resource_find(params[:id])
-    path = get_ed_by_user(current_user.username, @ed.name);
-    path.delete
+    @username = User.find(@ed.user_id)
+    path = get_ed_by_user(@username.username, @ed.name);    
+    File.delete(path.to_s)    
     @ed.destroy
     respond_to do |format|
         format.html { redirect_to(eds_path, :notice => 'Ed was successfully deleted.') }

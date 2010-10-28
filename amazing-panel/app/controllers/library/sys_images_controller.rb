@@ -34,6 +34,7 @@ class Library::SysImagesController < Library::ResourceController
   def new
     @sys_image = resource_new()
     @baselines = Array.new()
+    @baselines.push(["No Baseline", -1])
     SysImage.where("baseline" => true).each do |img| 
       @baselines.push([img.name, img.id])
     end
@@ -42,6 +43,10 @@ class Library::SysImagesController < Library::ResourceController
   # GET /sys_images/1/edit
   def edit
     @sys_image = resource_find(params[:id])
+    @baselines = Array.new()
+    SysImage.where("baseline" => true).each do |img| 
+      @baselines.push([img.name, img.id])
+    end
   end
 
   # POST /sys_images
@@ -49,6 +54,9 @@ class Library::SysImagesController < Library::ResourceController
   def create
     @sys_image = resource_new(params[:sys_image]) 
     @sys_image.user_id = current_user.id
+    if (params[:sys_image_id] != -1)
+      @sys_image.sys_image_id = params[:sys_image_id]
+    end
     uploaded_io = params[:file]
     path = get_sysimage_by_user(current_user.username, params[:sys_image][:name]);    
     File.open(path, 'w') do |file|
@@ -69,7 +77,9 @@ class Library::SysImagesController < Library::ResourceController
   # PUT /sys_images/1.xml
   def update
     @sys_image = resource_find(params[:id])
-
+    if (params[:sys_image_id] != -1)
+      @sys_image.sys_image_id = params[:sys_image_id]
+    end
     respond_to do |format|
       if @sys_image.update_attributes(params[:sys_image])
         format.html { redirect_to(@sys_image, :notice => 'Sys image was successfully updated.') }
@@ -83,9 +93,11 @@ class Library::SysImagesController < Library::ResourceController
   # DELETE /sys_images/1.xml
   def destroy
     @sys_image = resource_find(params[:id])
-    @sys_image.destroy
-    path = get_sysimage_by_user(current_user.username, @sys_image.name);
-    path.delete
+    @username = User.find(:id => @sys_image.user_id)
+    path = get_sysimage_by_user(@username, @sys_image.name);
+    puts path.to_s
+    File.delete(path.to_s)
+    @sys_image.destroy    
     respond_to do |format|
       format.html { redirect_to(sys_images_url) }
     end

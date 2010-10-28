@@ -360,9 +360,11 @@ ul#action-list > li {
 }
 
 #file-show {
-  margin-left:20px;
+  border: 1px solid #d1d1d1;
+  margin-left: 5px;
   float:left;
-  width: 65%;
+  width: 730px;
+  padding: 5px;
 }
 
 .CodeMirror-line-numbers {

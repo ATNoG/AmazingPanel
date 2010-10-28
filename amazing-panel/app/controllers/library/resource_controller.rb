@@ -11,7 +11,7 @@ class Library::ResourceController < ApplicationController
   end
 
   def get_path_for_library_resource(username, resource, filename)
-    return Pathname.new(APP_CONFIG['inventory']).join(resource, filename);
+    return Pathname.new(APP_CONFIG['inventory']).join(username, resource, filename);
   end
  
   def get_ed_by_user(username, filename)

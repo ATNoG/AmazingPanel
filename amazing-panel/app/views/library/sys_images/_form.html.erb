@@ -18,7 +18,7 @@
   
   <div class="field">
     <%= f.label("Choose a Baseline:")%><br/>
-    <%= f.select(:sys_image_id, options_for_select(@baselines)) %>
+    <%= select_tag(:sys_image_id, options_for_select(@baselines)) %>
   </div>  
   
   
