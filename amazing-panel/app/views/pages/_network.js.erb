@@ -1,0 +1,21 @@
+<% id = params[:id] %>
+<% elem_str = "testbed-#{id.to_s}"%>
+var nodes = $('#<%= elem_str %>');
+if (nodes.length > 0) {
+  setTimeout(updateStatus, 10000);  
+} 
+
+$(".node").click(function(evt){
+  var node_id = this.id.split('-')[1];
+  $(".node-active").removeClass('node-active');
+  if ("node-active" in this.classList) {    
+    $("#sub-toolbar").hide();
+  } else {
+    var href = "/admin/testbeds/<%= id %>/nodes/"+node_id+"/";
+    $("#sub-toolbar").html("<ul id=\"toolbar-action-list\"><li class=\"action\"><a class=\"action\" href=\""+href+"on"+"\"><img src=\"/images/enable.png\"/> On</a></li>"+
+			   "<li class=\"action\"><a class=\"action\" href=\""+href+"off"+"\"><img src=\"/images/disable.png\"/> Off</a></li>"+
+			   "<li class=\"action\"><a class=\"action\" href=\""+"#"+"\"><img src=\"/images/edit.png\"/> Show Details</a></li>"+
+			   "</ul>");
+    $(this).addClass("node-active");
+  }
+})

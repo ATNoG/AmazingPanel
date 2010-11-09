@@ -1,0 +1,84 @@
+testbed:
+  map: 1.png
+  positions:
+  # Node positions of a Testbed, in the mapping of image 1.png
+  # AMazINg 1º grid line
+  - id  : 24
+    x   : 27
+    y   : 25
+  - id  : 19
+    x   : 138
+    y   : 25
+  - id  : 14
+    x   : 249
+    y   : 25
+  - id  : 10
+    x   : 360
+    y   : 25
+  - id  : 5
+    x   : 471
+    y   : 25
+  # AMazINg 2º grid line
+  - id  : 23
+    x   : 27
+    y   : 125
+  - id  : 18
+    x   : 138
+    y   : 125
+  - id  : 13
+    x   : 249
+    y   : 125
+  - id  : 9
+    x   : 360
+    y   : 125
+  - id  : 4
+    x   : 471
+    y   : 125
+  # # AMazINg 3º grid line
+  - id  : 22
+    x   : 27
+    y   : 235
+  - id  : 17
+    x   : 138
+    y   : 235
+  - id  : -1
+    x   : 249
+    y   : 235
+  - id  : 8
+    x   : 380
+    y   : 235
+  - id  : 3
+    x   : 491
+    y   : 235
+  # # AMazINg 4º grid line
+  - id  : 21
+    x   : 27
+    y   : 345
+  - id  : 16
+    x   : 138
+    y   : 345
+  - id  : 12
+    x   : 249
+    y   : 345
+  - id  : 7
+    x   : 360
+    y   : 350
+  - id  : 2
+    x   : 471
+    y   : 350
+  # # AMazINg 5º grid line
+  - id  : 20
+    x   : 27
+    y   : 450
+  - id  : 15
+    x   : 138
+    y   : 435
+  - id  : 11
+    x   : 249
+    y   : 450
+  - id  : 6
+    x   : 360
+    y   : 450
+  - id  : 1
+    x   : 471
+    y   : 450

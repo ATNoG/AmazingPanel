@@ -1,0 +1,46 @@
+<% content_for :sub_actions do %>
+  <ul id="toolbar-action-list">
+    <li class="action">
+      <%= link_to (project_path(@project), :class => "action")  do %>
+	Back
+	<%= image_tag "back.png", {:height => 16, :width => 16} %>
+      <% end %> 
+    </li>
+  </ul>
+<% end %>
+
+<% content_for :content do %>
+  <% if @project.errors.any? %>
+      <div id="error_explanation">
+	<h2><%= pluralize(@project.errors.count, "error") %> prohibited this project from being saved:</h2>
+
+	<ul>
+	<% @project.errors.full_messages.each do |msg| %>
+	  <li><%= msg %></li>
+	<% end %>
+	</ul>
+      </div>
+  <% end %>
+  <div class="profile" summary="Profile information">
+    <div class="main">
+      <h1>
+        <img align="center" alt="jmartins" class="project" width="50" height="50" src="<%= project_logo_path(@project) %>">
+      </h1>
+    </div>
+    <div class="sidebar round">
+      <p>
+	<b>Name:</b>
+	<%= @project.name %>
+      </p><br />
+
+      <% if project_users_empty?(@project) == false %>
+	<%= render :partial => 'users', :locals => { :title => "Assigned Users:", :with_assignment_check => false, 
+		  :disabled => false, :make_leader => true, :assign => false, :unassign => true, :users => @project.users } %>
+      <% end %>
+
+      <% if @users.empty?  == false %>
+	<%= render :partial => 'users', :locals => { :title => "Users:", :with_assignment_check => true, 
+		  :disabled => false, :make_leader => false, :assign => true, :unassign => false, :users => @users } %>
+      <% end %>
+    </div>
+<% end %>

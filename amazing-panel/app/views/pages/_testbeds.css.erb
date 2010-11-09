@@ -1,0 +1,52 @@
+<% params.merge!(Rails.application.routes.recognize_path(params[:p])) %>
+<% testbed = Testbed.find(params[:id]) %>
+<% nodes = testbed_properties_for(testbed) %>  
+.testbed {
+  background-image: url('/images/testbeds/testbed-<%= testbed.id.to_s %>.png');
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-origin: content-box;
+  width: 600px;
+  height: 600px;
+}
+<% nodes["testbed"]["positions"].each do |n| %>
+#node-<%= n["id"].to_i - 1 %> {
+  text-align: center;
+  color: white;
+  position: relative;
+  left: <%= n["x"].to_i %>px;
+  top: <%= n["y"].to_i %>px;
+  width: 20px;
+  height: 20px;
+  background-color: gray;
+  float:left;
+}
+
+<% end %>
+
+.off {
+  background-color: #ff6347 !important;
+}
+
+.run {
+  background-color: #32cd32 !important;
+}
+.toggle {
+  background-color:  #ffd700 !important;
+}
+<% if params[:c] == "admin/testbeds" %>
+.node {
+  opacity: 0.9;
+}
+
+.node:hover {
+  opacity: 1;
+  cursor: pointer;
+}
+
+.node-active {
+  opacity: 1;
+  margin: -1px;
+  border: 1px solid black;
+}
+<% end %>

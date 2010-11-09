@@ -9,4 +9,8 @@ module TestbedsHelper
     data_json = ActiveSupport::JSON.decode(data)  
     return data_json
   end
+  
+  def node_actions(id)
+    
+  end
 end

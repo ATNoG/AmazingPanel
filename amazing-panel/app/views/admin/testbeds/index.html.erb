@@ -1,0 +1,27 @@
+<% content_for :sub_actions do %>
+  <ul id="toolbar-action-list">
+    <li class="action">
+      <%= link_to(new_admin_testbed_path, :class => "action")  do %>
+	New
+	<%= image_tag "add.png", {:height => 16, :width => 16} %>
+      <% end %> 
+    </li>
+  </ul>
+<% end %>
+
+<% content_for :content do %>
+  <% if @testbeds.length > 0 %>
+  <table id="sysimages" class="grid-view">
+    <%= generate_table_headers(Testbed, admin_testbeds_path, :fields => ["id", "name"], :labels => { "id" => "#"}) %>
+    <tbody>
+    <% @testbeds.each do |testbed| %>
+      <tr>	
+	<td><%= link_to testbed.id, admin_testbed_path(testbed) %></td>
+	<td><%= link_to testbed.name, admin_testbed_path(testbed) %></td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+  <% end %>
+  <br />
+<% end %>

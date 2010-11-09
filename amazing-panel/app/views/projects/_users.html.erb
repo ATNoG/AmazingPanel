@@ -1,0 +1,51 @@
+<% if title != nil and (users.empty? == false) %>
+  <b><%= title %></b><br/>
+<% end %>
+<% i = 0 %>
+<ul class="users">
+  <% users.each do |user| %>
+    <% if with_assignment_check == true %>      
+      <% next if project_is_user_assigned?(@project, user.id) == false %>
+    <% end %>
+    <% i += 1 %>
+    <li>     
+      <% if make_leader == true %>
+        <% if is_user_leader(@project, user) %>
+          <%= image_tag('star.png', :class => "leader-badge") %>
+        <% end %>
+      <% end %>    
+      <div class="user-info">	
+	<% link_to(user) do %>
+	  <%= gravatar_for user, :size => 30 %>
+	  <%= user.name %>
+	<% end %>
+
+	<% if disabled == false %>
+	  <% if is_user_leader(@project, current_user) %> 	    
+	    <% if unassign == true %>
+	    | <%= link_to "Unassign", project_user_path(@project, user), :method => :delete,
+				    :title => "Unassign #{user.name}" %>
+	    <% end %>
+	  <% end %>
+	  <% if is_user_leader(@project, current_user) %> 	    
+	    <% if assign == true %>
+	    | <%= link_to "Assign", project_user_path(@project, user), :method => :put,
+				    :title => "Assign #{user.name}" %>
+	    <% end %>
+	    <% if make_leader == true %>
+		<% if not is_user_leader(@project, user) %>       
+		| <%= link_to "Make Leader", project_leader_path(@project, user), :method => :put,
+				    :title => "Unassign #{user.name}" %>
+		<% end %>
+	    <% end %>
+
+	  <% end %>
+	<% end %>
+      </div>
+      <br />
+    </li>    
+  <% end %>
+  <% if i == 0 %>
+    <p>All users were assigned in this project.</p>
+  <% end %>
+</ul>

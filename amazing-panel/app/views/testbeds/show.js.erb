@@ -1,0 +1,6 @@
+<% if @interval > 5 %>
+  $("#testbed-<%= @testbed.id %>").attr('timestamp', <%= Time.now.strftime("%s").to_s %>);
+  <% @status.each do | k, v | %>  
+    $("#testbed-<%= @testbed.id %> > #node-<%= k %>").removeClass('on off toggle run').addClass('<%= v %>')
+  <% end %>
+<% end %>

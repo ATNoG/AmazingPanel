@@ -1,0 +1,48 @@
+<% content_for :sub_actions do %>
+  <ul id="toolbar-action-list">
+    <li class="action">
+      <%= link_to(new_project_path, :class => "action")  do %>
+	New
+	<%= image_tag "add.png", {:height => 16, :width => 16} %>
+      <% end %> 
+    </li>
+  </ul>
+<% end %>
+
+<% content_for :content do %>
+  <% if @projects.length > 0 %>
+  <table id="sysimages" class="grid-view">
+    <%= generate_table_headers(Project, projects_path, :fields => [ "", "id", "name", "description", "updated_at", "__actions"], :labels => { "id" => "#" }, 
+			      :filters => { "id" => 'integer_field_select', "updated_at" => 'text_field'}) %>
+    <tbody>
+    <% @projects.each do |project| %>
+      <tr>
+	<td><%= image_tag project_logo_path(project), {:height => 32, :width => 32} %></td>
+	<td class="underline"><%= link_to project.id, project %></td>
+	<td><%= link_to project.name, project %></td>
+	<td><%= project.description %></td>
+	<td><%= project.updated_at.strftime("%Y-%m-%d %H:%M:%S") %></td>
+	<% if is_user_leader(project, current_user) %>
+	<td>
+	  <div class="table-actions">
+	  <%= link_to(edit_project_path(project), :class => "action")  do %>
+	    <%= image_tag "edit.png", {:height => 16, :width => 16} %>
+	  <% end %> 
+	  <%= link_to(project, :confirm => 'Are you sure?', :method => :delete, :class => "action") do %>
+	    <%= image_tag "remove.png", {:height => 16, :width => 16} %>
+	  <% end %> 
+	  <%= link_to(assign_project_path(project), :class => "action")  do %>
+	    <%= image_tag "assign.png", {:height => 16, :width => 16} %>
+	  <% end %>     
+	  </div>
+	</td>
+	<% else %>
+	<td></td>
+	<% end %>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+  <% end %>
+  <br />
+<% end %>

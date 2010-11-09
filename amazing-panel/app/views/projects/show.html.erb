@@ -1,0 +1,52 @@
+<% content_for :sub_actions do %>
+  <ul id="toolbar-action-list">
+    <li class="action">
+      <%= link_to (projects_path, :class => "action")  do %>
+	Back
+	<%= image_tag "back.png", {:height => 16, :width => 16} %>
+      <% end %> 
+    </li>
+    <% if is_user_leader(@project, current_user) %>
+    <li class="action">
+      <%= link_to (edit_project_path(@project), :class => "action")  do %>
+	Edit
+	<%= image_tag "edit.png", {:height => 16, :width => 16} %>
+      <% end %> 
+    </li>
+    <li class="action">
+      <%= link_to (assign_project_path(@project), :class => "action")  do %>
+	Assign
+	<%= image_tag "assign.png", {:height => 16, :width => 16} %>
+      <% end %> 
+    </li>
+    <li class="action">
+      <%= link_to(@project, :confirm => 'Are you sure?', :method => :delete, :class => "action") do %>
+	Delete
+	<%= image_tag "remove.png", {:height => 16, :width => 16} %>
+      <% end %> 
+    </li>
+    <% end %>
+  </ul>
+<% end %>
+
+<% content_for :content do %>
+  <div class="profile" summary="Profile information">
+    <div class="main">
+      <h1>
+        <img align="center" alt="jmartins" class="project" width="50" height="50" src="<%= project_logo_path(@project) %>">
+      </h1>
+    </div>
+    <div class="sidebar round">
+      <p>
+	<b>Name:</b>
+	<%= @project.name %>
+      </p>
+
+      <p>
+	<b>Description:</b>
+	<%= @project.description %>
+      </p>
+
+      <%= render :partial => 'users', :locals => { :title => "Users:", :with_assignment_check => false, :disabled => true, :make_leader => true, :users => @project.users } %>
+    </div>
+<% end %>

@@ -3,7 +3,7 @@ $(document).ready(function(){
   <% if (@c == "library/eds") and (@a == "show" or @a =="edit") %>
     <%= render :partial => 'library' %>
   <% end %>
-  <% if (@c == "testbeds") and (@a == "show") %>
+  <% if ((@c == "testbeds") or (@c == "admin/testbeds")) and (@a == "show") %>
     <%= render :partial => 'network' %>
   <% end %>
 });
@@ -28,14 +28,16 @@ function setStringComparatorFilterExpression(path, id){
 function filter_path(path, field, cmp, value){
   return path+"?filter=field&field="+field+"&op="+cmp+"&value="+value;
 }
+  <% if ((@c == "testbeds") or (@c == "admin/testbeds")) and (@a == "show") %>
+    <% id = params[:id] %>
+    <% elem_str = "testbed-#{id.to_s}"%>
+    
+  function updateStatus() {  
+    var timestamp = $('#<%= elem_str %>').attr("timestamp");
+    $.getScript('/testbeds/<%= id %>.js?timestamp='+timestamp);  
+    setTimeout(updateStatus, 60000);  
+  }
+  <% end %>
+
 <% end %>                           
 
-<% if (@c == "testbeds") and (@a == "show") %>
-  <% id = params[:id] %>
-  <% elem_str = "testbed-#{id.to_s}"%>
-function updateStatus() {  
-  var timestamp = $('#<%= elem_str %>').attr("timestamp");
-  $.getScript('/testbeds/<%= id %>.js?timestamp='+timestamp);  
-  setTimeout(updateStatus, 60000);  
-}
-<% end %>
