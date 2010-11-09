@@ -1,6 +1,8 @@
 class PagesController < ApplicationController
+  respond_to :html, :only => [:index]
+  respond_to :js, :only => [:application] 
+  respond_to :css, :only => [:custom]
   
-  respond_to :html, :js, :css
   def index
   end
   
@@ -11,5 +13,6 @@ class PagesController < ApplicationController
   end
   
   def custom
+    render 'custom.css', :content_type => 'text/css'
   end
 end

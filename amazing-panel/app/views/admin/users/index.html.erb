@@ -1,4 +1,135 @@
-<% render 'sidebar' %>
+<% content_for :head do %>
+  <%= javascript_include_tag 'jquery.tablesorter.min.js' %>
+  <script>
+    $(document).ready(
+      function(){
+	//$(".tablesorter").tablesorter( { headers: { 0: { sorter: false}, 5: { sorter: false} } });
+      }
+    );
+  </script>
+<% end %>
+
+<% content_for :sub_actions do %>
+  <ul id="toolbar-action-list">
+    <li class="action">
+      <%= link_to(new_admin_user_registration_path, :class => "action")  do %>
+	New
+	<%= image_tag "add.png", {:height => 16, :width => 16} %>
+      <% end %> 
+    </li>
+
+    <% if @filters.length > 0 %>
+      <li class="action">
+	<%= link_to(admin_users_path+"?filter=clear", :class => "action")  do %>
+	  Clear
+	  <%= image_tag "clear.png", {:height => 16, :width => 16} %>
+	<% end %> 
+      </li>
+      <li class="action">
+	<%= link_to("#", :class => "action", :onclick=> "$('#active-filters-dialog').addClass('dialog-active')")  do %>
+	  Show Active Filters
+	  <%= image_tag "filter-2.png", {:height => 16, :width => 16} %>
+	<% end %>
+
+	<% modal_dialog("Active Filters:", "active-filters-dialog") do %>
+	  <% active_filters(admin_users_path) %>
+	<% end %>
+      </li>
+    <% end %>	
+
+  </ul>
+<% end %>
+
+
+<% if @error.nil? == false %>
+  <% content_for :content do %>
+    Invalid Filter.
+  <% end %>  
+<% elsif @users.nil? or @users.length == 0 %>
+  <% content_for :content do %>
+    No Users.
+  <% end %>
+<% else %>
+  <% content_for :content do %>
+    <table id="users" class="grid-view tablesorter">
+    <%= generate_table_headers(Ed, admin_users_path, 
+	    :fields => [ "id", "name", "email", "activated", "created_at", "updated_at", "last_sign_in_at", "__actions"],
+	    :labels => { "id" => "#", "activated" => "Account Status" }, 
+	    :refs => { },
+	    :filters => {"id" => 'integer_field_select', "activated" => 'bool_field', "created_at" => 'text_field', "updated_at" => 'text_field', "last_sign_in_at" => 'text_field'}) %>
+<!--<thead>
+      <tr>
+	<th></th>
+	<%= table_header("#") do %>
+	  <%= modal_filter_dialog("id") do %>
+	    <%= integer_field_select_filter(admin_users_path, "id", User.all) %>
+	  <% end %>
+	<% end %>
+	<%= table_header("Name") %>
+	<%= table_header("Email")%>
+	<%= table_header("Account Status") do %>
+	  <%= modal_filter_dialog("status") do %>
+	    <%= bool_field_filter(admin_users_path, "activated") %>
+	  <% end %>
+	<% end %>
+	<%= table_header("Created at") do %>
+	  <%= modal_filter_dialog("created_at") do %>
+	    <%= text_field_filter(admin_users_path, "created_at") %>
+	  <% end %>
+	<% end %>
+	<%= table_header("Updated at") do %>
+	  <%= modal_filter_dialog("updated_at") do %>
+	    <%= text_field_filter(admin_users_path, "updated_at") %>
+	  <% end %>
+	<% end %>
+	<%= table_header("Last Sign in at") do %>
+	  <%= modal_filter_dialog("last_sign_in") do %>
+	    <%= text_field_filter(admin_users_path, "last_sign_in") %>
+	  <% end %>
+	<% end %>
+	<th class="actions-2"></th>
+      </tr>
+    </thead>
+ -->
+    <tbody>
+      <% @users.each do |user| %>
+	<tr>
+<!--	  <td><%= gravatar_for user, :size => 24  %></td>-->
+	  <td class="underline"><%= link_to user.id, admin_user_path(:id => user.id) %></td>
+	  <td><%= link_to user.name, admin_user_path(:id => user.id) %></td>
+	  <td><%= link_to user.email, "mailto:"+user.email.to_s %></td>
+	  <td>
+	  <% if user.admin? == false %> 
+	    <% if user.activated? %>  
+	      Activated
+	    <% else %>
+	      Deactivated
+	    <% end %>    
+	  <% end %>    
+	  </td>
+	  <td><%= user.updated_at.strftime("%Y-%m-%d %H:%M:%S") %></td>
+	  <td><%= user.created_at.strftime("%Y-%m-%d %H:%M:%S") %></td>
+	  <td><%= user.last_sign_in_at.strftime("%Y-%m-%d %H:%M:%S") %></td>
+	  <td class="actions-2">
+	    <div class="table-actions">
+	      <!--<%= link_to(admin_user_path(user), :class => "action")  do %><%= image_tag "edit.png", {:height => 16, :width => 16} %><% end %>-->	      
+	      <% if user.admin? == false%>
+		<% if user.activated? %>  
+		  <%= link_to(user_activate_path(:user_id => user.id), :class => "action", :method => :put) do %><%= image_tag "disable.png", {:height => 16, :width => 16} %><% end %>
+		<% else %>
+		  <%= link_to(user_activate_path(:user_id => user.id), :class => "action", :method => :put) do %><%= image_tag "enable.png", {:height => 16, :width => 16} %><% end %>	  
+		<% end %> 	      
+	      <% end %> 
+	      <%= link_to(admin_users_path, :class => "action", :method => "delete") do %><%= image_tag "remove.png", {:height => 16, :width => 16} %><% end %>  
+	    </div>
+	  </td>
+	</tr>
+      <% end %>
+    </tbody>
+    </table>
+  <% end %>
+<% end %>
+
 <!--
 <% @users.each do | user | %>
   <%= gravatar_for user, :size => 50 %>

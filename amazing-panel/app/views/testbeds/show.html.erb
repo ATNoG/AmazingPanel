@@ -1,17 +1,20 @@
-<p>
-  <b>Name:</b>
-  <%= @testbed.name %>
-</p>
+<% content_for :sub_actions do %>
+  <ul id="toolbar-action-list">
+    <li class="action"></li>
+  </ul>
+<% end %>
 
-<p>
-  <b>Description:</b>
-  <%= @testbed.description %>
-</p>
-
-<%= render :partial => 'users', :locals => { :title => "Users", :with_assignment_check => false, :disabled => true, :make_leader => true, :users => @testbed.users } %>
-
-<% if is_user_leader(@testbed, current_user) %>
-  <%= link_to 'Assign', assign_testbed_path(@testbed) %> |
-  <%= link_to 'Edit', edit_testbed_path(@testbed) %> |
-  <%= link_to 'Back', testbeds_path %>
+<% content_for :content do %>
+  <% content_tag :center do %>
+    <% content_tag :div, :id => "testbed-"+@testbed.id.to_s, :class => "testbed", :timestamp => Time.now.strftime("%s").to_s do %>
+      <% length = 0 %>
+      <% @nodes["testbed"]["positions"].each do |n| %>      
+	<% if  ((length % 5) == 0) and (length != 0) %>
+	  <%= content_tag :div, "", :class => "clear" %>      	
+	<% end %>      
+	<%= content_tag(:div, n["id"], :id => "node-#{n["id"].to_i - 1}", :class => @status[(n["id"].to_i - 1).to_s]) unless n["id"] == -1 %>
+	<% length += 1 %>
+      <% end %>
+    <% end %>
+  <% end %>
 <% end %>

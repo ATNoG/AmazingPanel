@@ -1,6 +1,4 @@
 class Testbed < ActiveRecord::Base
-  validates_presence_of :name, :description
-  attr_accessible :name, :description, :user_ids, :leader
-  
-  has_and_belongs_to_many :users  
+  validates_presence_of :name
+  attr_accessible :name
 end

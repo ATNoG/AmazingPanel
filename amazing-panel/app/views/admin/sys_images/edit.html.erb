@@ -1,4 +1,13 @@
-<% render 'sidebar' %>
+<% content_for :sub_actions do %>
+  <ul id="toolbar-action-list">
+    <li class="action">
+      <%= link_to(admin_sys_image_path(@sys_image), :class => "action") do %>
+	Back
+	<%= image_tag "back.png", {:height => 16, :width => 16} %>
+      <% end %> 
+    </li>
+  </ul>
+<% end %>
 
 <% content_for :content do %>  
   <%= render :partial => 'form', :locals => { :target => admin_sys_images_path, :multipart => false, :remote => false }  %>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101024223326) do
+ActiveRecord::Schema.define(:version => 20101104171000) do
 
   create_table "device_kinds", :force => true do |t|
     t.integer "inventory_id",               :null => false
@@ -92,6 +92,19 @@ ActiveRecord::Schema.define(:version => 20101024223326) do
   end
 
   add_index "nodes", ["location_id"], :name => "location_id", :unique => true
+
+  create_table "projects", :force => true do |t|
+    t.string   "name"
+    t.string   "description"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "projects_users", :id => false, :force => true do |t|
+    t.integer "project_id"
+    t.integer "user_id"
+    t.boolean "leader",     :default => false
+  end
 
   create_table "pxeimages", :id => false, :force => true do |t|
     t.integer "id"

@@ -1,19 +1,41 @@
+<% params.merge!(Rails.application.routes.recognize_path(params[:p])) %>
 $(document).ready(function(){    
   <% if (@c == "library/eds") and (@a == "show" or @a =="edit") %>
-  setTimeout( function(){    
-    CodeMirror.fromTextArea('code', {
-      parserfile: ["../tokenizeruby.js", "../parseruby.js"],
-      stylesheet: "/stylesheets/codemirror/rubycolors.css",
-      path: "/javascripts/codemirror/base/",
-      lineNumbers: true,
-      textWrapping: false,
-      indentUnit: 2,
-      parserConfig: {},
-      readOnly: <%= (@a == "edit") ? false : true %>,
-      height: "67%",
-      width: "68%",
-    }, 0);  
-  });
+    <%= render :partial => 'library' %>
+  <% end %>
+  <% if (@c == "testbeds") and (@a == "show") %>
+    <%= render :partial => 'network' %>
   <% end %>
 });
 
+<% if user_signed_in? %>
+function setIntegerComparatorFilterExpression(path, id){
+  var filter = $("#"+id+"-filter > .modal-container > .filter > .option ");
+  var op = $("> #op > option:selected", filter).attr("value")
+  var value = $(" > #value > option:selected", filter).attr("value")
+  var anchor = $(" > .button > #apply-filter", filter)
+  anchor.attr("href", filter_path(path, id, op, value))
+}
+
+function setStringComparatorFilterExpression(path, id){
+  var filter = $("#"+id+"-filter > .modal-container > .filter > .option ");
+  var op = $("> #op > option:selected", filter).attr("value")
+  var value = $(" > #value", filter).attr("value")
+  var anchor = $(" > .button > #apply-filter", filter)
+  anchor.attr("href", filter_path(path, id, op, '\"'+value+'\"'))
+}
+
+function filter_path(path, field, cmp, value){
+  return path+"?filter=field&field="+field+"&op="+cmp+"&value="+value;
+}
+<% end %>                           
+
+<% if (@c == "testbeds") and (@a == "show") %>
+  <% id = params[:id] %>
+  <% elem_str = "testbed-#{id.to_s}"%>
+function updateStatus() {  
+  var timestamp = $('#<%= elem_str %>').attr("timestamp");
+  $.getScript('/testbeds/<%= id %>.js?timestamp='+timestamp);  
+  setTimeout(updateStatus, 60000);  
+}
+<% end %>

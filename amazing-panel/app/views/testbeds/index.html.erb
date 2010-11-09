@@ -1,29 +1,16 @@
-<table>
-  <tr>
-    <th>Name</th>
-    <th>Description</th>
-    <th></th>
-    <th></th>
-    <th></th>
-  </tr>
-
-<% @testbeds.each do |testbed| %>
-  <tr>
-    <td><%= link_to testbed.name, testbed %></td>
-    <td><%= testbed.description %></td>
-    <% if is_user_leader(testbed, current_user) %>
-    <td><%= link_to 'Assign', assign_testbed_path(testbed) %></td>
-    <td><%= link_to 'Edit', edit_testbed_path(testbed) %></td>
-    <td><%= link_to 'Destroy', testbed, :confirm => 'Are you sure?', :method => :delete %></td>
-    <% else %>
-    <td></td>
-    <td></td>
-    <td></td>    
+<% content_for :content do %>
+  <% if @testbeds.length > 0 %>
+  <table id="sysimages" class="grid-view">
+    <%= generate_table_headers(Testbed, testbeds_path, :fields => ["id", "name"], :labels => { "id" => "#"}) %>
+    <tbody>
+    <% @testbeds.each do |testbed| %>
+      <tr>	
+	<td><%= link_to testbed.id, testbed %></td>
+	<td><%= link_to testbed.name, testbed %></td>
+      </tr>
     <% end %>
-  </tr>
+    </tbody>
+  </table>
+  <% end %>
+  <br />
 <% end %>
-</table>
-
-<br />
-
-<%= link_to 'New Testbed', new_testbed_path %>

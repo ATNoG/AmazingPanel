@@ -1,4 +1,4 @@
 class Admin::RegistrationsController < Users::RegistrationsController
-  before_filter :admin_user
+  prepend_before_filter :admin_user, :only => [:destroy, :index]
   layout 'admin'
 end

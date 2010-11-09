@@ -2,7 +2,6 @@ require 'fileutils'
 
 class Users::RegistrationsController < Devise::RegistrationsController
   prepend_before_filter :authenticate_scope!, :only => [:edit, :update, :destroy, :index]
-  
   # POST /resource/sign_up
   def create
     build_resource

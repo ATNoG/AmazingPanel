@@ -1,6 +1,10 @@
 class Library::SysImagesController < Library::ResourceController
   before_filter :authenticate
   
+  def resource()
+    return SysImage
+  end
+  
   def resource_find_all
     return SysImage.all
   end
@@ -20,7 +24,18 @@ class Library::SysImagesController < Library::ResourceController
   # GET /sys_images
   # GET /sys_images.xml
   def index
-    @sys_images = resource_find_all
+    current_page = params[:page]
+    if current_page.nil?
+      current_page = "1"
+    end
+    @sys_images = filter(params)    
+    if @sys_images.nil? == false
+      @sys_images = @sys_images.paginate(:page => current_page)
+    end
+
+    if @error.nil? == false
+	@error = "Invalid Filter."
+    end
   end
 
   # GET /sys_images/1

@@ -6,6 +6,7 @@
     </div>
     <div class="sidebar round">
       <strong>Name</strong> <%= @user.name %><br />
-      <strong>URL</strong>  <%= link_to user_path(@user), @user %>
+      <strong>URL</strong>  <%= link_to user_path(@user), @user %><br />
+      <strong>Projects</strong> <%= generate_projects(@user) %>
     </div>
 </div>

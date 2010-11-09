@@ -1,14 +1,28 @@
-class Users::UsersController < ApplicationController
-  #include Devise::Controllers::InternalHelpers  
-  
+class Users::UsersController < Library::ResourceController  
   before_filter :authenticate  
+  layout 'application'
+  
+  def resource()
+    return User
+  end
+  
+  def resource_find_all()
+    return User.all
+  end
+  
+  def resource_find(id)
+    return User.find(id)
+  end
+  
+  def resource_new(model=nil)
+    if model.nil?
+      return User.new
+    else
+      return User.new(model)
+    end
+  end  
   
   def show
     @user = User.find(params[:id])
-  end
-  
-  def index
-    @users = User.where(["id != ?", current_user.id])
-    render :action => :index
   end
 end

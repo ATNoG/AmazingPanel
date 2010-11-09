@@ -1,4 +1,34 @@
-<% render 'sidebar' %>
+<% content_for :sub_actions do %>
+  <ul id="toolbar-action-list">
+    <li class="action">
+      <%= link_to (edit_user_registration_path, :class => "action")  do %>
+	Edit
+	<%= image_tag "edit.png", {:height => 16, :width => 16} %>
+      <% end %> 
+    </li>
+    <% if @user.admin? == false%>  
+      <li class="action">
+	<% if @user.activated? %>  
+	  <%= link_to(user_activate_path(:user_id => @user.id), :class => "action", :method => :put) do %>
+	    Deactivate
+	    <%= image_tag "disable.png", {:height => 16, :width => 16} %>
+	  <% end %>
+	<% else %>
+	  <%= link_to(user_activate_path(:user_id => @user.id), :class => "action", :method => :put) do %>
+	    Activate
+	    <%= image_tag "enable.png", {:height => 16, :width => 16} %>
+	  <% end %>	  
+	<% end %>    
+      </li>
+    <% end %>
+    <li class="action">
+      <%= link_to(admin_users_path, :class => "action") do %>
+	Back
+	<%= image_tag "back.png", {:height => 16, :width => 16} %>
+      <% end %> 
+    </li>
+  </ul>
+<% end %>
 
 <% content_for :content do %>
 <div class="profile" summary="Profile information">
@@ -8,14 +38,21 @@
       </h1>
     </div>
     <div class="sidebar round">
-      <strong>Name</strong> <%= @user.name %><br />
-      <strong>URL</strong>  <%= link_to user_path(@user), @user %><br/>
-      <strong>Account:</strong>
-      <% if @user.activated? %>  
-	<%= link_to "Deactivate", user_activate_path(:user_id => @user.id), :method => :put %>
-      <% else %>
-	<%= link_to "Activate", user_activate_path(:user_id => @user.id), :method => :put %>
-      <% end %>    
+      <strong>Name:</strong> <%= @user.name %><br />
+      <strong>URL:</strong>  <%= link_to user_path(@user), @user %><br/>
+      <strong>Email:</strong> <%= @user.email %><br/>
+      <% if @user.admin? == false%>  
+	<strong>Account:</strong>
+	<% if @user.activated? %>  
+	  Activated
+	<% else %>
+	  Deactivated
+	<% end %> 
+	<br/> 
+      <% end %>
+      <strong>Intention:</strong> 
+      <%= @user.intention %><br/>
+      <strong>Projects</strong> <%= generate_projects(@user) %><br/>
     </div>
 </div>
 <% end %>

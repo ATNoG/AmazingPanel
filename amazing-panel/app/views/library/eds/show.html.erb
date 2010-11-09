@@ -1,5 +1,33 @@
+<% content_for :head do %>
+  <%= javascript_include_tag 'codemirror/base/codemirror' %>  
+  <%= stylesheet_link_tag 'codemirror/rubycolors', :media => 'screen' %>  
+<% end %>
+
 <% creator = User.find(@ed.user_id) %>
-<% render 'sidebar' %>
+
+<% content_for :sub_actions do %>
+  <ul id="toolbar-action-list">
+    <li class="action">
+      <%= link_to (edit_ed_path(@ed), :class => "action")  do %>
+	Edit
+	<%= image_tag "edit.png", {:height => 16, :width => 16} %>
+      <% end %> 
+    </li>
+    <li class="action">
+      <%= link_to(eds_path, :class => "action") do %>
+	Back
+	<%= image_tag "back.png", {:height => 16, :width => 16} %>
+      <% end %> 
+    </li>
+    <li class="action">
+      <%= link_to(eds_path, :class => "action", :method => "delete") do %>
+	Delete
+	<%= image_tag "remove.png", {:height => 16, :width => 16} %>
+      <% end %> 
+    </li>
+  </ul>
+<% end %>
+
 
 <% content_for :content do %>
   <p>
@@ -20,8 +48,4 @@
   <p>    
   <%= text_area_tag :code, @content.readlines, :cols => 40, :rows => 30 %> 
   </p>    
-<% end %>
-
-<% content_for :actions do %>
-  <%= add_action 'Edit', edit_ed_path(@ed) %>
 <% end %>

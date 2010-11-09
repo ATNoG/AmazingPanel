@@ -1,28 +1,15 @@
-<% content_for :head do %>
-  <%= javascript_include_tag 'codemirror/base/codemirror' %>
-  <%= javascript_include_tag "/javascripts/application.js?c="+self.request.parameters[:controller]+"&a="+self.request.parameters[:action]+"&p="+self.request.headers["PATH_INFO"] %>
-  <%= stylesheet_link_tag 'codemirror/rubycolors', :media => 'screen' %>
-<% end %>
-
 <% content_for :main_content do %>
   <div id="toolbar">
     <ul id="toolbar-action-list">
-        <%= add_action 'Experiment Definitions', eds_path %>
-	<%= add_action 'System Images', sys_images_path %>
+        <%= add_action 'Experiment Definitions', eds_path, ['library/eds'] %>
+	<%= add_action 'System Images', sys_images_path, ['library/sys_images'] %>
     </ul>
+  </div>
+  <div id="sub-toolbar">
+    <%= yield :sub_actions %>
   </div>
   
   <br />
-  
-  <div class="simple-sidebar">
-    <ul id="resource-list">
-      <%= yield :resources %>           
-    </ul>
-    <ul id="action-list">
-	<%= yield :actions %>
-    </ul>
-  </div>
-
   <div id="file-show">
     <%= yield :content %>
   </div>

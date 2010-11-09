@@ -1,5 +1,27 @@
 <% creator = User.find(@sys_image.user_id) %>
-<% render 'sidebar' %>
+
+<% content_for :sub_actions do %>
+  <ul id="toolbar-action-list">
+    <li class="action">
+      <%= link_to (edit_sys_image_path(@sys_image), :class => "action")  do %>
+	Edit
+	<%= image_tag "edit.png", {:height => 16, :width => 16} %>
+      <% end %> 
+    </li>
+    <li class="action">
+      <%= link_to(sys_images_path, :class => "action") do %>
+	Back
+	<%= image_tag "back.png", {:height => 16, :width => 16} %>
+      <% end %> 
+    </li>
+    <li class="action">
+      <%= link_to(sys_images_path, :class => "action", :method => "delete") do %>
+	Delete
+	<%= image_tag "remove.png", {:height => 16, :width => 16} %>
+      <% end %> 
+    </li>
+  </ul>
+<% end %>
 
 <% content_for :content do %>
   <p>

@@ -1,11 +1,12 @@
 AmazingPanel::Application.routes.draw do
+  #devise_for :users, :controllers => { :sessions => "users/sessions", :registrations => "users/registrations" }  
   devise_for :users, :controllers => { :sessions => "users/sessions", :registrations => "users/registrations" }    
   
   scope :module => "users" do
     resources :users, :only => [:index, :show, :destroy]
   end
   
-  resources :testbeds do
+  resources :projects do
     member do
       get 'assign'
       put 'user/:user_id', :action => "assign_user"
@@ -29,7 +30,10 @@ AmazingPanel::Application.routes.draw do
       put '/activate', :action => "activate"
     end    
     resources :sys_images, :path => "admin/sys_images"  
+    resources :testbeds, :path => "admin/testbeds"  
   end
+  
+  resources :testbeds
   
   match 'javascripts/application.js' => 'pages#application'
   match 'stylesheets/custom.css' => 'pages#custom'

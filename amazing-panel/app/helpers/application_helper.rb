@@ -15,7 +15,6 @@ module ApplicationHelper
   end
   
   def is_active_by_controllers?(controllers)
-    puts self.request.headers['PATH_INFO']
     for c in controllers:
       if (self.request.parameters[:controller] == c)
 	return true
@@ -47,5 +46,4 @@ module ApplicationHelper
       return "omni-active";
     end
   end
-
 end

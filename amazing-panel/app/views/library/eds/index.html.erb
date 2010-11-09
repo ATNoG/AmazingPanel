@@ -1,1 +1,100 @@
-<% render 'sidebar' %>
+<% content_for :sub_actions do %>
+  <ul id="toolbar-action-list">
+    <li class="action">
+      <%= link_to(new_ed_path, :class => "action")  do %>
+	New
+	<%= image_tag "add.png", {:height => 16, :width => 16} %>
+      <% end %> 
+    </li>
+    
+    <% if @filters.length > 0 %>
+      <li class="action">
+	<%= link_to(eds_path+"?filter=clear", :class => "action")  do %>
+	  Clear
+	  <%= image_tag "clear.png", {:height => 16, :width => 16} %>
+	<% end %> 
+      </li>
+      <li class="action">
+
+	<%= link_to("#", :class => "action", :onclick=> "$('#active-filters-dialog').addClass('dialog-active')")  do %>
+	  Show Active Filters
+	  <%= image_tag "filter-2.png", {:height => 16, :width => 16} %>
+	<% end %>
+
+	<% modal_dialog("Active Filters:", "active-filters-dialog") do %>
+	  <% active_filters(eds_path) %>
+	<% end %>
+
+      </li>
+    <% end %>	
+  </ul>
+<% end %>
+<% content_for :content do %>
+<% if @error.nil? == false %>
+    Invalid Filter.
+<% elsif @eds.nil? or @eds.length == 0 %>
+    No Experiments Definitions on your Library.  
+<% else %>  
+    <%= will_paginate :previous_label => "Previous", :next_label =>"Next" %>
+    
+    <table id="eds" class="grid-view tablesorter">
+    <%= generate_table_headers(Ed, eds_path, 
+	    :fields => [ "id", "user_id", "name", "description", "updated_at", "__actions"],
+	    :labels => { "id" => "#", "user_id" => "Creator" }, 
+	    :refs => { "user_id" => [User,nil,"eq"] },
+	    :filters => {"id" => 'integer_field_select', "user_id" => 'string_list_field:custom', "updated_at" => 'text_field'}) do |u| %>
+	<% if u.field_filter == "user_id" %>
+	  <%= gravatar_for u, :size => 36  %>
+	  <%= link_to u.name, filter_path(eds_path, "user_id", "eq", u.id.to_s) %>
+	<% end %>
+    <% end %>
+<!--
+   <thead>
+      <tr>
+	<%= table_header("#") do %>
+	  <%= modal_filter_dialog("id") do %>
+	    <%= integer_field_select_filter(eds_path, "id", Ed.all) %>
+	  <% end %>	  
+	<% end %>
+
+	<%= table_header("Creator") do %>
+	  <%= modal_filter_dialog("creator") do %>
+	    <%= string_list_field_filter(eds_path, "user_id", Ed.all, User) do |u| %>
+	      <%= gravatar_for u, :size => 36  %>
+	      <%= link_to u.name, filter_path(eds_path, "user_id", "eq", u.id.to_s) %>
+	    <% end %>
+	  <% end %>
+	<% end %>
+
+	<%= table_header("Name") %>
+	<%= table_header("Description") %>
+	<%= table_header("Updated at") do %>
+	  <%= modal_filter_dialog("updated_at") do %>
+	    <%= text_field_filter(eds_path, "updated_at") %>
+	  <% end %>
+	<% end %>
+	<%= table_header("") %>
+      </tr>
+    </thead>
+-->
+    <tbody>
+      <% @eds.each do |ed| %>
+	<% creator = User.find(ed.user_id) %>
+	<tr>
+	  <td><%= link_to ed.id, ed, :class=>"underline" %></td>
+	  <td><%= link_to creator.name, user_path(:id => creator.id) %></td>
+	  <td><%= link_to ed.name, ed %></td>
+	  <td><%= ed.description %></td>
+	  <td><%= ed.updated_at %></td>
+	  <td>
+	    <div class="table-actions">
+	      <%= link_to(edit_ed_path(ed), :class => "action")  do %><%= image_tag "edit.png", {:height => 16, :width => 16} %><% end %>
+	      <%= link_to(eds_path, :class => "action", :method => "delete") do %><%= image_tag "remove.png", {:height => 16, :width => 16} %><% end %> 
+	    </div>
+	  </td>
+	</tr>
+      <% end %>
+    </tbody>
+    </table>
+  <% end %>
+<% end %>

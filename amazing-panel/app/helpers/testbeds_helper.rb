@@ -1,22 +1,12 @@
 module TestbedsHelper
-  def testbed_user_path(testbed, user)
-    "/testbeds/#{testbed.id}/user/#{user.id}"
-  end
-
-  def testbed_leader_path(testbed, user)
-    "/testbeds/#{testbed.id}/user/#{user.id}/leader"
+  
+  def testbed_properties_for(testbed)
+    return YAML.load_file("#{Rails.root}/inventory/testbeds/#{testbed.id}.yml")
   end
   
-  def testbed_is_user_assigned?(testbed, id)
-     return (testbed.user_ids.index(id).nil?)
-  end  
-  
-  def testbed_users_empty?(testbed)
-     return testbed.user_ids.empty?
-  end
-
-  def is_user_leader(testbed, user)
-     @user = Testbed.find(testbed.id).users.find(user.id)
-     return (@user.leader == 't')
+  def get_nodes_status
+    data = File.new('tmp/nodes.json','r').readlines().to_s
+    data_json = ActiveSupport::JSON.decode(data)  
+    return data_json
   end
 end

@@ -1,6 +1,10 @@
 class Library::EdsController < Library::ResourceController
   before_filter :authenticate
   
+  def resource()
+    return Ed
+  end
+
   def resource_find_all()
     return Ed.all
   end
@@ -20,7 +24,18 @@ class Library::EdsController < Library::ResourceController
   # GET /eds
   # GET /eds.xml
   def index
-    @eds = Ed.all
+    current_page = params[:page]
+    if current_page.nil?
+      current_page = "1"
+    end
+    @eds = filter(params)
+    if @eds.nil? == false
+      @eds = @eds.paginate(:page => current_page)
+    end
+
+    if @error.nil? == false
+	@error = "Invalid Filter."
+    end    
   end
 
   # GET /eds/1
