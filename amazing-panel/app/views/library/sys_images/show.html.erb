@@ -15,7 +15,7 @@
       <% end %> 
     </li>
     <li class="action">
-      <%= link_to(sys_images_path, :class => "action", :method => "delete") do %>
+      <%= link_to(sys_image_path(@sys_image), :class => "action", :method => "delete") do %>
 	Delete
 	<%= image_tag "remove.png", {:height => 16, :width => 16} %>
       <% end %> 
@@ -61,8 +61,4 @@
   </p>
   <% end %>
 
-<% end %>
-
-<% content_for :actions do %>
-  <%= add_action 'Edit', edit_sys_image_path(@sys_image) %>
 <% end %>

@@ -108,7 +108,7 @@ class Library::SysImagesController < Library::ResourceController
   # DELETE /sys_images/1.xml
   def destroy
     @sys_image = resource_find(params[:id])
-    @username = User.find(:id => @sys_image.user_id)
+    @username = User.find(@sys_image.user_id).username
     path = get_sysimage_by_user(@username, @sys_image.name);
     puts path.to_s
     File.delete(path.to_s)

@@ -23,6 +23,8 @@ AmazingPanel::Application.routes.draw do
     resources :eds
   end
   
+  resources :testbeds
+  
   scope :module => "admin", :as => "admin" do
     resources :admin, :path => "admin", :only => [:index]
     devise_for :users , :path => "admin/users", :controllers => { :registrations => "admin/registrations" }    
@@ -30,10 +32,12 @@ AmazingPanel::Application.routes.draw do
       put '/activate', :action => "activate"
     end    
     resources :sys_images, :path => "admin/sys_images"  
-    resources :testbeds, :path => "admin/testbeds"  
+    resources :testbeds, :path => "admin/testbeds"  do
+      get '/nodes/:node_id/info', :action => "node_info", :as => "info", :on => :member
+      put '/nodes/:node_id/toggle', :action => "node_toggle", :as => "toggle", :on => :member
+    end
   end
   
-  resources :testbeds
   
   match 'javascripts/application.js' => 'pages#application'
   match 'stylesheets/custom.css' => 'pages#custom'

@@ -1,6 +1,6 @@
 <% params.merge!(Rails.application.routes.recognize_path(params[:p])) %>
 <% testbed = Testbed.find(params[:id]) %>
-<% nodes = testbed_properties_for(testbed) %>  
+<% nodes = testbed_properties_for(params[:id]) %>  
 .testbed {
   background-image: url('/images/testbeds/testbed-<%= testbed.id.to_s %>.png');
   background-repeat: no-repeat;
@@ -10,7 +10,8 @@
   height: 600px;
 }
 <% nodes["testbed"]["positions"].each do |n| %>
-#node-<%= n["id"].to_i - 1 %> {
+  <% next if (n["id"].to_i == -1) %>
+#node-<%= n["id"].to_i%> {
   text-align: center;
   color: white;
   position: relative;
@@ -21,7 +22,6 @@
   background-color: gray;
   float:left;
 }
-
 <% end %>
 
 .off {
@@ -42,11 +42,13 @@
 .node:hover {
   opacity: 1;
   cursor: pointer;
+  border: 2px solid #2e2e2e;
+  margin: -2px;
 }
 
 .node-active {
   opacity: 1;
-  margin: -1px;
-  border: 1px solid black;
+  margin: -2px;
+  border: 2px solid black;
 }
 <% end %>

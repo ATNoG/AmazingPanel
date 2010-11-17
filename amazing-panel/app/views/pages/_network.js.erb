@@ -5,17 +5,18 @@ if (nodes.length > 0) {
   setTimeout(updateStatus, 10000);  
 } 
 
-$(".node").click(function(evt){
+$(".node").live('click', function(evt){
   var node_id = this.id.split('-')[1];
-  $(".node-active").removeClass('node-active');
-  if ("node-active" in this.classList) {    
+  var $this = $(this);
+  $(".node-active").removeClass('node-active');  
+  if ($this.hasClass("node-active")) {
     $("#sub-toolbar").hide();
   } else {
-    var href = "/admin/testbeds/<%= id %>/nodes/"+node_id+"/";
-    $("#sub-toolbar").html("<ul id=\"toolbar-action-list\"><li class=\"action\"><a class=\"action\" href=\""+href+"on"+"\"><img src=\"/images/enable.png\"/> On</a></li>"+
-			   "<li class=\"action\"><a class=\"action\" href=\""+href+"off"+"\"><img src=\"/images/disable.png\"/> Off</a></li>"+
-			   "<li class=\"action\"><a class=\"action\" href=\""+"#"+"\"><img src=\"/images/edit.png\"/> Show Details</a></li>"+
-			   "</ul>");
+  var href = "/admin/testbeds/<%= id %>/nodes/";
+  var toggle_url = href + node_id +"/toggle";
+  var info_url = href + node_id +"/info";
+    $("#sub-toolbar").html("<ul id=\"toolbar-action-list\"><li class=\"action\"><a class=\"action\" href=\""+toggle_url+"\" data-remote=\"true\" data-method=\"put\"><img src=\"/images/toggle2.png\"/> Toggle</a></li>"+
+			   "<li class=\"action\"><a class=\"action\" href=\""+info_url+".js"+"\" data-remote=\"true\"><img src=\"/images/edit.png\"/> Show Details</a></li></ul>");
     $(this).addClass("node-active");
   }
-})
+});

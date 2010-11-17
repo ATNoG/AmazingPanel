@@ -1,16 +1,11 @@
 module TestbedsHelper
-  
-  def testbed_properties_for(testbed)
-    return YAML.load_file("#{Rails.root}/inventory/testbeds/#{testbed.id}.yml")
-  end
-  
-  def get_nodes_status
-    data = File.new('tmp/nodes.json','r').readlines().to_s
-    data_json = ActiveSupport::JSON.decode(data)  
-    return data_json
-  end
-  
-  def node_actions(id)
-    
-  end
+
+    def properties_file_str(id)
+     return "#{Rails.root}/inventory/testbeds/#{id}.yml"
+    end
+
+    def testbed_properties_for(testbed_id)
+      return YAML.load_file(properties_file_str(testbed_id))
+    end
+
 end

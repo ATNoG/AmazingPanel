@@ -17,8 +17,3 @@
 <% content_for :content do %>
   <%= render :partial => 'form', :locals => { :target => ed_path, :multipart => true, :remote => false }  %>
 <% end %>
-
-<% content_for :actions do %>
-  <%= add_action 'Show', ed_path(:id => @ed.id), ['library/eds'] %>
-  <%= add_action 'Back', ed_path(:id => @ed.id), ['library/eds'] %>
-<% end %>
