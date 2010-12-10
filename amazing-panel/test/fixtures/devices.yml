@@ -1,0 +1,281 @@
+--- 
+devices_028: 
+  address: 192.0.1.30
+  canonical_name: ath1
+  motherboard_id: "3"
+  mac: 00:80:48:62:4e:77
+  id: "32"
+  device_kind_id: "1"
+  inventory_id: "1"
+devices_017: 
+  address: ""
+  canonical_name: eth0
+  motherboard_id: "9"
+  mac: 00:03:1d:07:15:86
+  id: "90"
+  device_kind_id: "1"
+  inventory_id: "1"
+devices_006: 
+  address: ""
+  canonical_name: eth0
+  motherboard_id: "18"
+  mac: 00:03:1d:07:15:85
+  id: "180"
+  device_kind_id: "1"
+  inventory_id: "1"
+devices_029: 
+  address: ""
+  canonical_name: eth0
+  motherboard_id: "14"
+  mac: 00:03:1d:07:15:7e
+  id: "140"
+  device_kind_id: "1"
+  inventory_id: "1"
+devices_018: 
+  address: ""
+  canonical_name: eth0
+  motherboard_id: "22"
+  mac: 00:03:1d:07:15:84
+  id: "220"
+  device_kind_id: "1"
+  inventory_id: "1"
+devices_007: 
+  address: 192.0.0.1
+  canonical_name: ath0
+  motherboard_id: "1"
+  mac: 00:80:48:62:4b:fe
+  id: "11"
+  device_kind_id: "1"
+  inventory_id: "1"
+devices_030: 
+  address: ""
+  canonical_name: node3
+  motherboard_id: "3"
+  mac: 00:0e:0c:7f:0e:8c
+  id: "3"
+  device_kind_id: "1"
+  inventory_id: "1"
+devices_019: 
+  address: 192.0.0.25
+  canonical_name: ath0
+  motherboard_id: "25"
+  mac: 00:80:48:62:e7:e3
+  id: "251"
+  device_kind_id: "1"
+  inventory_id: "1"
+devices_008: 
+  address: ""
+  canonical_name: eth0
+  motherboard_id: "12"
+  mac: 00:03:1d:07:15:74
+  id: "120"
+  device_kind_id: "1"
+  inventory_id: "1"
+devices_031: 
+  address: 192.0.0.3
+  canonical_name: ath0
+  motherboard_id: "3"
+  mac: 00:80:48:62:e7:ba
+  id: "31"
+  device_kind_id: "1"
+  inventory_id: "1"
+devices_020: 
+  address: 192.0.1.20
+  canonical_name: ath1
+  motherboard_id: "2"
+  mac: 00:80:48:62:4e:81
+  id: "22"
+  device_kind_id: "1"
+  inventory_id: "1"
+devices_009: 
+  address: ""
+  canonical_name: eth0
+  motherboard_id: "19"
+  mac: 00:03:1d:07:15:80
+  id: "190"
+  device_kind_id: "1"
+  inventory_id: "1"
+devices_032: 
+  address: ""
+  canonical_name: eth0
+  motherboard_id: "15"
+  mac: 00:03:1d:07:15:17
+  id: "150"
+  device_kind_id: "1"
+  inventory_id: "1"
+devices_021: 
+  address: ""
+  canonical_name: eth0
+  motherboard_id: "10"
+  mac: 00:03:1d:07:15:75
+  id: "100"
+  device_kind_id: "1"
+  inventory_id: "1"
+devices_010: 
+  address: 192.0.1.10
+  canonical_name: ath1
+  motherboard_id: "1"
+  mac: 00:80:48:62:e7:e8
+  id: "12"
+  device_kind_id: "1"
+  inventory_id: "1"
+devices_033: 
+  address: ""
+  canonical_name: eth0
+  motherboard_id: "25"
+  mac: 00:03:1d:07:15:83
+  id: "250"
+  device_kind_id: "1"
+  inventory_id: "1"
+devices_022: 
+  address: ""
+  canonical_name: eth0
+  motherboard_id: "23"
+  mac: 00:03:1d:07:15:7a
+  id: "230"
+  device_kind_id: "1"
+  inventory_id: "1"
+devices_011: 
+  address: ""
+  canonical_name: eth0
+  motherboard_id: "5"
+  mac: 00:03:1d:07:15:73
+  id: "50"
+  device_kind_id: "1"
+  inventory_id: "1"
+devices_034: 
+  address: ""
+  canonical_name: eth0
+  motherboard_id: "6"
+  mac: 00:03:1d:07:15:82
+  id: "60"
+  device_kind_id: "1"
+  inventory_id: "1"
+devices_023: 
+  address: ""
+  canonical_name: node2
+  motherboard_id: "2"
+  mac: 00:0e:0c:7f:0d:f3
+  id: "2"
+  device_kind_id: "1"
+  inventory_id: "1"
+devices_012: 
+  address: ""
+  canonical_name: eth0
+  motherboard_id: "20"
+  mac: 00:03:1d:07:15:77
+  id: "200"
+  device_kind_id: "1"
+  inventory_id: "1"
+devices_001: 
+  address: 192.0.1.250
+  canonical_name: ath1
+  motherboard_id: "25"
+  mac: 00:80:48:62:4b:f2
+  id: "252"
+  device_kind_id: "1"
+  inventory_id: "1"
+devices_035: 
+  address: ""
+  canonical_name: eth0
+  motherboard_id: "16"
+  mac: 00:03:1d:07:15:76
+  id: "160"
+  device_kind_id: "1"
+  inventory_id: "1"
+devices_024: 
+  address: ""
+  canonical_name: eth0
+  motherboard_id: "3"
+  mac: 00:03:1d:07:15:72
+  id: "30"
+  device_kind_id: "1"
+  inventory_id: "1"
+devices_013: 
+  address: ""
+  canonical_name: eth0
+  motherboard_id: "2"
+  mac: 00:03:1d:07:15:78
+  id: "20"
+  device_kind_id: "1"
+  inventory_id: "1"
+devices_002: 
+  address: ""
+  canonical_name: eth0
+  motherboard_id: "7"
+  mac: 00:03:1d:07:15:79
+  id: "70"
+  device_kind_id: "1"
+  inventory_id: "1"
+devices_025: 
+  address: ""
+  canonical_name: eth0
+  motherboard_id: "13"
+  mac: 00:03:1d:07:15:81
+  id: "130"
+  device_kind_id: "1"
+  inventory_id: "1"
+devices_014: 
+  address: ""
+  canonical_name: eth0
+  motherboard_id: "8"
+  mac: 00:03:1d:07:15:8c
+  id: "80"
+  device_kind_id: "1"
+  inventory_id: "1"
+devices_003: 
+  address: ""
+  canonical_name: eth0
+  motherboard_id: "17"
+  mac: 00:03:1d:07:15:7c
+  id: "170"
+  device_kind_id: "1"
+  inventory_id: "1"
+devices_026: 
+  address: ""
+  canonical_name: eth0
+  motherboard_id: "24"
+  mac: 00:03:1d:07:15:7b
+  id: "240"
+  device_kind_id: "1"
+  inventory_id: "1"
+devices_015: 
+  address: ""
+  canonical_name: eth0
+  motherboard_id: "21"
+  mac: 00:03:1d:07:15:7d
+  id: "210"
+  device_kind_id: "1"
+  inventory_id: "1"
+devices_004: 
+  address: ""
+  canonical_name: eth0
+  motherboard_id: "1"
+  mac: 00:03:1d:07:15:8e
+  id: "10"
+  device_kind_id: "1"
+  inventory_id: "1"
+devices_027: 
+  address: ""
+  canonical_name: node4
+  motherboard_id: "4"
+  mac: 
+  id: "4"
+  device_kind_id: "1"
+  inventory_id: "1"
+devices_016: 
+  address: 192.0.0.2
+  canonical_name: ath0
+  motherboard_id: "2"
+  mac: 00:80:48:62:e7:e0
+  id: "21"
+  device_kind_id: "1"
+  inventory_id: "1"
+devices_005: 
+  address: ""
+  canonical_name: eth0
+  motherboard_id: "11"
+  mac: 00:03:1d:07:15:8b
+  id: "110"
+  device_kind_id: "1"
+  inventory_id: "1"

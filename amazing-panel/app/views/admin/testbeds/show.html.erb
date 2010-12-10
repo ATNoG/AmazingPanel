@@ -5,16 +5,6 @@
 
 <% content_for :content do %>  
   <%= modal_dialog("", "popup") %>
-  <%= content_tag :center do %>
-    <%= content_tag :div, :id => "testbed-"+@testbed.id.to_s, :class => "testbed", :timestamp => Time.now.strftime("%s").to_s do %>
-      <% length = 0 %>
-      <% @nodes.each do |n| %>      
-	<% if  ((length % 5) == 0) and (length != 0) %>
-	  <%= content_tag :div, "", :class => "clear" %>      	
-	<% end %>      
-	<%= content_tag(:div, n["id"], :id => "node-#{n["id"].to_i}", :class => "node") unless n["id"] == -1 %>
-	<% length += 1 %>
-      <% end %>
-    <% end %>
-  <% end %>  
+
+  <%= render :partial => "testbeds/map" %>
 <% end %>

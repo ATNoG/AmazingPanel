@@ -1,32 +1,12 @@
 <% content_for :sub_actions do %>
-  <ul id="toolbar-action-list">
-    <li class="action">
-      <%= link_to (projects_path, :class => "action")  do %>
-	Back
-	<%= image_tag "back.png", {:height => 16, :width => 16} %>
-      <% end %> 
-    </li>
+  <%= sub_toolbar do %>
+    <%= back_action(projects_path) %>
     <% if is_user_leader(@project, current_user) %>
-    <li class="action">
-      <%= link_to (edit_project_path(@project), :class => "action")  do %>
-	Edit
-	<%= image_tag "edit.png", {:height => 16, :width => 16} %>
-      <% end %> 
-    </li>
-    <li class="action">
-      <%= link_to (assign_project_path(@project), :class => "action")  do %>
-	Assign
-	<%= image_tag "assign.png", {:height => 16, :width => 16} %>
-      <% end %> 
-    </li>
-    <li class="action">
-      <%= link_to(@project, :confirm => 'Are you sure?', :method => :delete, :class => "action") do %>
-	Delete
-	<%= image_tag "remove.png", {:height => 16, :width => 16} %>
-      <% end %> 
-    </li>
+      <%= edit_action(edit_project_path(@project)) %>
+      <%= assign_action(assign_project_path(@project)) %>
+      <%= delete_action(@project, { :confirm => "Are you sure?" }) %>
     <% end %>
-  </ul>
+  <% end %>
 <% end %>
 
 <% content_for :content do %>

@@ -1,11 +1,301 @@
-# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
-
-# This model initially had no columns defined.  If you add columns to the
-# model remove the '{}' from the fixture names and add the columns immediately
-# below each fixture, per the syntax in the comments below
-#
-one: {}
-# column: value
-#
-two: {}
-#  column: value
+--- 
+nodes_018: 
+  control_ip: 10.110.1.13
+  motherboard_id: "13"
+  hrn: omf.amazing.node13
+  control_mac: 00:03:1d:07:15:81
+  id: "13"
+  location_id: "13"
+  pxeimage_id: "1"
+  hostname: node13
+  disk: /dev/hdd
+  chassis_sn: "1"
+  inventory_id: "1"
+nodes_007: 
+  control_ip: 10.110.1.5
+  motherboard_id: "5"
+  hrn: omf.amazing.node5
+  control_mac: 00:03:1d:07:15:73
+  id: "5"
+  location_id: "5"
+  pxeimage_id: "1"
+  hostname: node5
+  disk: /dev/hdd
+  chassis_sn: "1"
+  inventory_id: "1"
+nodes_019: 
+  control_ip: 10.110.1.24
+  motherboard_id: "24"
+  hrn: omf.amazing.node24
+  control_mac: 00:03:1d:07:15:7b
+  id: "24"
+  location_id: "24"
+  pxeimage_id: "1"
+  hostname: node24
+  disk: /dev/hdd
+  chassis_sn: "1"
+  inventory_id: "1"
+nodes_008: 
+  control_ip: 10.110.1.20
+  motherboard_id: "20"
+  hrn: omf.amazing.node20
+  control_mac: 00:03:1d:07:15:77
+  id: "20"
+  location_id: "20"
+  pxeimage_id: "1"
+  hostname: node20
+  disk: /dev/hdd
+  chassis_sn: "1"
+  inventory_id: "1"
+nodes_020: 
+  control_ip: 10.110.1.25
+  motherboard_id: "25"
+  hrn: omf.amazing.node25
+  control_mac: 00:03:1d:07:15:83
+  id: "25"
+  location_id: "25"
+  pxeimage_id: "1"
+  hostname: node25
+  disk: /dev/hdd
+  chassis_sn: "1"
+  inventory_id: "1"
+nodes_009: 
+  control_ip: 10.110.1.8
+  motherboard_id: "8"
+  hrn: omf.amazing.node8
+  control_mac: 00:03:1d:07:15:8c
+  id: "8"
+  location_id: "8"
+  pxeimage_id: "1"
+  hostname: node8
+  disk: /dev/hdd
+  chassis_sn: "1"
+  inventory_id: "1"
+nodes_021: 
+  control_ip: 10.110.1.14
+  motherboard_id: "14"
+  hrn: omf.amazing.node14
+  control_mac: 00:03:1d:07:15:7e
+  id: "14"
+  location_id: "14"
+  pxeimage_id: "1"
+  hostname: node14
+  disk: /dev/hdd
+  chassis_sn: "1"
+  inventory_id: "1"
+nodes_010: 
+  control_ip: 10.110.1.21
+  motherboard_id: "21"
+  hrn: omf.amazing.node21
+  control_mac: 00:03:1d:07:15:7d
+  id: "21"
+  location_id: "21"
+  pxeimage_id: "1"
+  hostname: node21
+  disk: /dev/hdd
+  chassis_sn: "1"
+  inventory_id: "1"
+nodes_022: 
+  control_ip: 10.110.1.1
+  motherboard_id: "1"
+  hrn: omf.amazing.node1
+  control_mac: 00:03:1d:07:15:8e
+  id: "1"
+  location_id: "1"
+  pxeimage_id: "1"
+  hostname: node1
+  disk: /dev/hdd
+  chassis_sn: "1"
+  inventory_id: "1"
+nodes_011: 
+  control_ip: 10.110.1.2
+  motherboard_id: "2"
+  hrn: omf.amazing.node2
+  control_mac: 00:03:1d:07:15:78
+  id: "2"
+  location_id: "2"
+  pxeimage_id: "1"
+  hostname: node2
+  disk: /dev/hdd
+  chassis_sn: "1"
+  inventory_id: "1"
+nodes_023: 
+  control_ip: 10.110.1.15
+  motherboard_id: "15"
+  hrn: omf.amazing.node15
+  control_mac: 00:03:1d:07:15:17
+  id: "15"
+  location_id: "15"
+  pxeimage_id: "1"
+  hostname: node15
+  disk: /dev/hdd
+  chassis_sn: "1"
+  inventory_id: "1"
+nodes_012: 
+  control_ip: 10.110.1.9
+  motherboard_id: "9"
+  hrn: omf.amazing.node9
+  control_mac: 00:03:1d:07:15:86
+  id: "9"
+  location_id: "9"
+  pxeimage_id: "1"
+  hostname: node9
+  disk: /dev/hdd
+  chassis_sn: "1"
+  inventory_id: "1"
+nodes_001: 
+  control_ip: 10.110.1.7
+  motherboard_id: "7"
+  hrn: omf.amazing.node7
+  control_mac: 00:03:1d:07:15:79
+  id: "7"
+  location_id: "7"
+  pxeimage_id: "1"
+  hostname: node7
+  disk: /dev/hdd
+  chassis_sn: "1"
+  inventory_id: "1"
+nodes_024: 
+  control_ip: 10.110.1.6
+  motherboard_id: "6"
+  hrn: omf.amazing.node6
+  control_mac: 00:03:1d:07:15:82
+  id: "6"
+  location_id: "6"
+  pxeimage_id: "1"
+  hostname: node6
+  disk: /dev/hdd
+  chassis_sn: "1"
+  inventory_id: "1"
+nodes_013: 
+  control_ip: 10.110.1.22
+  motherboard_id: "22"
+  hrn: omf.amazing.node22
+  control_mac: 00:03:1d:07:15:84
+  id: "22"
+  location_id: "22"
+  pxeimage_id: "1"
+  hostname: node22
+  disk: /dev/hdd
+  chassis_sn: "1"
+  inventory_id: "1"
+nodes_002: 
+  control_ip: 10.110.1.17
+  motherboard_id: "17"
+  hrn: omf.amazing.node17
+  control_mac: 00:03:1d:07:15:7c
+  id: "17"
+  location_id: "17"
+  pxeimage_id: "1"
+  hostname: node17
+  disk: /dev/hdd
+  chassis_sn: "1"
+  inventory_id: "1"
+nodes_025: 
+  control_ip: 10.110.1.16
+  motherboard_id: "16"
+  hrn: omf.amazing.node16
+  control_mac: 00:03:1d:07:15:76
+  id: "16"
+  location_id: "16"
+  pxeimage_id: "1"
+  hostname: node16
+  disk: /dev/hdd
+  chassis_sn: "1"
+  inventory_id: "1"
+nodes_014: 
+  control_ip: 10.110.1.3
+  motherboard_id: "3"
+  hrn: omf.amazing.node3
+  control_mac: 00:03:1d:07:15:72
+  id: "3"
+  location_id: "3"
+  pxeimage_id: "1"
+  hostname: node3
+  disk: /dev/hdd
+  chassis_sn: "1"
+  inventory_id: "1"
+nodes_003: 
+  control_ip: 10.110.1.11
+  motherboard_id: "11"
+  hrn: omf.amazing.node11
+  control_mac: 00:03:1d:07:15:8b
+  id: "11"
+  location_id: "11"
+  pxeimage_id: "1"
+  hostname: node11
+  disk: /dev/hdd
+  chassis_sn: "1"
+  inventory_id: "1"
+nodes_015: 
+  control_ip: 10.110.1.10
+  motherboard_id: "10"
+  hrn: omf.amazing.node10
+  control_mac: 00:03:1d:07:15:75
+  id: "10"
+  location_id: "10"
+  pxeimage_id: "1"
+  hostname: node10
+  disk: /dev/hdd
+  chassis_sn: "1"
+  inventory_id: "1"
+nodes_004: 
+  control_ip: 10.110.1.18
+  motherboard_id: "18"
+  hrn: omf.amazing.node18
+  control_mac: 00:03:1d:07:15:85
+  id: "18"
+  location_id: "18"
+  pxeimage_id: "1"
+  hostname: node18
+  disk: /dev/hdd
+  chassis_sn: "1"
+  inventory_id: "1"
+nodes_016: 
+  control_ip: 10.110.1.23
+  motherboard_id: "23"
+  hrn: omf.amazing.node23
+  control_mac: 00:03:1d:07:15:7a
+  id: "23"
+  location_id: "23"
+  pxeimage_id: "1"
+  hostname: node23
+  disk: /dev/hdd
+  chassis_sn: "1"
+  inventory_id: "1"
+nodes_005: 
+  control_ip: 10.110.1.12
+  motherboard_id: "12"
+  hrn: omf.amazing.node12
+  control_mac: 00:03:1d:07:15:74
+  id: "12"
+  location_id: "12"
+  pxeimage_id: "1"
+  hostname: node12
+  disk: /dev/hdd
+  chassis_sn: "1"
+  inventory_id: "1"
+nodes_017: 
+  control_ip: 10.110.1.4
+  motherboard_id: "4"
+  hrn: omf.amazing.node4
+  control_mac: 00:03:1d:07:15:7f
+  id: "4"
+  location_id: "4"
+  pxeimage_id: "1"
+  hostname: node4
+  disk: /dev/hdd
+  chassis_sn: "1"
+  inventory_id: "1"
+nodes_006: 
+  control_ip: 10.110.1.19
+  motherboard_id: "19"
+  hrn: omf.amazing.node19
+  control_mac: 00:03:1d:07:15:80
+  id: "19"
+  location_id: "19"
+  pxeimage_id: "1"
+  hostname: node19
+  disk: /dev/hdd
+  chassis_sn: "1"
+  inventory_id: "1"

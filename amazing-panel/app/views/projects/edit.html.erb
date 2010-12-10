@@ -1,7 +1,12 @@
-<h1>Editing project</h1>
+<% content_for :sub_actions do %>
+  <%= sub_toolbar do %>
+    <% if is_user_leader(@project, current_user) %>
+      <%= assign_action(assign_project_path(@project)) %>
+      <%= back_action(@project) %>
+    <% end %>
+  <% end %>
+<% end %>
 
-<%= render 'form' %>
-
-<%= link_to 'Assign', assign_project_path(@project) %> |
-<%= link_to 'Show', @project %> |
-<%= link_to 'Back', projects_path %>
+<% content_for :content do %>
+  <%= render 'form' %>
+<% end %>

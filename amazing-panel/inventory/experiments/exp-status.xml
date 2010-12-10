@@ -1,0 +1,7 @@
+<testbed name='amazing'>
+  <progress>
+    <omf.amazing.node1 status='UP' progress="20" />
+    <omf.amazing.node2 status='UP' progress="20" />
+    <omf.amazing.node3 status='DOWN' />    
+  </progress>
+</testbed>

@@ -1,0 +1,42 @@
+<%= form_for(@experiment, experiments_path) do |f| %>  
+  <%= render 'shared/error_messages', :object => f.object %>
+
+  <%= content_tag(:div, :class => "field") do %>
+    <%= label_tag "experiment[nodes][testbed]", "Testbed: "  %>
+    <%= select_tag "experiment[nodes][testbed]", options_for_select(Testbed.all.collect {|t| [ t.name, t.id ] }) %>
+  <% end %>
+  <br/>
+  <%= content_tag(:div, :class => "node-actions") do %>
+    <b>Select the images to load in your nodes:</b><br/>
+    <hr />
+    <%= label_tag :sys_images, "Image to Load: "  %>
+    <%= select_tag "experiment[sys_images]", options_for_select(SysImage.all.collect {|t| [ t.name, t.id ] }), :last => SysImage.last.id %>
+    <%= content_tag(:div, "Associate", :id => "associate-action", :class => "button") %>
+    <%= content_tag(:div, :id => "mapped") do %>
+      <b>Already Mapped:</b><br/>
+      <hr />
+      <%= content_tag(:div, :class => "nodes") do %>
+        <table class="grid-view mini">
+          <thead>
+            <tr>
+              <th><span>Node</span></th>
+              <th><span>System Image</span></th>
+              <th><span></span></th>
+            </tr>
+          </thead>
+          <tbody id="table-mapped-nodes">
+          </tbody>
+        </table>
+      <% end %>
+    <% end %>
+  <% end %>
+  
+  <%= content_tag(:div, :id => "testbed-map") do %>
+    <%= render :partial => 'testbeds/map' %>
+  <% end %>
+  <%= clear %> 
+  <%= content_tag(:div, :class => "field") do %>
+    <%= f.submit "Next" %>
+  <% end %>
+
+<% end %>

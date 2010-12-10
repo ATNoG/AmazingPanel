@@ -1,22 +1,23 @@
-<% id = params[:id] %>
-<% elem_str = "testbed-#{id.to_s}"%>
-var nodes = $('#<%= elem_str %>');
+<% params.merge!(Rails.application.routes.recognize_path(params[:p])) %>
+var nodes = $('.testbed');
 if (nodes.length > 0) {
   setTimeout(updateStatus, 10000);  
 } 
-
+<% if @c == "admin/testbeds" %>
 $(".node").live('click', function(evt){
   var node_id = this.id.split('-')[1];
   var $this = $(this);
   $(".node-active").removeClass('node-active');  
   if ($this.hasClass("node-active")) {
     $("#sub-toolbar").hide();
-  } else {
-  var href = "/admin/testbeds/<%= id %>/nodes/";
+    } else {
+  var id  = $(".testbed").attr("id").replace(/testbed-/, "");
+  var href = "/admin/testbeds/"+id+"/nodes/";
   var toggle_url = href + node_id +"/toggle";
   var info_url = href + node_id +"/info";
     $("#sub-toolbar").html("<ul id=\"toolbar-action-list\"><li class=\"action\"><a class=\"action\" href=\""+toggle_url+"\" data-remote=\"true\" data-method=\"put\"><img src=\"/images/toggle2.png\"/> Toggle</a></li>"+
 			   "<li class=\"action\"><a class=\"action\" href=\""+info_url+".js"+"\" data-remote=\"true\"><img src=\"/images/edit.png\"/> Show Details</a></li></ul>");
     $(this).addClass("node-active");
   }
-});
+  });
+<% end %>

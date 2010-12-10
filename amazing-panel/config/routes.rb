@@ -37,7 +37,13 @@ AmazingPanel::Application.routes.draw do
       put '/nodes/:node_id/toggle', :action => "node_toggle", :as => "toggle", :on => :member
     end
   end
-  
+ 
+  resources :experiments do
+    get 'prepare', :action => 'prepare', :on => :member
+    get 'start', :action => 'start', :on => :member
+    get 'stop', :action => 'stop', :on => :member
+    get 'stat', :action => 'stat', :on => :member
+  end
   
   match 'javascripts/application.js' => 'pages#application'
   match 'stylesheets/custom.css' => 'pages#custom'

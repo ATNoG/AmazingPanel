@@ -7,6 +7,6 @@ class Ed < ActiveRecord::Base
   scope :in, lambda { |column, value| { :conditions => [column+" in " + value] } }
   scope :between, lambda { |column, _start, _end| { :conditions => [column+" BETWEEN "+start+" AND "+_end] } }
   scope :like, lambda { |column, value| { :conditions => [column+" = ?", value] } }
-  
+  belongs_to :user  
   attr_accessible :id, :user_id, :name, :description, :created_at, :updated_at
 end

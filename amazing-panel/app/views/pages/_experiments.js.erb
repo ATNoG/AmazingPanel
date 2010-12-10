@@ -1,0 +1,100 @@
+<% params.merge!(Rails.application.routes.recognize_path(params[:p])) %>
+
+<% if (@a == "new")%>
+$(".field > #experiment_submit").hover(function() {
+  var _toggle = 'arrow-active-toggle'
+  var _selector = $('.arrow-active')
+  if (_selector.hasClass(_toggle) == false) {
+    _selector.addClass(_toggle);
+  } else {
+    _selector.removeClass(_toggle);
+  }
+  });
+$("select#map").change(function(){      
+  var _this = $(this);  
+  var value = _this.val()+".js?mode=embed";
+  //_this.attr("selected", "true");
+  $.getScript("<%= testbeds_path %>/"+value);
+});
+
+$("#table-mapped-nodes > tr").live('hover', function(evt){
+  var id = $(this).attr("id").replace(/map-/g,"");
+  var node_id_sel = "#node-"+id;
+  $(node_id_sel).toggleClass("node-active");
+});
+
+$(".node").live('hover', function(evt){
+  var node_id = this.id.split('-')[1];
+  $("#map-"+node_id).toggleClass("grid-line-hover");
+});
+
+$(".node").live('click', function(evt){
+  var node_id = this.id.split('-')[1];
+  var $this = $(this);
+  $this.toggleClass("node-selected");
+});
+
+$("#associate-action").live("click", function(evt){    
+    var n_images = $("#experiment_sys_images").attr("last");
+    var __sys_image = $("#experiment_sys_images option:selected");
+    var image = { id : __sys_image.val(), name : __sys_image.text()  }
+    
+    var selected_nodes = $(".node-selected");
+    var n_selected = selected_nodes.length;
+    var tmp = image.id/n_images;
+    var color = { d : tmp, bg: rgb_color(tmp) } 
+    var mini_table_mnodes = $("#table-mapped-nodes");
+
+    var select_image = $("#experiment_sys_images option:selected").text();
+    selected_nodes.css("background-color", color.bg);
+    selected_nodes.each(function(index, value){
+        var _id = value.innerText;
+        var node = { 
+          id: _id, 
+          selector: $("#map-"+_id), 
+          sys_image: image.id,          
+          for_name: "nodes_"+_id+"_"+image.id,
+          name: "experiment[nodes]["+_id+"][sys_image]"
+        };
+        var str = "<td>"+node.id+"</td> <td>"+image.name+"</td><td style='width:12px;height:12px;background-color:"+color.bg+"'><input id='"+node.for_name+"' name="+node.name+" type='hidden' value='"+image.id+"' /></td>";
+        if (node.selector.length == 1){
+          node.selector.html(str);
+        } else {
+          mini_table_mnodes.append("<tr id='map-"+node.id+"'>"+str+"</tr>");
+          $(value).toggleClass("mapped");
+        }
+    });
+
+    selected_nodes.toggleClass("node-selected");
+});
+
+<% end %>
+<% if (@a == 'show') %>
+<% experiment = Experiment.find(params[:id])%>
+$(".more-ed-anchor").live("click", function(evt){
+  $("#modal-dialog > .title-box").html("Experiment Definition");
+  $("#modal-dialog > .modal-container").html("<div id=\"ed-<%= +experiment.ed.id %>\"></div>");
+  var tmp = $("#modal-dialog, .modal-container")
+  tmp.css("width","500px"); 
+  $("#modal-dialog").css("height","500px").css("top","20%").css("left", "30%");
+  $(".modal-container").css("height","423px"); 
+  $.getScript("<%= ed_path(experiment.ed, :format=>"js")  %>");
+  $("#modal-dialog").toggleClass("dialog-active");
+});
+
+$("#prepare-experiment-button").live('click', function(evt){
+    $.getScript("<%= prepare_experiment_path(experiment) %>");
+});
+
+$("#start-experiment-button").live('click', function(evt){
+    $("#start-experiment-button").addClass("button-disabled");
+    $("#stop-experiment-button").removeClass("button-disabled");
+    $.getScript("<%= start_experiment_path(experiment) %>");
+});
+
+$("#stop-experiment-button").live('click', function(evt){
+    $("#prepare-experiment-button").removeClass("button-disabled");
+    $("#stop-experiment-button").addClass("button-disabled");
+    $.getScript("<%= stop_experiment_path(experiment) %>");
+});
+<% end %>

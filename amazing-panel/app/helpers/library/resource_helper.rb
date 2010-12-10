@@ -66,7 +66,7 @@ module Library::ResourceHelper
   
   def modal_dialog(title, id, &block)            
     title_box = content_tag(:div, title.html_safe, :class=>"title-box")    
-    close_button = content_tag(:div, "Close", :class=>"button", :onclick => "$('#"+id+"').removeClass('dialog-active')");
+    close_button = content_tag(:div, "Close", :class=>"button", :onclick => "closeDialog('#"+id+"')");
     actions = content_tag(:div, close_button, :class=>"modal-actions")
     if block_given?
       content = with_output_buffer(&block) 

@@ -3,6 +3,7 @@ testbed:
   server_url: '10.110.1.253'
   server_path: '/cgi-bin/'
   inventory_url: 'http://jimbo.av.it.pt:5053/inventory'
+  
   positions:
   # Node positions of a Testbed, in the mapping of image 1.png
   # AMazINg 1º grid line

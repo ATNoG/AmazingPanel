@@ -1,0 +1,9 @@
+<%= render :partial => 'testbeds/map' %>
+<script>
+
+<% last = SysImage.last.id %>
+<% @resources.each do |rm| %>
+  $("#node-<% rm.node_id %>").css("background-color", color("<%= rm.sys_image_id/last %>"));
+<% end %>
+
+</script>

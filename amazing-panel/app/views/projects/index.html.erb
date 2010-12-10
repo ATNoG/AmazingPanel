@@ -1,12 +1,7 @@
 <% content_for :sub_actions do %>
-  <ul id="toolbar-action-list">
-    <li class="action">
-      <%= link_to(new_project_path, :class => "action")  do %>
-	New
-	<%= image_tag "add.png", {:height => 16, :width => 16} %>
-      <% end %> 
-    </li>
-  </ul>
+  <%= sub_toolbar do %>
+    <%= new_action(new_project_path) %>
+  <% end %>
 <% end %>
 
 <% content_for :content do %>
@@ -25,15 +20,9 @@
 	<% if is_user_leader(project, current_user) %>
 	<td>
 	  <div class="table-actions">
-	  <%= link_to(edit_project_path(project), :class => "action")  do %>
-	    <%= image_tag "edit.png", {:height => 16, :width => 16} %>
-	  <% end %> 
-	  <%= link_to(project, :confirm => 'Are you sure?', :method => :delete, :class => "action") do %>
-	    <%= image_tag "remove.png", {:height => 16, :width => 16} %>
-	  <% end %> 
-	  <%= link_to(assign_project_path(project), :class => "action")  do %>
-	    <%= image_tag "assign.png", {:height => 16, :width => 16} %>
-	  <% end %>     
+        <%= edit_action(edit_project_path(project), {:link => true, :text => false, "original-title" => "Edit Project Settings"} ) %>
+        <%= delete_action(project, { :confirm => "Are you sure?", :link => true, :text => false, "original-title" => "Delete Project"}) %>
+        <%= assign_action(assign_project_path(project), { :link => true, :text => false, "original-title" => "Assign users to Project"}) %>
 	  </div>
 	</td>
 	<% else %>

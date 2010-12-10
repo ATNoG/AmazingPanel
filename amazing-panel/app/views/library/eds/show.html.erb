@@ -3,49 +3,14 @@
   <%= stylesheet_link_tag 'codemirror/rubycolors', :media => 'screen' %>  
 <% end %>
 
-<% creator = User.find(@ed.user_id) %>
-
 <% content_for :sub_actions do %>
-  <ul id="toolbar-action-list">
-    <li class="action">
-      <%= link_to (edit_ed_path(@ed), :class => "action")  do %>
-	Edit
-	<%= image_tag "edit.png", {:height => 16, :width => 16} %>
-      <% end %> 
-    </li>
-    <li class="action">
-      <%= link_to(eds_path, :class => "action") do %>
-	Back
-	<%= image_tag "back.png", {:height => 16, :width => 16} %>
-      <% end %> 
-    </li>
-    <li class="action">
-      <%= link_to(eds_path, :class => "action", :method => "delete") do %>
-	Delete
-	<%= image_tag "remove.png", {:height => 16, :width => 16} %>
-      <% end %> 
-    </li>
-  </ul>
+  <% sub_toolbar do %>
+    <%= edit_action(edit_ed_path(@ed)) %>
+    <%= back_action(eds_path) %>
+    <%= delete_action(eds_path) %>
+  <% end %>
 <% end %>
 
-
 <% content_for :content do %>
-  <p>
-    <b>Creator:</b>
-    <%= link_to creator.name, user_path(:id => creator.id) %>
-  </p>
-
-  <p>
-    <b>Name:</b>
-    <%= @ed.name %>
-  </p>
-
-  <p>
-    <b>Description:</b>
-    <%= @ed.description %>
-  </p>        
-
-  <p>    
-  <%= text_area_tag :code, @content.readlines, :cols => 40, :rows => 30 %> 
-  </p>    
+  <%= render @ed %>  
 <% end %>

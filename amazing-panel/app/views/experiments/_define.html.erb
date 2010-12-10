@@ -1,0 +1,18 @@
+<%= form_for(@experiment, experiments_path, :method => 'post') do |f| %>
+  <%= render 'shared/error_messages', :object => f.object %>
+
+  <div class="field">
+    <%= f.label :ed, "From Library: "  %>
+    <%= f.select :ed_id, Ed.all.collect {|e| [ e.name, e.id ] } %>
+  </div>
+  
+  <div class="field">
+    <%= f.label :project, "Project: "  %>
+    <%= f.select :project_id, Project.all.collect {|p| [ p.name, p.id ] } %>
+  </div>
+  
+  <div class="field">
+    <%= f.submit "Next" %>
+  </div>
+
+<% end %>

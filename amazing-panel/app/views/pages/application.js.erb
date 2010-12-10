@@ -1,14 +1,71 @@
-<% params.merge!(Rails.application.routes.recognize_path(params[:p])) %>
-$(document).ready(function(){    
+<% if user_signed_in? %>
+$(document).ready(function(){
+  $(".action").tipsy({ live: true });
   <% if (@c == "library/eds") and (@a == "show" or @a =="edit") %>
     <%= render :partial => 'library' %>
   <% end %>
-  <% if ((@c == "testbeds") or (@c == "admin/testbeds")) and (@a == "show") %>
+  <% if (((@c == "testbeds") or (@c == "admin/testbeds")) and (@a == "show")) %>
     <%= render :partial => 'network' %>
+  <% end %>
+  <% if (@c == "experiments") %>
+    <%= render :partial => 'experiments' %>    
   <% end %>
 });
 
-<% if user_signed_in? %>
+function rgb_color(d){
+  var _A   = 0.16667;
+  var _B   = 0.33333;
+  var _C   = 0.66667;
+  var _D   = 0.83333;
+
+  if (d<=0 || d>1) {
+    return -1;
+  }
+  var r=1,g=1,b=1;
+
+  if (d<_A) {
+    g = d/_A;
+    b = 0;
+  }
+  else if (d<_B) {
+    r = 1 - ((d-_A)/_A) ;
+    b = 0;
+  }
+  else if (d<0.5) {
+    r = 0;
+    b = (d-_B)/_A;
+  }
+  else if (d<_C) {
+    r = 0;
+    g = 1 - ((d-0.5)/_A);
+  }
+  else if (d<_D) {
+    r = (d-_C)/_A;
+    g = 0;
+  }
+  else {
+    b = 1 - ((d-_D)/_A)
+    g = 0;
+  }
+  r = (r*255) | 0
+  g = (g*255) | 0
+  b = (b*255) | 0
+  return "rgb("+r+","+g+","+b+")";
+}
+
+function closeDialog(selector){
+  var modal = $(selector);
+  var titlebox = $(selector+" > .title-box");
+  var container = $(selector+" > .modal-container");  
+  var actions = $(selector+" > .modal-actions");
+  modal.removeClass("dialog-active");
+  modal.attr("class", "modal").removeAttr("style");
+  titlebox.attr("class", "title-box").removeAttr("style").html("");
+  container.attr("class", "modal-container").removeAttr("style").html("");
+  actions.attr("class", "modal-actions").removeAttr("style");
+
+}
+
 function setIntegerComparatorFilterExpression(path, id){
   var filter = $("#"+id+"-filter > .modal-container > .filter > .option ");
   var op = $("> #op > option:selected", filter).attr("value")
@@ -28,15 +85,14 @@ function setStringComparatorFilterExpression(path, id){
 function filter_path(path, field, cmp, value){
   return path+"?filter=field&field="+field+"&op="+cmp+"&value="+value;
 }
-  <% if ((@c == "testbeds") or (@c == "admin/testbeds")) and (@a == "show") %>
-    <% id = params[:id] %>
-    <% elem_str = "testbed-#{id.to_s}"%>
-    
-  function updateStatus() {  
-    var timestamp = $('#<%= elem_str %>').attr("timestamp");
-    $.getScript('/testbeds/<%= id %>.js?timestamp='+timestamp);  
-    setTimeout(updateStatus, 60000);  
-  }
+  <% if ((@c == "testbeds") or (@c == "admin/testbeds")) and (@a == "show")%>
+function updateStatus() { 
+  var testbed = $('.testbed')
+  var timestamp = testbed.attr("timestamp");
+  var id = testbed.attr('id').replace(/testbed-/, "");
+  $.getScript('/testbeds/'+id+'.js?timestamp='+timestamp);  
+  setTimeout(updateStatus, 60000);  
+}
   <% end %>
 
 <% end %>                           

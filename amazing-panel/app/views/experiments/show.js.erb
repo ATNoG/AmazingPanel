@@ -1,0 +1,28 @@
+<% if params.has_key?("resources") %>
+$("#modal-dialog").addClass("resources-map-dialog");
+$("#modal-dialog > .modal-container").addClass("resources-map-dialog-container");
+$("#modal-dialog > .title-box").html("Resources: <span class=\"sysimage-id\"></span> <span class=\"sysimage-desc\"></span>")
+$("#modal-dialog > .modal-container").html("<%= escape_javascript(render(:partial => "testbeds/map")) %>");
+  <% last = SysImage.last.id %>
+  <% @resources.each do |rm| %>
+    <% d = rm.sys_image_id.to_f/last.to_f %>
+$("#node-<%= rm.node_id %>").css("background-color", rgb_color("<%= d %>"));
+$("#node-<%= rm.node_id %>").attr("description", "<%= "#{rm.sys_image.name}" %>");
+  <% end %>
+$("#modal-dialog").toggleClass("dialog-active");
+$(".node[description]").live('mouseover mouseout', function(event) {
+  var $this = $(this);
+  var elem_id = $this.attr("id");
+  var id = $this.text();
+  var background = $this.css("background-color");
+  if (event.type == 'mouseover') {
+    $("#modal-dialog > .title-box > .sysimage-desc").html($this.attr("description"));
+    $("#modal-dialog > .title-box > .sysimage-id").html("#"+id);
+    $("#modal-dialog > .title-box > .sysimage-id").css("background-color", background);
+  } else {
+    $("#modal-dialog > .title-box > .sysimage-desc").html("");
+    $("#modal-dialog > .title-box > .sysimage-id").html("");
+  }
+});
+<% end %>
+

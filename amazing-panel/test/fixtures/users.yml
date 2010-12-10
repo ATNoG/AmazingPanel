@@ -1,11 +1,41 @@
-# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
-
-# This model initially had no columns defined.  If you add columns to the
-# model remove the '{}' from the fixture names and add the columns immediately
-# below each fixture, per the syntax in the comments below
-#
-one: {}
-# column: value
-#
-two: {}
-#  column: value
+--- 
+users_001: 
+  name: "Jo\xC3\xA3o Martins"
+  encrypted_password: $2a$10$mAtvZRgXFOLiZtuX15Zmbu5D5PhLL579.gGinx97qHwcJFdRvhkmu
+  created_at: 2010-10-26 23:50:43
+  updated_at: 2010-12-02 13:39:17
+  last_sign_in_ip: 127.0.0.1
+  username: jmartins
+  admin: "1"
+  last_sign_in_at: 2010-12-02 01:25:06
+  intention: Godlike!
+  sign_in_count: "90"
+  id: "1"
+  password_salt: $2a$10$mAtvZRgXFOLiZtuX15Zmbu
+  current_sign_in_ip: 127.0.0.1
+  remember_token: 
+  reset_password_token: 
+  activated: "1"
+  current_sign_in_at: 2010-12-02 13:39:17
+  remember_created_at: 
+  email: joaolemos@ua.pt
+users_002: 
+  name: Patrick Marques
+  encrypted_password: $2a$10$YMShNB7dj0jNoAHK/.uIa.Y3Fn/XqdScaJkcJ0f6bQiRIkC.uuVQa
+  created_at: 2010-10-26 23:52:14
+  updated_at: 2010-11-10 02:01:14
+  last_sign_in_ip: 127.0.0.1
+  username: pmarques
+  admin: "0"
+  last_sign_in_at: 2010-11-07 00:43:16
+  intention: Just a Experimenter.
+  sign_in_count: "4"
+  id: "2"
+  password_salt: $2a$10$YMShNB7dj0jNoAHK/.uIa.
+  current_sign_in_ip: 127.0.0.1
+  remember_token: 
+  reset_password_token: 
+  activated: "0"
+  current_sign_in_at: 2010-11-07 17:11:46
+  remember_created_at: 
+  email: patrickfmarques@ua.pt

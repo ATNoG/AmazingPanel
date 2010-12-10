@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101104171000) do
+ActiveRecord::Schema.define(:version => 20101206020453) do
 
   create_table "device_kinds", :force => true do |t|
     t.integer "inventory_id",               :null => false
@@ -46,6 +46,17 @@ ActiveRecord::Schema.define(:version => 20101104171000) do
     t.string   "description"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "experiments", :force => true do |t|
+    t.integer  "ed_id"
+    t.integer  "resources_map_id"
+    t.datetime "start_at"
+    t.integer  "duration"
+    t.integer  "status"
+    t.string   "user_id"
+    t.integer  "phase_id"
+    t.integer  "project_id"
   end
 
   create_table "inventories", :force => true do |t|
@@ -93,6 +104,12 @@ ActiveRecord::Schema.define(:version => 20101104171000) do
 
   add_index "nodes", ["location_id"], :name => "location_id", :unique => true
 
+  create_table "phases", :force => true do |t|
+    t.integer "number"
+    t.string  "label"
+    t.string  "description"
+  end
+
   create_table "projects", :force => true do |t|
     t.string   "name"
     t.string   "description"
@@ -112,6 +129,16 @@ ActiveRecord::Schema.define(:version => 20101104171000) do
     t.string  "short_description", :limit => 128
   end
 
+  create_table "resources_maps", :force => true do |t|
+    t.integer  "experiment_id"
+    t.integer  "node_id"
+    t.integer  "sys_image_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "testbed_id"
+    t.integer  "progress"
+  end
+
   create_table "sys_images", :force => true do |t|
     t.integer  "user_id"
     t.integer  "sys_image_id"
@@ -127,8 +154,6 @@ ActiveRecord::Schema.define(:version => 20101104171000) do
   create_table "testbeds", :force => true do |t|
     t.string "name", :limit => 128, :null => false
   end
-
-  add_index "testbeds", ["name"], :name => "node_domain", :unique => true
 
   create_table "users", :force => true do |t|
     t.string   "email",                               :default => "",    :null => false

@@ -1,0 +1,12 @@
+<% if @error.nil? %>
+function experiment_stat(){
+  $.getScript("<%= stat_experiment_path(:id => params[:id], :format => :js) %>");
+}
+$("#error-experiment").addClass("hidden");
+$("#caption-experiment").show();
+$(".image-progress").show();
+setTimeout(experiment_stat,2000);
+<% else %>
+$("#error-experiment").removeClass("hidden");
+$("#error-experiment > .text").html("<%= @error %>");
+<% end %>

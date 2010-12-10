@@ -1,44 +1,36 @@
 <% params.merge!(Rails.application.routes.recognize_path(params[:p])) %>
-<% testbed = Testbed.find(params[:id]) %>
-<% nodes = testbed_properties_for(params[:id]) %>  
-.testbed {
-  background-image: url('/images/testbeds/testbed-<%= testbed.id.to_s %>.png');
+.testbed {  
   background-repeat: no-repeat;
   background-size: 100% 100%;
   background-origin: content-box;
   width: 600px;
   height: 600px;
 }
-<% nodes["testbed"]["positions"].each do |n| %>
-  <% next if (n["id"].to_i == -1) %>
-#node-<%= n["id"].to_i%> {
+
+.node {
   text-align: center;
   color: white;
   position: relative;
-  left: <%= n["x"].to_i %>px;
-  top: <%= n["y"].to_i %>px;
   width: 20px;
   height: 20px;
   background-color: gray;
   float:left;
-}
+<% if selectable %>
+  opacity: 0.9;
 <% end %>
+}
 
 .off {
-  background-color: #ff6347 !important;
+  background-color: #ff6347;
 }
 
 .run {
-  background-color: #32cd32 !important;
+  background-color: #32cd32;
 }
 .toggle {
-  background-color:  #ffd700 !important;
+  background-color:  #ffd700;
 }
-<% if params[:c] == "admin/testbeds" %>
-.node {
-  opacity: 0.9;
-}
-
+<% if selectable %>
 .node:hover {
   opacity: 1;
   cursor: pointer;
@@ -47,6 +39,13 @@
 }
 
 .node-active {
+  opacity: 1;
+  margin: -2px;
+  border: 2px solid black;
+}
+<% end %>
+<% if toggleable %>
+.node-selected {
   opacity: 1;
   margin: -2px;
   border: 2px solid black;

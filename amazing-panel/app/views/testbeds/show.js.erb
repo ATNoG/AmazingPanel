@@ -1,6 +1,12 @@
-<% if @interval > 5 %>
-  $("#testbed-<%= @testbed.id %>").attr('timestamp', <%= Time.now.strftime("%s").to_s %>);
-  <% @status.each do | k, v | %>  
-    $("#testbed-<%= @testbed.id %> > #node-<%= (k.to_i + 1).to_s %>").removeClass('on off toggle run').addClass('<%= v %>')
+<% case %>
+<% when (params[:mode].nil? or params[:mode] == "diff") %>
+  <% if @interval > 5 %>
+$("#testbed-<%= @testbed.id %>").attr('timestamp', <%= Time.now.strftime("%s").to_s %>);
+    <% @nodes.each do | n | %> 
+      <% next if n["id"].to_i == -1 %>
+  $("#testbed-<%= @testbed.id %> > #node-<%= (n["id"].to_i).to_s %>").removeClass('on off toggle run').addClass('<%= n["status"] %>')
+    <% end %>
   <% end %>
+<% when (params[:mode] == "embed") %>
+  $("#testbed-map").html("<%= escape_javascript(render(:partial=>"map")) %>");
 <% end %>

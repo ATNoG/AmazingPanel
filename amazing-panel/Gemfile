@@ -7,11 +7,15 @@ gem 'rails', '3.0.0'
 
 gem 'mysql', '2.8.1'
 gem 'sqlite3-ruby', :require => 'sqlite3'
-gem 'jquery-rails'
+gem 'jquery-rails', "~>0.2"
 gem 'gravatar_image_tag', '0.1.0'
 gem 'devise'
 gem 'will_paginate', '~> 3.0.pre2'
-
+gem 'ruby_parser', '2.0.5'
+gem 'prawn'
+gem 'prawn_rails'
+#gem 'spawn'
+#gem 'pdfkit'
 # Use unicorn as the web server
 # gem 'unicorn'
 
@@ -21,6 +25,10 @@ gem 'will_paginate', '~> 3.0.pre2'
 # To use debugger
 gem 'ruby-debug'
 
+
+group :test do
+  gem 'single_test'
+end
 # Bundle the extra gems:
 # gem 'bj'
 # gem 'nokogiri'

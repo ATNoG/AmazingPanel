@@ -1,0 +1,5 @@
+--- 
+pxeimages_001: 
+  short_description: 5.3 PXE image
+  id: "1"
+  image_name: pxeconfig

@@ -1,0 +1,229 @@
+require 'ruby_parser'
+require 'pp'
+
+module OMF
+  module Experiments
+    class OEDLParser < RubyParser
+      attr_accessor :apps
+
+      def initialize(ed)
+        super()
+        @raw = process(ed)
+        @apps = Array.new
+      end
+
+      def getApplicationMetrics()
+        @apps = @apps.clear()
+        getApplications()
+        getMetrics()
+        ret = Array.new()
+        @apps.each do |app|
+          ret.push({:app => app[:name], :metrics => app[:metrics]})
+        end
+        return ret
+      end
+
+      def getApplications()
+        @raw.each_of_type(:iter) do |i|
+          app = i[1]
+          if (app[2] == :addApplication)
+            app = { :sexp => app, :locals => app[1], :name => app[3][1][1].split(":"), :block => i[3], :metrics => Array.new() }
+            if @apps.index(app).nil? 
+              @apps.push(app)
+            end
+          end
+        end
+      end
+
+      def getDuration        
+      end
+
+      def getSenderGroups
+      end
+
+      def defReceiverGroups
+      end
+
+      def getMetrics()
+        @apps.each do |app|
+          app[:block].each_of_type(:call) do |call|
+            if (call[2] == :measure)
+              app[:metrics].push({:name => call[3][1][1]})
+            end
+          end
+        end
+      end
+    end
+
+    class GenericResults
+      class OMLGenerated < ActiveRecord::Base
+        abstract_class = true
+      end
+      class DataGenerated < ActiveRecord::Base
+        abstract_class = true
+      end
+      class Sender < OMLGenerated
+        set_table_name('_senders')
+      end
+      class ExperimentMetadata < OMLGenerated
+        set_table_name('_experiment_metadata')
+      end
+      class Data < DataGenerated
+        abstract_class = true
+      end
+      
+      attr_accessor :tables, :config
+      def initialize(experiment, app={})
+        @config = { :adapter => "sqlite3", :database => "#{Rails.root}/inventory/experiments/#{experiment.id}.sq3" }
+        @tables = { }
+        if (app == {})
+          load_models(self.class)
+        else
+          create_models(app)
+        end
+      end
+      
+      def select_model_by_metric(app, metrics)
+        ts = Array.new()
+        Data.connection.tables.each do |t|
+          if (app.select {|e| t.include?(e) }).length > 0         
+          #pp "for <#{t}> --> #{has_app}"
+            if (metrics.select {|mt| t.include?(mt[:name]) }).length > 0
+              ts.push(t)
+            end
+          end
+        end
+        if ts.length == 1
+          Data.set_table_name(ts[0])
+          return Data
+        end
+        return nil
+      end
+
+      def select_model(table)
+        Data.set_table_name(table)
+        return Data;
+      end
+      
+      protected
+      def load_models(klass)
+        klass.constants.each do |rt|
+          rt_class = klass.const_get(rt)
+          rt_superclass = rt_class.superclass
+          unless rt_superclass != DataGenerated
+            #puts "Class: #{rt_class}"
+            rt_class.establish_connection(@config)
+            @tables[rt_class.to_s] = rt_class
+          end
+        end
+      end   
+    end
+    
+    class ExperimentControllerProxy
+      attr_accessor :id, :experiment
+      
+      def initialize(args)
+        if args.class == Fixnum
+          args = {:id => args }
+        end
+        unless args.nil? or args.length == 0
+          @id = args[:id]
+          @experiment = args[:id].nil? ? args[:experiment] : Experiment.find(@id)
+        end
+      end
+
+      def prepare
+         testbeds  = @experiment.resources_map.group(:testbed_id)
+         testbeds.each do |t|
+           images = @experiment.resources_map.group(:sys_image_id) 
+           images.each do |img|
+             op_testbed(t.testbed_id) {
+               ActiveRecord::Base.verify_active_connections!
+               load_resource_map(img, @experiment.nodes)
+             }
+           end
+        end
+      end
+
+      def start
+        op_testbed(1) {
+          sleep 10
+          puts "Starting..."
+        }
+      end
+
+      def stop
+        op_testbed(1) {
+        }
+      end
+
+      protected
+      def load_resource_map(img, nodes)
+        comma_nodes = nodes.join(",");
+        #popen("omf -i #{img.id}.ndz -t #{comma_nodes}");
+      end
+
+      def lock_testbed(t_id)
+        lock = OMF::GridServices::testbed_rel_file_str(t_id, "lock")
+        ret = false
+        data = { :experiment => @id, :pid => Process.pid }
+        unless (ret = File.exists?(lock))
+          open(lock, "w") { |f|
+            f.write(ActiveSupport::JSON.encode(data))          
+          }
+        end
+        return ret;
+      end
+
+      def unlock_testbed(t_id)
+        lock = OMF::GridServices::testbed_rel_file_str(t_id, "lock")
+        ret = false
+        f = IO::read(lock)
+        unless f.nil?
+          ret = File.unlink(lock)
+        end
+        return ret
+      end
+
+      def op_testbed(t_id, &block)
+        child = fork {
+          lock_testbed(t_id)
+          yield
+          unlock_testbed(t_id)
+        }        
+        ret = Process.detach(child)
+        return ret
+      end
+    end
+    
+    # Get the appropiate results for the experiment
+    def self.results(experiment)
+      ed = experiment.ed
+      ed_content = OMF::Workspace.open_ed(ed.user, ed.name)
+      parser = OMF::Experiments::OEDLParser.new(ed_content)
+      data = OMF::Experiments::GenericResults.new(experiment)
+      return { :metrics => parser.getApplicationMetrics(), :results => data }
+    end
+    
+    # Prepare an experiment
+    def self.prepare(id)
+      begin
+        puts "Preparing experiment #{id}"
+
+        images = experiment.sys_images.group(:id).inspect
+        images.each do |i|
+          nodes = experiment.resources_map.find(:sys_image => i.id)       
+        end
+        return true
+      rescue
+        return false
+      end
+    end
+
+    # Start an experiment
+    def self.start
+      return true
+    end
+  end
+end
+

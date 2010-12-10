@@ -1,14 +1,13 @@
 <% content_for :main_content do %> 
-  <div id="toolbar">
-    <ul id="toolbar-action-list">
-        <%= add_action 'Users', admin_users_path, ['admin/users'] %>
-	<%= add_action 'Baseline Images', admin_sys_images_path, ['admin/sys_images']%>
-	<%= add_action 'Testbeds', admin_testbeds_path, ['admin/testbeds']%>
-    </ul>
-  </div>
-  <div id="sub-toolbar">
+  <% toolbar do %>
+    <%= add_action 'Users', admin_users_path, { :controller => 'admin/users'} %>
+    <%= add_action 'Baseline Images', admin_sys_images_path, { :controller => 'admin/sys_images'} %>
+    <%= add_action 'Testbeds', admin_testbeds_path, { :controller => 'admin/testbeds'} %>
+  <% end %>
+ 
+  <% sub_toolbar do %>
     <%= yield :sub_actions %>
-  </div>
+  <% end %>
   <br/>
   <div id="file-show">
     <%= yield :content %>

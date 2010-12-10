@@ -1,11 +1,34 @@
-# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
-
-# This model initially had no columns defined.  If you add columns to the
-# model remove the '{}' from the fixture names and add the columns immediately
-# below each fixture, per the syntax in the comments below
-#
-one: {}
-# column: value
-#
-two: {}
-#  column: value
+--- 
+sys_images_001: 
+  name: Sample
+  created_at: 2010-11-10 01:58:21
+  size: "54477"
+  kernel_version_os: 2.6.36
+  updated_at: 2010-11-10 02:08:30
+  baseline: "1"
+  id: "5"
+  user_id: "1"
+  description: asdfghjk
+  sys_image_id: 
+sys_images_002: 
+  name: Based on Sample
+  created_at: 2010-11-10 01:59:07
+  size: "30932"
+  kernel_version_os: 2.6.36
+  updated_at: 2010-11-10 01:59:07
+  baseline: "0"
+  id: "6"
+  user_id: "1"
+  description: 1234567gfghnm
+  sys_image_id: "5"
+sys_images_003: 
+  name: Independent
+  created_at: 2010-11-10 02:10:55
+  size: "76879"
+  kernel_version_os: 2.6.35
+  updated_at: 2010-11-10 02:10:55
+  baseline: "1"
+  id: "7"
+  user_id: "1"
+  description: foobar
+  sys_image_id: 

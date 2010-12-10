@@ -1,13 +1,11 @@
 class Admin::TestbedsController < TestbedsController
+  include OMF::GridServices
   include Admin::TestbedsHelper
 
   layout 'admin'
 
   before_filter :admin_user
-#  prepend_before_filter :setHTTPEnvironment, :properties, :only => [:node_toggle]    
-#  prepend_before_filter :setHTTPEnvironment, :properties, :admin_user, :only => [:show]
-#  prepend_before_filter :setHTTPEnvironment, :properties, :admin_user, :only => [:node_toggle]    
-
+  
   def index    
     super()
   end
@@ -17,10 +15,9 @@ class Admin::TestbedsController < TestbedsController
   end
   
   def node_toggle
-    properties
     @node = Node.find(params[:node_id])
     @id = @node.id
-    @status = toggle()
+    @status = OMF::GridServices.testbed_node_toggle(params[:id], @id)
   end
   
   def node_info
@@ -37,11 +34,4 @@ class Admin::TestbedsController < TestbedsController
       format.js
     end
   end
-
-  private
-
-    def toggle      
-      return 'run'
-      #return ogscmc_ws_invoke("toggle", params.merge!({ :node_id => params[:node_id] }))
-    end
 end

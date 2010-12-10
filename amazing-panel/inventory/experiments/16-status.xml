@@ -1,0 +1,9 @@
+<testbed id="1"> <!--ROOT element é a testbed com o ID que consta na BD (e.g. ID=1 NAME=amazing) -->
+    <progress state="LOADING_IMAGES">
+        <value id="1" node="omf.amazing.node1" value="20" />
+        <value id="2" node="omf.amazing.node2" value="20" />
+        <value id="3" node="omf.amazing.node3" value="20" />
+    </progress>
+</testbed>
+
+
