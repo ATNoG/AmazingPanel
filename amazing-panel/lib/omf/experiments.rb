@@ -74,7 +74,9 @@ module OMF
       
       attr_accessor :tables, :config
       def initialize(experiment, app={})
-        @config = { :adapter => "sqlite3", :database => "#{Rails.root}/inventory/experiments/#{experiment.id}.sq3" }
+        @config = { 
+          :adapter => "sqlite3", 
+          :database => "#{APP_CONFIG['exp_results']}#{experiment.id}.sq3" }
         @tables = { }
         if (app == {})
           load_models(self.class)
@@ -151,8 +153,8 @@ module OMF
         e = Experiment.find(@id)
         images = e.resources_map.group(:sys_image_id)
         images.each do |img|
-          #'XXX' Wrong load nodes
-          load_resource_map(img, e.nodes)
+          nodes = e.resources_map.where('sys_image_id' => img.sys_image).map! { |x| x.node.hrn  }
+          load_resource_map(img, nodes)
         end          
         Experiment.verify_active_connections!
         status(0)        
@@ -171,9 +173,10 @@ module OMF
         }
         status(1)
         puts "STARTING! #{Process.pid}"
-        # ret = popen("omf exec -e #{@id} #{@experiment.ed.id}.rb ");
+        #ret = system("omf exec -e #{@id} #{@experiment.user.username}/#{@experiment.ed.id}.rb ");
         sleep 5 # 'XXX' - REMOVE DUMMY
-        File.copy("/tmp/#{@id}.sq3", "#{Rails.root}/inventory/experiments/#{@id}.sq3")
+        get_results
+        #File.copy("#{APP_CONFIG['omlserver_tmp']}#{@id}.sq3", "#{APP_CONFIG['exp_results']}#{@id}.sq3")
         puts "FINISHIN!"
         status(2)
         unlock_testbed(testbeds)
@@ -194,7 +197,7 @@ module OMF
 
       def load_status
         unless Experiment.find(@id).status.nil?
-          stat = IO::read("/tmp/omf-log.xml")
+          stat = IO::read(APP_CONFIG['omf_load_log'])
           puts "DEBUG: #{stat}"
           return Hash.from_xml(stat)
         end
@@ -212,9 +215,10 @@ module OMF
         return Experiment.find(@id).resources_map.group(:testbed_id).map{ |t| t.testbed_id }
       end
 
-      def load_resource_map(img, nodes)
+      def load_resource_map(img, nodes)        
         comma_nodes = nodes.join(",");
-        puts "omf -i #{img.id}.ndz -t #{comma_nodes}"
+        puts "omf -i #{img.sys_image_id}.ndz -t #{comma_nodes}"
+        #system "omf -i #{img.sys_image_id}.ndz -t #{comma_nodes}"
       end
 
       def current_lock(t_ids)
@@ -257,7 +261,7 @@ module OMF
               puts "UNLOCKED"
             end
           else
-            return false
+            return 
           end
         end
         return ret
@@ -279,12 +283,25 @@ module OMF
         end
         return ret
       end
+
+      def get_results
+        http = Net::HTTP.new(APP_CONFIG['aggmgr_url'])
+        root_path = '/result/'
+        path = "#{root_path}/dumpDatabase?expID=#{@id}"
+        request = Net::HTTP::Get.new(path)
+        #response = http.request(request)
+        FileUtils.cp("#{APP_CONFIG['omlserver_tmp']+@id.to_s}.sq3", "#{APP_CONFIG['exp_results']+@id.to_s}.sq3")
+        puts "cp #{APP_CONFIG['omlserver_tmp']+@id.to_s}.sq3 #{APP_CONFIG['exp_results']+@id.to_s}.sq3"
+        #if response.status == 200
+        #  FileUtils.cp("#{APP_CONFIG['omlserver_tmp']+@id}.sq3", "#{APP_CONFIG['exp_results']+@id}.sq3")
+        #end
+      end
     end
     
     # Get the appropiate results for the experiment
     def self.results(experiment)
       ed = experiment.ed
-      ed_content = OMF::Workspace.open_ed(ed.user, ed.name)
+      ed_content = OMF::Workspace.open_ed(ed.user, "#{ed.id}.rb")
       parser = OMF::Experiments::OEDLParser.new(ed_content)
       data = OMF::Experiments::GenericResults.new(experiment)
       return { :metrics => parser.getApplicationMetrics(), :results => data }

@@ -45,13 +45,14 @@
   <% content_for :content do %>
     Invalid Filter.
   <% end %>  
-<% elsif @users.nil? or @users.length == 0 %>
+<% elsif @resources.nil? or @resources.length == 0 %>
   <% content_for :content do %>
     No Users.
   <% end %>
 <% else %>
   <% content_for :content do %>
     <table id="users" class="grid-view tablesorter">
+    <%= will_paginate @resources, :previous_label => "Previous", :next_label =>"Next" %>
     <%= generate_table_headers(Ed, admin_users_path, 
 	    :fields => [ "id", "name", "email", "activated", "created_at", "updated_at", "last_sign_in_at", "__actions"],
 	    :labels => { "id" => "#", "activated" => "Account Status" }, 
@@ -92,7 +93,7 @@
     </thead>
  -->
     <tbody>
-      <% @users.each do |user| %>
+      <% @resources.each do |user| %>
 	<tr>
 <!--	  <td><%= gravatar_for user, :size => 24  %></td>-->
 	  <td class="underline"><%= link_to user.id, admin_user_path(:id => user.id) %></td>
@@ -129,20 +130,3 @@
     </table>
   <% end %>
 <% end %>
-
-<!--
-<% @users.each do | user | %>
-  <%= gravatar_for user, :size => 50 %>
-  <%= link_to user.name+" ("+user.username+")", user %>
-  <% if current_user.admin? %>
-    | <%= link_to "delete", admin_user_path(:id=>user.id), :method => :delete, :confirm => "You sure?",
-                                  :title => "Delete #{user.name}" %>
-    <% if user.activated? %>  
-    | <%= link_to "deactivate", user_activate_path(:user_id => user.id), :method => :put %>
-    <% else %>
-    | <%= link_to "activate", user_activate_path(:user_id => user.id), :method => :put %>
-    <% end %>
-  <% end %>
-  <br/>
-<% end %>
--->

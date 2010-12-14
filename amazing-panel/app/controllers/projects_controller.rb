@@ -1,38 +1,33 @@
 class ProjectsController < ApplicationController
   include ProjectsHelper
   before_filter :authenticate
+  append_before_filter :is_project_leader, :only => [:assign, :unassign, :make_leader, :update, :destroy]
+
   layout 'general'
+  respond_to :html
   # GET /projects
   # GET /projects.xml
   def index    
-    @projects = Project.all
-    puts @projects[0].attributes.inspect
-    @users = User.all
-    respond_to do |format|
-      format.html # index.html.erb
-      format.xml  { render :xml => @projects }
+    current_page = params[:page]
+    if current_page.nil?
+      current_page = '1'
     end
+
+    @projects = Project.paginate(:page => current_page)
+    #puts @projects[0].attributes.inspect
+    @users = User.all
   end
 
   # GET /projects/1
   # GET /projects/1.xml
   def show
     @project = Project.find(params[:id])
-
-    respond_to do |format|
-      format.html # show.html.erb
-      format.xml  { render :xml => @project }
-    end
   end
 
   # GET /projects/new
   # GET /projects/new.xml
   def new
     @project = Project.new
-    respond_to do |format|
-      format.html # new.html.erb
-      format.xml  { render :xml => @project }
-    end
   end
 
   # GET /projects/1/edit
@@ -44,10 +39,6 @@ class ProjectsController < ApplicationController
   def assign
     @project = Project.find(params[:id])
     @users = User.all
-    respond_to do |format|
-      format.html # assign.html.erb
-      format.xml  { render :xml => @project }
-    end
   end
 
   # POST /projects
@@ -55,42 +46,35 @@ class ProjectsController < ApplicationController
   def create
     @project = Project.new(params[:project])
     uploaded_io = params[:file]
-    respond_to do |format|
-      if @project.save and ProjectsUsers.create({:project_id => @project.id, :user_id => current_user.id, :leader => 't'})
-	path = project_logo_path_for(@project)
-	File.open(path, 'wb') do |file|
-	  file.write(uploaded_io.read)
-	end
-        format.html { redirect_to(@project, :notice => 'Project was successfully created.') }
-        format.xml  { render :xml => @project, :status => :created, :location => @project }
-      else
-        format.html { render :action => "new" }
-        format.xml  { render :xml => @project.errors, :status => :unprocessable_entity }
+    if @project.save and ProjectsUsers.create({:project_id => @project.id, :user_id => current_user.id, :leader => 't'})
+      unless uploaded_io.nil?
+        path = project_logo_path_for(@project)
+        File.open(path, 'wb') do |file|
+          file.write(uploaded_io.read)
+        end
       end
+     flash["success"] = 'Project was successfully created.'
+     return redirect_to(@project)
     end
+    render :action => "new"
   end
 
   # PUT /projects/1
   # PUT /projects/1.xml
   def update
     @project = Project.find(params[:id])
-    uploaded_io = params[:file]    
-    
-    respond_to do |format|
-      if @project.update_attributes(params[:project])
-	if uploaded_io.size > 0
-	  path = project_logo_path_for(@project)
-	  File.open(path, 'wb') do |file|
-	    file.write(uploaded_io.read)
-	  end	  
-	end
-        format.html { redirect_to(@project, :notice => 'Project was successfully updated.') }
-        format.xml  { head :ok }
-      else
-        format.html { render :action => "edit" }
-        format.xml  { render :xml => @project.errors, :status => :unprocessable_entity }
+    uploaded_io = params[:file]
+    if @project.update_attributes(params[:project])
+      unless uploaded_io.nil? or uploaded_io.size == 0
+        path = project_logo_path_for(@project)
+    	File.open(path, 'wb') do |file|
+    	  file.write(uploaded_io.read)
+    	end	  
       end
+      flash["success"] = 'Project was successfully updated.'
+      return redirect_to(@project)
     end
+    render :action => "edit" 
   end
 
   # PUT /projects/1/user/1
@@ -104,30 +88,25 @@ class ProjectsController < ApplicationController
     if tmp.index(id).nil?
       tmp.push(id)
     end
-    
-    respond_to do |format|
-      if @project.update_attributes({:user_ids => tmp})
-        format.html { redirect_to(assign_project_path(@project), :success => @user.name.to_s + ' assigned to' + @project.name.to_s) }
-        format.xml  { render :xml => @project, :status => :created, :location => @project }
-      else
-        format.html { render :action => "assign" }
-        format.xml  { render :xml => @project.errors, :status => :unprocessable_entity }
-      end
+      
+    if @project.update_attributes({:user_ids => tmp})
+      flash["success"] = @user.name.to_s + ' assigned to ' + @project.name.to_s
+      return redirect_to(assign_project_path(@project))
     end
+    render :action => "assign"
   end
   
   def make_leader
-    id = Integer(params[:user_id])
-    @project = Project.find(params[:id])
-    @user = User.find(id)
-    @project_user = ProjectsUsers.where("project_id = :tid AND user_id = :uid", { :tid => params[:id], :uid => params[:user_id]})
-    Project.find(params[:id]).users.delete(@user)
-    ProjectsUsers.create({:project_id => params[:id], :user_id => params[:user_id], :leader => 't'})
-    
-    respond_to do |format|
-      format.html { redirect_to(assign_project_path(@project), :success => @user.name.to_s + ' assigned to' + @project.name.to_s) }
-      format.xml  { render :xml => @project, :status => :created, :location => @project }      
-    end
+     id = Integer(params[:user_id])
+     @project = Project.find(params[:id])
+     @user = User.find(id)
+     @project_user = ProjectsUsers.where("project_id = :tid AND user_id = :uid", 
+                                  { :tid => params[:id], :uid => params[:user_id]})
+     Project.find(params[:id]).users.delete(@user)
+     ProjectsUsers.create({:project_id => params[:id], :user_id => params[:user_id], :leader => 't'})
+     
+     flash["success"] = @user.name.to_s + ' is also leader on ' + @project.name.to_s
+     redirect_to(assign_project_path(@project)) 
   end
 
   # DELETE /projects/1
@@ -136,10 +115,7 @@ class ProjectsController < ApplicationController
     @project = Project.find(params[:id])
     @project.destroy
 
-    respond_to do |format|
-      format.html { redirect_to(projects_url) }
-      format.xml  { head :ok }
-    end
+    redirect_to(projects_url) 
   end
   
   # DELETE /projects/1/user/1
@@ -153,15 +129,20 @@ class ProjectsController < ApplicationController
     if tmp.index(id).nil? == false
       tmp.delete(id)
     end
-
-    respond_to do |format|
-      if @project.update_attributes({:user_ids => tmp})
-        format.html { redirect_to(assign_project_path(@project), :success => @user.name.to_s + ' unassigned from ' + @project.name.to_s) }
-        format.xml  { render :xml => @project, :status => :created, :location => @project }
-      else
-        format.html { render :action => "assign" }
-        format.xml  { render :xml => @project.errors, :status => :unprocessable_entity }
-      end
+    if @project.update_attributes({:user_ids => tmp})
+      flash["success"] = @user.name.to_s + ' unassigned from ' + @project.name.to_s
+      redirect_to(assign_project_path(@project))
+    else
+      render :action => "assign" 
     end
+  end
+
+  private
+  def is_project_leader
+    project = Project.find(params[:id])
+    if (project.users.find(current_user.id).leader == "1" or current_user.admin?)
+      return true
+    end
+    head :forbidden
   end
 end

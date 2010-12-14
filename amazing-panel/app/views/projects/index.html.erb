@@ -7,6 +7,7 @@
 <% content_for :content do %>
   <% if @projects.length > 0 %>
   <table id="sysimages" class="grid-view">
+    <%= will_paginate @projects, :previous_label => "Previous", :next_label =>"Next" %>
     <%= generate_table_headers(Project, projects_path, :fields => [ "", "id", "name", "description", "updated_at", "__actions"], :labels => { "id" => "#" }, 
 			      :filters => { "id" => 'integer_field_select', "updated_at" => 'text_field'}) %>
     <tbody>

@@ -13,10 +13,10 @@
 <% content_for :content do %>
 <% if @error.nil? == false %>
     Invalid Filter.
-<% elsif @eds.nil? or @eds.length == 0 %>
+<% elsif @resources.nil? or @resources.length == 0 %>
     No Experiments Definitions on your Library.  
 <% else %>  
-    <%= will_paginate :previous_label => "Previous", :next_label =>"Next" %>
+    <%= will_paginate @resources, :previous_label => "Previous", :next_label =>"Next" %>
     
     <table id="eds" class="grid-view tablesorter">
     <%= generate_table_headers(Ed, eds_path, 
@@ -59,7 +59,7 @@
     </thead>
 -->
     <tbody>
-      <% @eds.each do |ed| %>
+      <% @resources.each do |ed| %>
 	<% creator = User.find(ed.user_id) %>
 	<tr>
 	  <td><%= link_to ed.id, ed, :class=>"underline" %></td>

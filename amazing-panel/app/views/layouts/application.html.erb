@@ -47,7 +47,9 @@
     <div id="main-section">
       <div class="container">
 	  <% flash.each do |key, value| %>
-    	  <p class="<%= key %>"><%= value %></p>
+    	  <p class="<%= user_signed_in? ? "flash-msg-integrated  #{key}" : key %>">
+            <%= value %>
+          </p>
     	<% end %>
 	<%= yield(:main_content) %>
 	<%= yield %>

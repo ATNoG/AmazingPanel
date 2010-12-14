@@ -1,27 +1,17 @@
 class Admin::UsersController < Users::UsersController
   layout 'admin'
-  before_filter :admin_user
+  append_before_filter :admin_user
 
-  def index
-    current_page = params[:page]
-    if current_page.nil?
-      current_page = "1"
-    end
-    @users = filter(params)
-    puts "session: "+@users.inspect
-    if @users.nil? == false
-      @users = @users.paginate(:page => current_page)
-    end
-
-    if @error.nil? == false
-	@error = "Invalid Filter."
-    end
-  end
-  
   def activate
-    user = resource_find(params[:user_id]);    
-    activated = user.activated ? false : true;
-    if user.update_attributes({:activated => activated })
+    @user = resource_find(params[:user_id]);
+    activated = @user.activated ? false : true;
+    if @user.update_attributes({:activated => activated })
+      if (activated == true)
+        #mail(:from => "admin@amazing.hng.av.it.pt", :to => @user.email) do |format|
+        #  format.text
+        #end
+        create_workspace(@user)
+      end
       redirect_to admin_user_path(params[:user_id])
     end
   end
@@ -34,8 +24,7 @@ class Admin::UsersController < Users::UsersController
     end
   end
   
-  def new
-    
+  def new    
   end
   
   def create
@@ -47,4 +36,9 @@ class Admin::UsersController < Users::UsersController
   
   def update
   end  
+
+  private
+  def create_workspace(user)
+    OMF::Workspace.create_workspace(user)
+  end
 end

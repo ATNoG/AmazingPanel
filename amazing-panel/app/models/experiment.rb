@@ -1,5 +1,5 @@
 class ResourcesMap < ActiveRecord::Base
-  attr_accessible :progress, :node, :experiment, :sys_image, :testbed
+  attr_accessible :progress, :node, :experiment, :sys_image, :testbed, :sys_image_id, :node_id
   belongs_to :node
   belongs_to :experiment
   belongs_to :sys_image

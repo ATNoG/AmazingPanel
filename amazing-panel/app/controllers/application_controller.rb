@@ -14,8 +14,8 @@ class ApplicationController < ActionController::Base
     def admin_user
       redirect_to(root_path) unless current_user.admin?
     end
-    
-    def action_image()
-      
+
+    def permission_denied(path)
+      redirect_to(path, :error => "You don't have permission to modify this resource")
     end
 end

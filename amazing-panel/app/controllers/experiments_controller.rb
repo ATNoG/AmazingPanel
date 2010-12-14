@@ -40,7 +40,6 @@ class ExperimentsController < ApplicationController
   end
   
   def new
-    pp session
     @experiment = Experiment.new()
     session[:phase_status] = 0
     @current_phase = (!session[:phase].nil? ? session[:phase] : Phase.first)
@@ -85,20 +84,19 @@ class ExperimentsController < ApplicationController
       session[:experiment].delete(:cache)
       session[:experiment][:phase] = Phase.RUN
       session[:experiment][:id] = @experiment.id          
-      redirect_to(experiment_url(@experiment)) 
-    else
-      if session[:experiment].nil?
-        @experiment = Experiment.new() 
-        @experiment.ed = Ed.find(params[:experiment][:ed_id])
-        @experiment.phase = @current_phase
-        @experiment.user = current_user
-        @experiment.project = Project.find(params[:experiment][:project_id])
-        session[:experiment] = Hash.new()
-        session[:experiment][:cache] = @experiment
-      end
-      session[:experiment].merge!(params[:experiment])
-      phase_step
+      return redirect_to(experiment_url(@experiment)) 
     end
+    if session[:experiment].nil?
+      @experiment = Experiment.new() 
+      @experiment.ed = Ed.find(params[:experiment][:ed_id])
+      @experiment.phase = @current_phase
+      @experiment.user = current_user
+      @experiment.project = Project.find(params[:experiment][:project_id])
+      session[:experiment] = Hash.new()
+      session[:experiment][:cache] = @experiment
+    end
+    session[:experiment].merge!(params[:experiment])
+    phase_step
   end
 
   def destroy

@@ -52,7 +52,7 @@
     <% @results.each do |k,v| %>
       <% css_class = (i>0 ? " hidden " : "") %>
       <% css_class += (i==0 ? " column-active  " : "") %>
-      <%= content_tag :div, :id => "exp14_"+k , :class => "column-select "+ css_class do %>
+      <%= content_tag :div, :id => "exp#{@experiment.id.to_s}_"+k , :class => "column-select "+ css_class do %>
         <span class="bold">Field:</span>
         <%= select_tag :columns, options_for_select(v[:columns].collect { |c| [ c, c ]  }) %>
       <% end %>

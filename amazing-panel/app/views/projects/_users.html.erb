@@ -15,7 +15,7 @@
         <% end %>
       <% end %>    
       <div class="user-info">	
-	<% link_to(user) do %>
+	<%= link_to(user) do %>
 	  <%= gravatar_for user, :size => 30 %>
 	  <%= user.name %>
 	<% end %>

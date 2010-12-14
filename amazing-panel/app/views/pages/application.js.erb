@@ -1,6 +1,7 @@
 <% if user_signed_in? %>
 $(document).ready(function(){
   $(".action").tipsy({ live: true });
+  $(".flash-msg-integrated").slideDown(500).delay(5000).slideUp(200);
   <% if (@c == "library/eds") and (@a == "show" or @a =="edit") %>
     <%= render :partial => 'library' %>
   <% end %>

@@ -3,9 +3,9 @@
     <% tmp = { :controller => 'experiments', :action => 'index'} %>    
     <%= add_action 'Running', experiments_path+"?active", params.has_key?(:active) ? tmp : nil %> 
     <%= add_action 'Finished', experiments_path+'?done', params.has_key?(:done) ? tmp : nil %> 
-  <% end %>
-
-    <%= yield :sub_actions %>
+  <% end %> 
+  <div class="clear"></div>
+  <%= yield :sub_actions %>
   <br/>
   <div id="file-show">
     <%= yield :content %>

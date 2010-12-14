@@ -46,13 +46,15 @@
   <% content_for :content do %>
     Invalid Filter.
   <% end %>  
-<% elsif @sys_images.nil? or @sys_images.length == 0 %>
+<% elsif @resources.nil? or @resources.length == 0 %>
   <% content_for :content do %>
     No Experiments Definitions on your Library.
   <% end %>
 <% else %>
 
   <% content_for :content do %>
+    <%= will_paginate @resources, :previous_label => "Previous", :next_label =>"Next" %>
+    
     <table id="sysimages" class="grid-view tablesorter">
     <%= generate_table_headers(SysImage, sys_images_path, 
 	    :fields => [ "id", "user_id", "name", "kernel_version_os", "size", "description", "sys_image_id", "updated_at", "__actions"],
@@ -119,7 +121,7 @@
     </thead>
 -->
     <tbody>
-      <% @sys_images.each do |sys_image| %>
+      <% @resources.each do |sys_image| %>
 	<% creator = User.find(sys_image.user_id) %>
 	<tr>
 	  <td><%= link_to sys_image.id, sys_image, :class => "underline" %></td>
