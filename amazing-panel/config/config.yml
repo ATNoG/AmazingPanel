@@ -1,17 +1,18 @@
 development:
-  inventory: /home/jon/Developer/Projects/it/amazing/code/amazing-panel/git/amazing-panel/inventory
-  exp_results: /home/jon/Developer/Projects/it/amazing/code/amazing-panel/git/amazing-panel/inventory/experiments/  
+  inventory: /home/jmartins/inventory
+  exp_results: /home/jmartins/inventory/experiments/  
   omlserver_tmp: /tmp/
   omf_load_log: /tmp/omf-log.xml
-  aggmgr_frisbee: /home/jon/Developer/Projects/it/amazing/code/amazing-panel/git/amazing-panel/tmp/frisbee.yaml
+#  aggmgr_frisbee: /home/jmartins/git/amazing-panel/tmp/frisbee.yaml
+  aggmgr_frisbee: /etc/omf-aggmgr-5.3/enabled/frisbee.yaml
   aggmgr_url: "10.110.1.150:5053"
 
 test:  
-  inventory: /home/jon/Developer/Projects/it/amazing/code/amazing-panel/git/amazing-panel/inventory
-  exp_results: /home/jon/Developer/Projects/it/amazing/code/amazing-panel/git/amazing-panel/inventory/experiments/
+  inventory: /home/jmartins/git/amazing-panel/inventory
+  exp_results: /home/jmartins/git/amazing-panel/inventory/experiments/
   omlserver_tmp: /tmp/
   omf_load_log: /tmp/omf-log.xml
-  aggmgr_frisbee: /home/jon/Developer/Projects/it/amazing/code/amazing-panel/git/amazing-panel/tmp/frisbee.yaml
+  aggmgr_frisbee: /home/jmartins/git/amazing-panel/tmp/frisbee.yaml
   aggmgr_url: "10.110.1.150:5053"
 
 production:

@@ -7,7 +7,7 @@ class ResourcesMap < ActiveRecord::Base
 end
 
 class Experiment < ActiveRecord::Base 
-  attr_accessible :description, :status, :created_at, :updated_at, :resources_map
+  attr_accessible :description, :status, :created_at, :updated_at, :resources_map, :user
   belongs_to :ed
   belongs_to :phase
   belongs_to :user

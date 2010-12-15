@@ -10,8 +10,8 @@ development:
   enconding: utf8
   database: inventory_development
   pool: 5
-  username: root
-  password: root  
+  username: omf
+  password: omf 
 #  socket: /tmp/mysql.sock
 
 # Warning: The database defined as "test" will be erased and
@@ -28,8 +28,8 @@ test:
   enconding: utf8
   database: inventory_test
   pool: 5
-  username: root
-  password: root  
+  username: omf
+  password: omf  
 
 #production:
 #  adapter: sqlite3
@@ -41,5 +41,5 @@ production:
   enconding: utf8
   database: inventory
   pool: 5
-  username: root
-  password: root  
+  username: omf
+  password: omf

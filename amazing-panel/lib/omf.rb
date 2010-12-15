@@ -35,12 +35,14 @@ module OMF
     # create a sys_image 
     def self.create_sysimage(img, target)
       dir_frisbee_path = Pathname.new(@frisbee_img_dir).join('users', img.user.username)
-      FileUtils.ln_s(target.realpath, dir_frisbee_path.join(img.id).realpath)      
+	  old = target.realpath
+	  new = dir_frisbee_path.join("#{img.id.to_s}.ndz")
+      FileUtils.ln_s(old, new)      
     end
 
     def self.remove_sysimage(img)
       dir_frisbee_path = Pathname.new(@frisbee_img_dir).join('users', img.user.username)
-      FileUtils.rm dir_frisbee_path.join(img.id).realpath      
+      FileUtils.rm dir_frisbee_path.join("#{img.id.to_s}.ndz").realpath      
     end
   end
 end

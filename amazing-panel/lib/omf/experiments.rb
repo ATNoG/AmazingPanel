@@ -164,6 +164,7 @@ module OMF
 
       def start
         ActiveRecord::Base.verify_active_connections!
+		experiment = Experiment.find(@id)
         ret = lock_testbed(testbeds)
         trap('INT'){
           status(2)
@@ -172,12 +173,14 @@ module OMF
           exit
         }
         status(1)
+
         puts "STARTING! #{Process.pid}"
-        #ret = system("omf exec -e #{@id} #{@experiment.user.username}/#{@experiment.ed.id}.rb ");
-        sleep 5 # 'XXX' - REMOVE DUMMY
+        ret = system("omf exec -e #{@id} #{OMF::Workspace.ed_for(experiment.ed.user, experiment.ed.id.to_s)} ");
+		puts "start: #{ret.to_s}"
+        #sleep 5 # 'XXX' - REMOVE DUMMY
         get_results
-        #File.copy("#{APP_CONFIG['omlserver_tmp']}#{@id}.sq3", "#{APP_CONFIG['exp_results']}#{@id}.sq3")
-        puts "FINISHIN!"
+        File.copy("#{APP_CONFIG['omlserver_tmp']}#{@id}.sq3", "#{APP_CONFIG['exp_results']}#{@id}.sq3")
+        puts "FINISHING!"
         status(2)
         unlock_testbed(testbeds)
       end
@@ -188,6 +191,7 @@ module OMF
         begin
           pp data
           Process.kill('INT', data["pid"] )
+          unlock_testbed(testbeds)
           return true
         rescue 
           puts "NO PID"
@@ -217,8 +221,8 @@ module OMF
 
       def load_resource_map(img, nodes)        
         comma_nodes = nodes.join(",");
-        puts "omf -i #{img.sys_image_id}.ndz -t #{comma_nodes}"
-        #system "omf -i #{img.sys_image_id}.ndz -t #{comma_nodes}"
+       	ret = system("omf load -i users/#{img.sys_image.user.username}/#{img.sys_image_id}.ndz -t #{comma_nodes}")
+        puts "omf -i #{img.sys_image_id}.ndz -t #{comma_nodes} => #{ret}"
       end
 
       def current_lock(t_ids)

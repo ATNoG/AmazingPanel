@@ -125,10 +125,11 @@ class ExperimentsController < ApplicationController
     @error = "Another Experiment is running"
     if ec.check(:init)
       @error = nil
-      fork { 
+      pid = fork { 
         ec.prepare() 
         render :nothing=>true
       }
+	  Process.detach(pid)
     end
   end
 
@@ -155,9 +156,9 @@ class ExperimentsController < ApplicationController
         @nodes[id.to_s] ={ :progress => v["progress"], :state => v["status"], :msg => msg } 
       end
     end
-    #@state = "PREPARED" #'XXX' REMOVE DUMMY
+    @state = "PREPARED"
     sum_prog.each do |p| if p != 100 then @state = "";break;end;end;
-    @state = "PREPARED" #'XXX' REMOVE DUMMY
+    #@state = "PREPARED" #'XXX' REMOVE DUMMY
   end
   
   def start
@@ -165,10 +166,11 @@ class ExperimentsController < ApplicationController
     @error = "Another Experiment is running";
     if ec.check(:prepared)
       @error = nil
-      fork { 
+	  pid = fork { 
         ec.start()
         render :nothing => true
       }
+	  Process.detach(pid)
     end
   end
 
@@ -177,10 +179,11 @@ class ExperimentsController < ApplicationController
     @error = "Another Experiment is running";
     if ec.check(:started)
       @error = nil
-      fork { 
+      pid = fork { 
         ec.stop()
         render :nothing => true
       }
+	  Process.detach(pid)
     end
   end
 
