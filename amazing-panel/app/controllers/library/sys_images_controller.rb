@@ -85,7 +85,7 @@ class Library::SysImagesController < Library::ResourceController
     if @sys_image.save
       write_resource(@sys_image, uploaded_io.read, "ndz")
       @sys_image.size = File.size(get_path(@sys_image,"ndz").to_s)
-      OMF::Workspace.create_sysimage(@sys_image.id, get_path(@sys_image, "ndz")) 
+      OMF::Workspace.create_sysimage(@sys_image, get_path(@sys_image, "ndz")) 
       flash["success"] = 'Sys image was successfully created.'
       redirect_to(@sys_image) 
     else
