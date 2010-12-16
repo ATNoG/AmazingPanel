@@ -23,6 +23,7 @@ class ExperimentsController < ApplicationController
 
   def show
     @experiment = Experiment.find(params[:id])
+		@status = @experiment.status
     @nodes = Hash.new()
     @experiment.resources_map.each do |rm|
       @nodes[rm.node_id] = rm.sys_image_id
@@ -135,30 +136,20 @@ class ExperimentsController < ApplicationController
 
   def stat 
     ec = OMF::Experiments::ExperimentControllerProxy.new(params[:id].to_i)
-    @nodes = Hash.new()
-    status = ec.load_status()    
-    unless status.nil?
-      sum_prog = Array.new()
-      progress = status["testbed"]["progress"]
-      progress.each do |k,v|
-        id = Node.find_by_hrn(k).id
-        sum_prog.push(v["progress"])
-        s = v["status"]
-        msg = ""
-        case 
-        when s == "UP"
-          msg = "Loading image..."
-        when s == "DOWN"
-          msg = "Waiting for node..."
-        when s == "FAILED"
-          msg = "Node failed to load..."
-        end
-        @nodes[id.to_s] ={ :progress => v["progress"], :state => v["status"], :msg => msg } 
-      end
-    end
-    @state = "PREPARED"
-    sum_prog.each do |p| if p != 100 then @state = "";break;end;end;
-    #@state = "PREPARED" #'XXX' REMOVE DUMMY
+		@experiment = Experiment.find(params[:id])
+		status = @experiment.status
+		case 
+		when (status == -1 or status == 0)
+	    tmp = ec.prepare_status()   
+			@nodes = tmp[:nodes]
+			@state = tmp[:state]
+		when (status == 1 or status == 2)
+			tmp = ec.experiment_status()		
+	    #@state = "PREPARED" #'XXX' REMOVE DUMMY
+			@msg = tmp; 			
+		end
+		@status = status
+		@ec = ec
   end
   
   def start
@@ -166,7 +157,7 @@ class ExperimentsController < ApplicationController
     @error = "Another Experiment is running";
     if ec.check(:prepared)
       @error = nil
-	  pid = fork { 
+	  	pid = fork { 
         ec.start()
         render :nothing => true
       }

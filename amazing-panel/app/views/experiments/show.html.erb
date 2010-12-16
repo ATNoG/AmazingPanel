@@ -39,9 +39,17 @@
     <%= link_to "[See Ed]", "#", :class=>"more-ed-anchor", :ed => @experiment.ed.id %>
     <%= @experiment.ed.description %>
   </p>        
-
-<%= experiment_widget(@experiment, @nodes) %>
-<% if @experiment.status == 2 %>
+  <hr/>
+<% # EXPERIMENT STATUS %>
+<ul id="experiment-widget-tabs" class="tabs">
+	<li><a href="#status">Status</a></li>
+	<li><a href="#log">Log</a></li>
+</ul>
+<div id="status" class="tab">
+<% if @status != 2 %>
+	<%= experiment_widget(@experiment, @nodes) %>
+<% # GRAPHS %> 
+<% else @experiment.status == 2 %>
   <%= content_tag :div, :id => "graph-choose-box" do %>   
     <%= content_tag :div, :id => "graph-choose-source" do %>
       <span class="bold">Source:</span>
@@ -65,6 +73,8 @@
     <%= content_tag :div, "Clear", :id => "clear-data-set-button", :class => 'button' %>
   <% end %>
   <%= content_tag :div, "", :id => "graph", :class => "graph-container" %>  
+
+
 <script>
 var data = {
   <% @results.each do |k,v| %>
@@ -144,5 +154,10 @@ $("#clear-data-set-button").live('click', function(){
 });
 </script>
 <% end %>  
-  <%= modal_dialog("", "modal-dialog") %>
+</div>
+<div id="log" class="tab">
+</div>
+<% end %>
+<% content_for :footer do %>
+<%= modal_dialog("", "modal-dialog") %>
 <% end %>

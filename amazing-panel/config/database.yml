@@ -12,6 +12,7 @@ development:
   pool: 5
   username: omf
   password: omf 
+  reconnect: true
 #  socket: /tmp/mysql.sock
 
 # Warning: The database defined as "test" will be erased and
@@ -30,6 +31,7 @@ test:
   pool: 5
   username: omf
   password: omf  
+  reconnect: true
 
 #production:
 #  adapter: sqlite3
@@ -43,3 +45,4 @@ production:
   pool: 5
   username: omf
   password: omf
+  reconnect: true

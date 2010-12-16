@@ -1,0 +1,13 @@
+<% @nodes.each do |k, v| %>  
+  $("#image-node-<%= k %> > .image-label").removeClass("node-FAILED node-SUCCESS node-UP node-DOWN").addClass("node-<%= v[:state] %>")
+  $("#image-node-<%= k %> > .image-status").html("<%= v[:msg] %>");
+  $("#image-node-<%= k %> > .progress-container > .progress_text").html("<%= v[:progress] %>%")
+  $("#image-node-<%= k %> > .progress-container > .progress_bar").css("width","<%= v[:progress] %>%")
+<% end %>
+<% if @state=="PREPARED" %>
+  $("#caption-experiment").hide(); 
+  $("#prepare-experiment-button").toggleClass("button-disabled");
+  $("#start-experiment-button").toggleClass("button-disabled");
+<% elsif %>
+  setTimeout(experiment_stat,2000);
+<% end %>

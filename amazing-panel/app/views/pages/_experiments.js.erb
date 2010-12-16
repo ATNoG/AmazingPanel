@@ -79,7 +79,25 @@ $(".more-ed-anchor").live("click", function(evt){
   $("#modal-dialog").css("height","500px").css("top","20%").css("left", "30%");
   $(".modal-container").css("height","423px"); 
   $.getScript("<%= ed_path(experiment.ed, :format=>"js")  %>");
+	$("#modal-dialog").fadeIn();
   $("#modal-dialog").toggleClass("dialog-active");
+
+});
+
+$(".tab").hide();
+$(".tab:eq(0)").show();
+$(".tabs li:first-child").addClass("tab-active");
+$(".tabs li").live('click', function(evt){
+	var active_tab = $($(this).find("a").attr("href"));
+	$(".tab").hide();
+	$(".tabs li").removeClass("tab-active");
+	$(this).addClass("tab-active");
+	active_tab.fadeIn();
+	active_tab.focus();
+});
+
+$("#log").live('focus', function(evt){
+	alert('LOG CALLED');
 });
 
 $("#prepare-experiment-button").live('click', function(evt){
@@ -97,4 +115,7 @@ $("#stop-experiment-button").live('click', function(evt){
     $("#stop-experiment-button").addClass("button-disabled");
     $.getScript("<%= stop_experiment_path(experiment) %>");
 });
+<% if experiment.status != 2 %>
+    $.getScript("<%= stat_experiment_path(experiment) %>");
+<% end %>
 <% end %>

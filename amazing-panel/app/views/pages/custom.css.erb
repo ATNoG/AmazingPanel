@@ -44,6 +44,29 @@ li > a {
   padding: 0px 10px 0px 10px;
 }
 
+select, input[type=text] {
+	border:1px solid #ccc;  
+	border-radius:5px;  
+	-moz-border-radius:5px;  
+	-webkit-border-radius:5px;  
+	padding:2px;  
+}
+
+
+input[type=submit] {	
+	border:1px solid #bbb;  
+  border-radius:5px;  
+  -moz-border-radius:5px;  
+  -webkit-border-radius:5px;  
+  padding:5px; 
+	cursor: pointer; 
+	color: #111;
+}
+
+input[type=submit]:hover {
+	border:1px solid black;  
+	color: #000;
+}
 a:visited {
   color:#3E5C6B;
   text-decoration:none;
@@ -989,7 +1012,64 @@ a.action > img {
 }
 
 .node-SUCCESS {
-  color: red;
+  color: green;
 }
 
+.tabs {
+		margin: 0;
+    padding: 0;
+    float: left;
+    list-style: none;
+    height: 32px;
+    border-bottom: 1px solid #999;
+    border-left: 1px solid #999;
+    width: 100%;
+}
+
+.tabs li {
+		float: left;
+		list-style: none;
+    margin: 0;
+    padding: 0;
+    height: 31px;
+    line-height: 31px;
+    border: 1px solid #999;
+    border-left: none;
+    margin-bottom: -1px;
+    background: #e0e0e0;
+    overflow: hidden;
+    position: relative;
+ }
+
+.tabs li a {
+    text-decoration: none;
+    color: #000;
+    display: block;
+    font-size: 1.2em;
+    padding: 0 20px;
+    border: 1px solid #fff;
+    outline: none;
+}
+.tabs li a:hover {
+    background: #ccc;
+}   
+.tabs li.tab-active, ul.tabs li.tab-active a:hover  {
+    background: #fff;
+    border-bottom: 1px solid #fff;
+}
+.tab {
+	background: white;
+	border-bottom-left-radius: 5px 5px;
+	border-bottom-right-radius: 5px 5px;
+	border-top: none;
+	clear: both;
+  padding: 20px;
+	border: 1px solid #999;
+	border-top:none;
+ 	height: 100%;
+}
+
+#status {
+	height: 480px;
+}
 

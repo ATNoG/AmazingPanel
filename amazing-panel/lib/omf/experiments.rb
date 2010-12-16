@@ -134,6 +134,7 @@ module OMF
       end
 
       def check(type)
+        ActiveRecord::Base.verify_active_connections!        
         case 
         when type == :init
           exps = Experiment.where("status=0 or status=-1 or status=1 ")
@@ -148,6 +149,7 @@ module OMF
 
       def prepare
         lock_testbed(testbeds)
+				clean_log()
         status(-1)
         ActiveRecord::Base.verify_active_connections!
         e = Experiment.find(@id)
@@ -176,10 +178,12 @@ module OMF
 
         puts "STARTING! #{Process.pid}"
         ret = system("omf exec -e #{@id} #{OMF::Workspace.ed_for(experiment.ed.user, experiment.ed.id.to_s)} ");
-		puts "start: #{ret.to_s}"
+				puts "start: #{ret.to_s}"
         #sleep 5 # 'XXX' - REMOVE DUMMY
         get_results
         File.copy("#{APP_CONFIG['omlserver_tmp']}#{@id}.sq3", "#{APP_CONFIG['exp_results']}#{@id}.sq3")
+        File.copy("#{APP_CONFIG['omlserver_tmp']}#{@id}-state.xml", "#{APP_CONFIG['exp_results']}#{@id}-state.xml")
+        File.copy("#{APP_CONFIG['omlserver_tmp']}omf-log.xml", "#{APP_CONFIG['exp_results']}#{@id}-prepare.xml")
         puts "FINISHING!"
         status(2)
         unlock_testbed(testbeds)
@@ -199,16 +203,67 @@ module OMF
         end
       end
 
-      def load_status
-        unless Experiment.find(@id).status.nil?
-          stat = IO::read(APP_CONFIG['omf_load_log'])
-          puts "DEBUG: #{stat}"
-          return Hash.from_xml(stat)
-        end
-        return nil
-      end
+      def prepare_status
+      	if !File.exists?(APP_CONFIG['omf_load_log'])
+					system "echo nofile > /tmp/foobar.log"
+					return { :nodes => Hash.new(), :status => "" }
+				end
+				
+				system "echo dumbass > /tmp/foobar.log"
+    		nodes = Hash.new()
+				state = ""
 
-      protected
+	      stat = IO::read(APP_CONFIG['omf_load_log'])
+	      status = Hash.from_xml(stat)
+			  sum_prog = Hash.new()
+				progress = status["testbed"]["progress"]
+				unless progress.nil?
+			    progress.each do |k,v|
+						#system "echo #{k} > /tmp/foobar.log"
+					  node = Node.find_by_hrn(k)
+						next if	node.nil?
+						id = node.id
+						if v["status"] == "SUCCESS" then v["percentage"] = 100; end;
+					  sum_prog[id] = v["percentage"].to_i
+					  s = v["status"]
+					  msg = ""
+					  case 
+							when s == "UP"
+					      msg = "Loading image..."
+					    when s == "DOWN"
+					      msg = "Waiting for node..."
+			        when s == "FAILED"
+					  	  msg = "Node failed to load..."
+						end
+		  			nodes[id.to_s] ={ :progress => v["percentage"], :state => v["status"], :msg => msg } 
+				  end
+    		end
+      	state = "PREPARED"
+			  sum_prog.each do |k, p| if p != 100 then state = "";break;end;end;
+				return { :nodes => nodes, :state => state }
+			end
+			
+			def experiment_status
+				file = "#{APP_CONFIG['omlserver_tmp']}#{@id}-state.xml"
+      	if !File.exists?(file)
+					return { :status => "" }
+				end		     
+				 stat = IO::read(file)
+	      stat = Hash.from_xml(stat)
+				#system "echo #{k} > /tmp/foobar.log"
+				return ""
+			end
+
+			def logs(params={})
+			end
+
+			protected
+			def clean_log
+				if File.exists?(APP_CONFIG['omf_load_log'])
+      		FileUtils.rm "#{APP_CONFIG['omf_load_log']}"
+				end
+			end
+
       def status(v)
         ActiveRecord::Base.verify_active_connections!        
         Experiment.find(@id).update_attributes(:status => v)
@@ -221,7 +276,10 @@ module OMF
 
       def load_resource_map(img, nodes)        
         comma_nodes = nodes.join(",");
-       	ret = system("omf load -i users/#{img.sys_image.user.username}/#{img.sys_image_id}.ndz -t #{comma_nodes}")
+				cmd = "omf load -i users/#{img.sys_image.user.username}/#{img.sys_image_id}.ndz -t #{comma_nodes} > /tmp/omf_load_cmg.log"
+				system("echo #{cmd} > /omf_load_log")
+				#system("echo `#{cmd}` > /omf_load_log_2")
+       	ret = system(cmd)
         puts "omf -i #{img.sys_image_id}.ndz -t #{comma_nodes} => #{ret}"
       end
 
