@@ -44,23 +44,23 @@ li > a {
   padding: 0px 10px 0px 10px;
 }
 
-select, input[type=text] {
-	border:1px solid #ccc;  
-	border-radius:5px;  
-	-moz-border-radius:5px;  
-	-webkit-border-radius:5px;  
-	padding:2px;  
+select, input[type=text], input[type=password] {
+  border:1px solid #ccc;  
+  border-radius:5px;  
+  -moz-border-radius:5px;  
+  -webkit-border-radius:5px;  
+  padding:2px;  
 }
 
 
 input[type=submit] {	
-	border:1px solid #bbb;  
+  border:1px solid #bbb;  
   border-radius:5px;  
   -moz-border-radius:5px;  
   -webkit-border-radius:5px;  
   padding:5px; 
-	cursor: pointer; 
-	color: #111;
+  cursor: pointer; 
+  color: #111;
 }
 
 input[type=submit]:hover {
@@ -901,6 +901,7 @@ a.action > img {
 #experiment-briefing {
   line-height: 30px;
   height: 30px;
+  padding-bottom: 10px;
 }
 
 .button-disabled {
@@ -1058,18 +1059,24 @@ a.action > img {
     border-bottom: 1px solid #fff;
 }
 .tab {
-	background: white;
-	border-bottom-left-radius: 5px 5px;
-	border-bottom-right-radius: 5px 5px;
-	border-top: none;
-	clear: both;
+  background: white;
+  border-bottom-left-radius: 5px 5px;
+  border-bottom-right-radius: 5px 5px;
+  border-top: none;
+  clear: both;
   padding: 20px;
-	border: 1px solid #999;
-	border-top:none;
- 	height: 100%;
+  border: 1px solid #999;
+  border-top:none;
+  height: 100%;
 }
 
-#status {
-	height: 480px;
+#status, #log {
+  height: 530px;
+}
+
+#log_area {
+  width: 100%;
+  height: 510px;
+  resize: none;
 }
 

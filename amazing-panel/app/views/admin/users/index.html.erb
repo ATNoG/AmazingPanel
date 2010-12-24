@@ -108,9 +108,9 @@
 	    <% end %>    
 	  <% end %>    
 	  </td>
-	  <td><%= user.updated_at.strftime("%Y-%m-%d %H:%M:%S") %></td>
-	  <td><%= user.created_at.strftime("%Y-%m-%d %H:%M:%S") %></td>
-	  <td><%= user.last_sign_in_at.strftime("%Y-%m-%d %H:%M:%S") %></td>
+	  <td><% unless user.updated_at.nil? %><%= user.updated_at.strftime("%Y-%m-%d %H:%M:%S") %><% end %></td>
+	  <td><% unless user.created_at.nil? %><%= user.created_at.strftime("%Y-%m-%d %H:%M:%S") %><% end %></td>
+	  <td><% unless user.last_sign_in_at.nil? %><%= user.last_sign_in_at.strftime("%Y-%m-%d %H:%M:%S") %><% end %></td>
 	  <td class="actions-2">
 	    <div class="table-actions">
 	      <!--<%= link_to(admin_user_path(user), :class => "action")  do %><%= image_tag "edit.png", {:height => 16, :width => 16} %><% end %>-->	      
@@ -121,7 +121,7 @@
 		  <%= link_to(user_activate_path(:user_id => user.id), :class => "action", :method => :put) do %><%= image_tag "enable.png", {:height => 16, :width => 16} %><% end %>	  
 		<% end %> 	      
 	      <% end %> 
-	      <%= link_to(admin_users_path, :class => "action", :method => "delete") do %><%= image_tag "remove.png", {:height => 16, :width => 16} %><% end %>  
+	      <%= link_to(admin_user_path(:id => user.id), :class => "action", :method => "delete") do %><%= image_tag "remove.png", {:height => 16, :width => 16} %><% end %>  
 	    </div>
 	  </td>
 	</tr>

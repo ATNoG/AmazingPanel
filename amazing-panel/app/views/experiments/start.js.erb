@@ -2,6 +2,12 @@
 function experiment_stat(){
   $.getScript("<%= stat_experiment_path(:id => params[:id], :format => :js) %>");
 }
+
+$("#images-loading").hide()
+$("#graph-choose-box").hide()
+$("#graph").hide()
+$(".graph-actions").hide()
+
 $("#error-experiment").addClass("hidden");
 $("#caption-experiment").show().find("span").html(" ");
 $(".image-progress").show();

@@ -1,4 +1,4 @@
 $("#caption-experiment > .text").html("<%= @msg %>");
-<% if @status==2 %>
+<% if @experiment.started? %>
 setTimeout(experiment_stat,2000);
 <% end %>

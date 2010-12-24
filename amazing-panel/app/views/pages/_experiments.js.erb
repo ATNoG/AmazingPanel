@@ -96,26 +96,24 @@ $(".tabs li").live('click', function(evt){
 	active_tab.focus();
 });
 
-$("#log").live('focus', function(evt){
-	alert('LOG CALLED');
-});
-
 $("#prepare-experiment-button").live('click', function(evt){
-    $.getScript("<%= prepare_experiment_path(experiment) %>");
+    $.getScript("<%= prepare_experiment_path(experiment) %>", function(evt){  
+      $("#prepare-experiment-button").addClass("button-disabled");
+      $("#stop-experiment-button").removeClass("button-disabled");
+      });
 });
 
 $("#start-experiment-button").live('click', function(evt){
+  $.getScript("<%= start_experiment_path(experiment) %>", function(evt){  
     $("#start-experiment-button").addClass("button-disabled");
     $("#stop-experiment-button").removeClass("button-disabled");
-    $.getScript("<%= start_experiment_path(experiment) %>");
+  });
 });
 
 $("#stop-experiment-button").live('click', function(evt){
-    $("#prepare-experiment-button").removeClass("button-disabled");
-    $("#stop-experiment-button").addClass("button-disabled");
     $.getScript("<%= stop_experiment_path(experiment) %>");
 });
-<% if experiment.status != 2 %>
+<% unless experiment.finished? %>
     $.getScript("<%= stat_experiment_path(experiment) %>");
 <% end %>
 <% end %>

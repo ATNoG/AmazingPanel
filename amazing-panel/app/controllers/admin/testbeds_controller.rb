@@ -1,3 +1,5 @@
+require 'omf'
+
 class Admin::TestbedsController < TestbedsController
   include OMF::GridServices
   include Admin::TestbedsHelper
@@ -6,7 +8,7 @@ class Admin::TestbedsController < TestbedsController
 
   before_filter :admin_user
   
-  def index    
+  def index
     super()
   end
 
@@ -18,6 +20,7 @@ class Admin::TestbedsController < TestbedsController
     @node = Node.find(params[:node_id])
     @id = @node.id
     @status = OMF::GridServices.testbed_node_toggle(params[:id], @id)
+    logger.info("#{@status}");
   end
   
   def node_info

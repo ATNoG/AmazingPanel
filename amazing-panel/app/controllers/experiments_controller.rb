@@ -13,9 +13,9 @@ class ExperimentsController < ApplicationController
     @has_exp_in_cache = (session[:experiment].nil? ) ? false : true;
     case 
     when params.has_key?("active")
-      @experiments = Experiment.where(:status => 1)
+      @experiments = Experiment.running
     when params.has_key?("done")
-      @experiments = Experiment.where(:status => 2)
+      @experiments = Experiment.finished
     else
       @experiments = Experiment.all
     end    
@@ -23,17 +23,24 @@ class ExperimentsController < ApplicationController
 
   def show
     @experiment = Experiment.find(params[:id])
-		@status = @experiment.status
+
+  	@status = @experiment.status
     @nodes = Hash.new()
     @experiment.resources_map.each do |rm|
       @nodes[rm.node_id] = rm.sys_image_id
     end
+    
+    unless params.has_key?("resources")    
+      #@log = OMF::Experiments::ExperimentControllerProxy.new(params[:id].to_i).log
+      @log = ""
+    end
+    
     case 
     when params.has_key?("resources")
       @resources = @experiment.resources_map      
       @testbed = @resources.first.testbed
       @nodes = OMF::GridServices.testbed_status(@testbed.id)
-    when @experiment.status == 2
+    when @experiment.finished?
       ret = fetch_results(@experiment)
       @results = ret[:results]
       @seq_num = ret[:seq_num]
@@ -136,20 +143,27 @@ class ExperimentsController < ApplicationController
 
   def stat 
     ec = OMF::Experiments::ExperimentControllerProxy.new(params[:id].to_i)
-		@experiment = Experiment.find(params[:id])
-		status = @experiment.status
-		case 
-		when (status == -1 or status == 0)
-	    tmp = ec.prepare_status()   
-			@nodes = tmp[:nodes]
-			@state = tmp[:state]
-		when (status == 1 or status == 2)
-			tmp = ec.experiment_status()		
-	    #@state = "PREPARED" #'XXX' REMOVE DUMMY
-			@msg = tmp; 			
-		end
-		@status = status
-		@ec = ec
+	@experiment = Experiment.find(params[:id])
+	status = @experiment.status
+    slice = nil
+	case 
+	when (status == -1 or status == 0)
+      tmp = ec.prepare_status()   
+	  @nodes = tmp[:nodes]
+	  @state = tmp[:state]
+      slice = tmp[:slice]
+      if params.has_key?('log') and !slice.nil?
+        @log = ec.log(slice)
+      elsif params.has_key?('log')      
+        @log = ec.log()
+      end
+	when (@experiment.started? or @experiment.finished?)
+	  tmp = ec.experiment_status()		
+    #@state = "PREPARED" #'XXX' REMOVE DUMMY
+	  @msg = tmp;
+	end
+	@status = status
+	@ec = ec
   end
   
   def start
@@ -168,17 +182,13 @@ class ExperimentsController < ApplicationController
   def stop
     ec = OMF::Experiments::ExperimentControllerProxy.new(params[:id].to_i)
     @error = "Another Experiment is running";
-    if ec.check(:started)
+    if ec.check(:started) or ec.check(:prepared)
       @error = nil
-      pid = fork { 
-        ec.stop()
-        render :nothing => true
-      }
-	  Process.detach(pid)
+      ec.stop()
     end
   end
 
-  private
+  private    
 
   def reset
     session[:phase] = Phase.first

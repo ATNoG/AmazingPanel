@@ -25,7 +25,10 @@ module OMF
       end
           
       def toggle(node_id)
-        return get("power", "toggle", { :node => node_id })
+        status = get("power", "toggle", { :node => node_id })
+        status = get("power", "status", { :node => node_id })
+        status.delete("type")
+        return status[node_id.to_s]
       end
   
       def power_on(node_id)
@@ -38,14 +41,14 @@ module OMF
 
       protected
       def get(controller, action, args={})
-        path = "#{@@path + controller}/#{action}"+(!args[:node].nil? ? "/#{args[:node]}" : "")
+        path = "#{@@path + controller}/#{action}"+(!args[:node].nil? ? "/#{args[:node].to_s}" : "")
         req = Net::HTTP::Get.new(path)
-        #resp = @@http.request(req)
-        #ret = ActiveSupport::JSON.decode(resp.body.gsub("'", "\""))
-        #return ret
-        data = File.new('tmp/nodes.json','r').readlines().to_s
-        status = ActiveSupport::JSON.decode(data)      
-        return status
+        resp = @@http.request(req)
+        ret = ActiveSupport::JSON.decode(resp.body.gsub("'", "\""))
+        return ret
+        #data = File.new('tmp/nodes.json','r').readlines().to_s
+        #status = ActiveSupport::JSON.decode(data)      
+        #return status
       end        
     end
     
@@ -54,11 +57,11 @@ module OMF
     end
     
     def self.properties_file_str(id)
-      return "#{Rails.root}/inventory/testbeds/#{id}.yml"
+      return "#{APP_CONFIG['inventory']}/testbeds/#{id}.yml"
     end
     
     def self.testbed_rel_file_str(id, extension="yml")
-      return "#{Rails.root}/inventory/testbeds/#{id}.#{extension}"
+      return "#{APP_CONFIG['inventory']}/testbeds/#{id}.#{extension}"
     end
     
     def self.testbed_status(id)
@@ -68,8 +71,9 @@ module OMF
   
     def self.testbed_node_toggle(id, node)
       ts = TestbedService.new(id)
-      #return ts.toggle(node)
-      return true
+      system "echo #{node.to_i - 1} > /tmp/logging_dumb"
+      return ts.toggle(node.to_i - 1)
+      #return true
     end
   end
 end

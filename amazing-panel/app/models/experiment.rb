@@ -16,4 +16,24 @@ class Experiment < ActiveRecord::Base
   has_many :nodes, :through => :resources_map
   has_many :sys_images, :through => :resources_map
   has_many :testbeds, :through => :resources_map
+  scope :finished, where("status = 2 or status = 3") 
+  scope :prepared, where("status = 0 ")
+  scope :started, where("status = 1")
+  scope :running, where("status = 0 or status = -1 or status = 1")
+
+  def finished?
+    return true if (status == 2 or status == 3)
+  end
+
+  def started?
+    return true if (status == 1)
+  end
+
+  def prepared?
+    return true if (status == 0 )
+  end
+
+  def preparing?
+    return true if (status == -1)
+  end
 end

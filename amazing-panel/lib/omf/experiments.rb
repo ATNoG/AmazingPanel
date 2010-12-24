@@ -131,31 +131,41 @@ module OMF
         unless args.nil? or args.length == 0
           @id = args[:id]
         end
+        @@logger = Logger.new("#{Rails.root.join("log/"+@id.to_s+"-proxylog.log")}")
       end
 
       def check(type)
-        ActiveRecord::Base.verify_active_connections!        
+        exp = Experiment.find(@id)
         case 
         when type == :init
-          exps = Experiment.where("status=0 or status=-1 or status=1 ")
+          exps = Experiment.running
           return true if exps.length == 0
         when type == :prepared
-          return true if Experiment.find(@id).status == 0
+          return exp.prepared?
         when type == :started                
-          return true if Experiment.find(@id).status == 1
+          return exp.started?
         end
         return false
       end
 
       def prepare
+        unless lock_testbed(testbeds)
+          @@logger.debug("Error: Failed To Lock on Prepare Experiment.")
+          return false
+        end
+        trap('INT'){
+          status(nil)
+          @@logger.debug("KILLED")
+          unlock_testbed(testbeds)
+          exit
+        }
         lock_testbed(testbeds)
-				clean_log()
+		clean_log()
         status(-1)
-        ActiveRecord::Base.verify_active_connections!
         e = Experiment.find(@id)
         images = e.resources_map.group(:sys_image_id)
         images.each do |img|
-          nodes = e.resources_map.where('sys_image_id' => img.sys_image).map! { |x| x.node.hrn  }
+          nodes = e.resources_map.where('sys_image_id' => img.sys_image).map! { |x| x.node.hrn }
           load_resource_map(img, nodes)
         end          
         Experiment.verify_active_connections!
@@ -167,102 +177,137 @@ module OMF
       def start
         ActiveRecord::Base.verify_active_connections!
 		experiment = Experiment.find(@id)
-        ret = lock_testbed(testbeds)
+        unless lock_testbed(testbeds)
+          @@logger.debug("Error: Failed to Lock on Start Experiment")
+          return false 
+        end
         trap('INT'){
           status(2)
-          puts "KILLED"
+          @@logger.debug("KILLED")
           unlock_testbed(testbeds)
           exit
         }
         status(1)
 
-        puts "STARTING! #{Process.pid}"
-        ret = system("omf exec -e #{@id} #{OMF::Workspace.ed_for(experiment.ed.user, experiment.ed.id.to_s)} ");
-				puts "start: #{ret.to_s}"
+        @@logger.debug("STARTING! #{Process.pid}")
+        ret = system("omf exec -e #{@id} #{OMF::Workspace.ed_for(experiment.ed.user, experiment.ed.id.to_s)}");
+		@@logger.debug("start: #{ret.to_s}")
         #sleep 5 # 'XXX' - REMOVE DUMMY
         get_results
         File.copy("#{APP_CONFIG['omlserver_tmp']}#{@id}.sq3", "#{APP_CONFIG['exp_results']}#{@id}.sq3")
         File.copy("#{APP_CONFIG['omlserver_tmp']}#{@id}-state.xml", "#{APP_CONFIG['exp_results']}#{@id}-state.xml")
         File.copy("#{APP_CONFIG['omlserver_tmp']}omf-log.xml", "#{APP_CONFIG['exp_results']}#{@id}-prepare.xml")
-        puts "FINISHING!"
+        File.copy("#{APP_CONFIG['omlserver_tmp']}#{@id}.log", "#{APP_CONFIG['exp_results']}#{@id}.log")
+        @@logger.debug("FINISHING!")
         status(2)
         unlock_testbed(testbeds)
       end
 
       def stop
-        puts "STOP puts pid => #{Process.pid}"
+        @@logger.debug("STOP puts pid => #{Process.pid}")
         data = current_lock(testbeds)
+        @@logger.debug("Current Lock: #{data.inspect}")
         begin
           pp data
           Process.kill('INT', data["pid"] )
-          unlock_testbed(testbeds)
           return true
         rescue 
-          puts "NO PID"
+          @@logger.debug("NO PID")
           return false
         end
       end
 
       def prepare_status
       	if !File.exists?(APP_CONFIG['omf_load_log'])
-					system "echo nofile > /tmp/foobar.log"
-					return { :nodes => Hash.new(), :status => "" }
-				end
+		  @@logger.debug("No progress file.")
+    	  return { :nodes => Hash.new(), :status => "" }
+		end
 				
-				system "echo dumbass > /tmp/foobar.log"
-    		nodes = Hash.new()
-				state = ""
+    	nodes = Hash.new()
+		state = ""
 
-	      stat = IO::read(APP_CONFIG['omf_load_log'])
-	      status = Hash.from_xml(stat)
-			  sum_prog = Hash.new()
-				progress = status["testbed"]["progress"]
-				unless progress.nil?
-			    progress.each do |k,v|
-						#system "echo #{k} > /tmp/foobar.log"
-					  node = Node.find_by_hrn(k)
-						next if	node.nil?
-						id = node.id
-						if v["status"] == "SUCCESS" then v["percentage"] = 100; end;
-					  sum_prog[id] = v["percentage"].to_i
-					  s = v["status"]
-					  msg = ""
-					  case 
-							when s == "UP"
-					      msg = "Loading image..."
-					    when s == "DOWN"
-					      msg = "Waiting for node..."
-			        when s == "FAILED"
-					  	  msg = "Node failed to load..."
-						end
-		  			nodes[id.to_s] ={ :progress => v["percentage"], :state => v["status"], :msg => msg } 
-				  end
-    		end
-      	state = "PREPARED"
-			  sum_prog.each do |k, p| if p != 100 then state = "";break;end;end;
-				return { :nodes => nodes, :state => state }
-			end
+	    stat = IO::read(APP_CONFIG['omf_load_log'])
+	    status = Hash.from_xml(stat)
+		sum_prog = Hash.new()
+        slice = status["testbed"]["id"]
+		progress = status["testbed"]["progress"]
+		unless progress.nil?
+		  progress.each do |k,v|
+			#system "echo #{k} > /tmp/foobar.log"
+			node = Node.find_by_hrn(k)
+			next if	node.nil?
+			id = node.id
+			if v["status"] == "SUCCESS" then v["percentage"] = 100; end;
+		    sum_prog[id] = v["percentage"].to_i
+			s = v["status"]
+			msg = ""
+			case 
+			  when s == "UP"
+			    msg = "Loading image..."
+			  when s == "DOWN"
+				msg = "Waiting for node..."
+			  when s == "FAILED"
+				msg = "Node failed to load..."
+			  end
+		  	nodes[id.to_s] ={ :progress => v["percentage"], :state => v["status"], :msg => msg } 
+		  end
+    	end
+        state = ""
+	  	sum_prog.each do |k, p| 
+          if p == 100 
+            state = "PREPARED";
+          else
+            state = "";
+            break;
+          end
+        end
+		return { :slice => slice, :nodes => nodes, :state => state }
+	  end
 			
-			def experiment_status
-				file = "#{APP_CONFIG['omlserver_tmp']}#{@id}-state.xml"
-      	if !File.exists?(file)
-					return { :status => "" }
-				end		     
-				 stat = IO::read(file)
-	      stat = Hash.from_xml(stat)
-				#system "echo #{k} > /tmp/foobar.log"
-				return ""
-			end
+	  def experiment_status
+		#file = "#{APP_CONFIG['omlserver_tmp']}#{@id}-state.xml"
+      	#if !File.exists?(file)
+		#  return { :status => "" }
+		#end		     
+	    #stat = IO::read(file)
+	    #stat = Hash.from_xml(stat)
+		#system "echo #{k} > /tmp/foobar.log"
+        exp = Experiment.find(@id)
+        msg = ""
+        if exp.started? 
+          msg = "Running..."
+        elsif exp.finished? 
+          msg = "Experiment Finished:"
+        end
+        return msg
+	  end
 
-			def logs(params={})
-			end
+	  def log(slice="", from_line=-1)
+        e = Experiment.find(@id)
+        preparing_file = "#{APP_CONFIG['omlserver_tmp']}#{slice}.log"
+        running_file = "#{APP_CONFIG['omlserver_tmp']}#{@id}.log"
+        finished_file = "#{APP_CONFIG['inventory']}/experiments/#{@id}.log"
+        
+        lines = IO::readlines(running_file) if e.started? and File.exists?(running_file)
+        lines = IO::readlines(preparing_file) if e.preparing? and File.exists?(preparing_file)
+        lines = IO::readlines(finished_file) if e.finished? and File.exists?(finished_file)
+        
+         
+        lines_content = ""
+        unless lines.nil?
+          lines.reverse_each { |line|
+            lines_content += line
+          }
+        end 
+        return lines_content
+	  end
 
-			protected
-			def clean_log
-				if File.exists?(APP_CONFIG['omf_load_log'])
-      		FileUtils.rm "#{APP_CONFIG['omf_load_log']}"
-				end
-			end
+	  protected
+	  def clean_log
+		if File.exists?(APP_CONFIG['omf_load_log'])
+      	  FileUtils.rm "#{APP_CONFIG['omf_load_log']}"
+		end
+	  end
 
       def status(v)
         ActiveRecord::Base.verify_active_connections!        
@@ -276,11 +321,9 @@ module OMF
 
       def load_resource_map(img, nodes)        
         comma_nodes = nodes.join(",");
-				cmd = "omf load -i users/#{img.sys_image.user.username}/#{img.sys_image_id}.ndz -t #{comma_nodes} > /tmp/omf_load_cmg.log"
-				system("echo #{cmd} > /omf_load_log")
-				#system("echo `#{cmd}` > /omf_load_log_2")
+		cmd = "omf load -i users/#{img.sys_image.user.username}/#{img.sys_image_id}.ndz -t #{comma_nodes}"
        	ret = system(cmd)
-        puts "omf -i #{img.sys_image_id}.ndz -t #{comma_nodes} => #{ret}"
+        @@logger.debug("#{cmd} => #{ret}")
       end
 
       def current_lock(t_ids)
@@ -305,6 +348,7 @@ module OMF
               f.write(ActiveSupport::JSON.encode(data))          
             }
           end
+          @@logger.info("#{lock} => #{ret.to_s}")
           if ret == true
             return false
           end
@@ -313,20 +357,19 @@ module OMF
       end
 
       def unlock_testbed(t_ids)
-        ret = true
         t_ids.each do |t_id|
           lock = OMF::GridServices::testbed_rel_file_str(t_id, "lock")
-          if (ret = File.exists?(lock))            
+          @@logger.debug("LOCK: #{lock}")
+          if (File.exists?(lock))            
             f = ActiveSupport::JSON.decode(IO::read(lock))
             if (f["pid"].to_i == Process.pid)
               File.unlink(lock)
-              puts "UNLOCKED"
+              @@logger.debug("UNLOCKED")
+              return true
             end
-          else
-            return 
           end
         end
-        return ret
+        return false
       end
 
 

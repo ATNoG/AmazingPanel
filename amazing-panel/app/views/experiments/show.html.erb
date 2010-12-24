@@ -46,10 +46,9 @@
 	<li><a href="#log">Log</a></li>
 </ul>
 <div id="status" class="tab">
-<% if @status != 2 %>
-	<%= experiment_widget(@experiment, @nodes) %>
+<%= experiment_widget(@experiment, @nodes) %>
 <% # GRAPHS %> 
-<% else @experiment.status == 2 %>
+<% if @experiment.finished? %>
   <%= content_tag :div, :id => "graph-choose-box" do %>   
     <%= content_tag :div, :id => "graph-choose-source" do %>
       <span class="bold">Source:</span>
@@ -156,6 +155,10 @@ $("#clear-data-set-button").live('click', function(){
 <% end %>  
 </div>
 <div id="log" class="tab">
+<% unless @experiment.status.nil? %>
+  <textarea id="log_area">
+  </textarea>
+<% end  %>
 </div>
 <% end %>
 <% content_for :footer do %>

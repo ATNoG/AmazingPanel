@@ -7,9 +7,7 @@ class Admin::UsersController < Users::UsersController
     activated = @user.activated ? false : true;
     if @user.update_attributes({:activated => activated })
       if (activated == true)
-        #mail(:from => "admin@amazing.hng.av.it.pt", :to => @user.email) do |format|
-        #  format.text
-        #end
+        Mailers.activation(@user).deliver
         create_workspace(@user)
       end
       redirect_to admin_user_path(params[:user_id])
@@ -19,7 +17,7 @@ class Admin::UsersController < Users::UsersController
   def destroy
     @user = resource_find(params[:id])
     if @user.destroy
-      flash['notice'] = "Successfully deleted User."
+      flash['success'] = "Successfully deleted User."
       redirect_to admin_users_path
     end
   end

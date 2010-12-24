@@ -6,8 +6,8 @@
 <% end %>
 <% if @state=="PREPARED" %>
   $("#caption-experiment").hide(); 
-  $("#prepare-experiment-button").toggleClass("button-disabled");
-  $("#start-experiment-button").toggleClass("button-disabled");
+  $("#stop-experiment-button").addClass("button-disabled");
+  $("#start-experiment-button").removeClass("button-disabled");
 <% elsif %>
   setTimeout(experiment_stat,2000);
 <% end %>

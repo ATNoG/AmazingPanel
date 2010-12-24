@@ -1,14 +1,26 @@
 function experiment_stat() {
-	$.getScript("<%= stat_experiment_path(:id => params[:id], :format => :js) %>")
+  var extra = "?log";
+  var tab = $(".tab-active")  
+  var base = "<%= stat_experiment_path(:id => params[:id], :format => :js) %>"
+  var url = (tab.find("a").attr("href") == "#log") ? base+"?log" : base 
+  $.getScript(url)
 }
-
-<% if @status == -1 %>
-	<% if @status == -1 %>
-		$("#error-experiment").addClass("hidden");
-		$("#caption-experiment").show()
-		$(".image-progress").show()
-	<% end %>
-	<%= render :partial => 'stat_prepare.js' %>
-<% elsif @status == 1 %>
-	<%= render :partial => 'stat_experiment.js' %>
+<% if @log %>
+  var log = $("#log")
+  log.html("<textarea id=\"log_area\"><%= escape_javascript(@log) %></textarea>");
+  var area = $("#log_area")
+  area.scrollBottom = area.scrollHeight;
+<% end %>
+<% if @experiment.preparing? %>
+  $("#error-experiment").addClass("hidden");
+  $("#caption-experiment").show()
+  $(".image-progress").show()
+  <%= render :partial => 'stat_prepare.js' %>
+<% elsif @experiment.started? %>
+  <%= render :partial => 'stat_experiment.js' %>
+<% elsif @experiment.finished? %>
+  $("#caption-experiment > .text").html("<p>Experiment Finished! <%= escape_javascript(link_to 'See Results', experiment_path(@experiment)) %></p>");
+  $("#caption-experiment > img").hide(); 
+  $("#stop-experiment-button").addClass("button-disabled");
+  $("#start-experiment-button").addClass("button-disabled");
 <% end %>
