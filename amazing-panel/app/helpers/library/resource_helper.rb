@@ -41,9 +41,9 @@ module Library::ResourceHelper
 	      end
 	    end)
 	  end	  	  
-	  th = content_tag(:th, span+f)	  
+    	  th = content_tag(:th, span+f)	  
       else      
-	 th = content_tag(:th, span)
+	      th = content_tag(:th, span)
       end
       concat(th.html_safe)
     end          

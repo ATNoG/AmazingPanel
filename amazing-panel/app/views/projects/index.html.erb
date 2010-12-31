@@ -16,7 +16,7 @@
 	<td><%= image_tag project_logo_path(project), {:height => 32, :width => 32} %></td>
 	<td class="underline"><%= link_to project.id, project %></td>
 	<td><%= link_to project.name, project %></td>
-	<td><%= project.description %></td>
+	<td class="description"><div class="description"><%= project.description %></div></td>
 	<td><%= project.updated_at.strftime("%Y-%m-%d %H:%M:%S") %></td>
 	<% if is_user_leader(project, current_user) %>
 	<td>

@@ -594,6 +594,14 @@ a.action > img {
   float:left;
 }
 
+.main {
+  width: 10%;
+}
+
+.sidebar {
+  width: 80%;
+}
+
 .profile > .sidebar {
   margin-left: 10px;
   padding-left: 10px;
@@ -611,8 +619,18 @@ a.action > img {
   margin-left: 20px;  
 }
 
+.description {
+  overflow-y: auto;
+  height: 30px;
+  width: 450px;
+}
+
 .grid-view > thead {
   background-color: #F0F0F0;
+}
+
+.grid-view > thead > tr {
+  height: 30px;
 }
 
 .grid-view > thead > tr > th {
@@ -624,13 +642,15 @@ a.action > img {
   background-color: #fff8dc;
 }
 
-.grid-view > tbody > tr > td > div.table-actions{
-  visibility: hidden;
+.grid-view > tbody > tr > td > .table-actions{
+  /*visibility: hidden;*/
+  opacity: 0.2;
   float:right;
 }
 
-.grid-view > tbody > tr:hover > td > div.table-actions{
-  visibility: visible;
+.grid-view > tbody > tr:hover > td > .table-actions{
+  /*visibility: visible;*/
+  opacity: 1;
   background-color: #fff8dc;
 }
 
@@ -1070,8 +1090,8 @@ a.action > img {
   height: 100%;
 }
 
-#status, #log {
-  height: 530px;
+#status, #results, #log {
+  height: 480px;
 }
 
 #log_area {

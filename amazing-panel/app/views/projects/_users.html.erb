@@ -34,7 +34,7 @@
 	    <% end %>
 	    <% if make_leader == true %>
 		<% if not is_user_leader(@project, user) %>       
-		| <%= link_to "Make Leader", project_leader_path(@project, user), :method => :put,
+		| <%= link_to "Make Manager", project_leader_path(@project, user), :method => :put,
 				    :title => "Unassign #{user.name}" %>
 		<% end %>
 	    <% end %>

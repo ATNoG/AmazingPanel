@@ -38,9 +38,9 @@ module ExperimentsHelper
   def experiment_widget(experiment, nodes)
     status = experiment.status
     l_button = "button giant-button"
-    l_prepare_class = status.nil? ? l_button : l_button+" button-disabled"
-    l_start_class = (status == 0 or status == 3) ? l_button : l_button+" button-disabled"
-    l_stop_class = status == 1 ? l_button : l_button+" button-disabled"
+    l_prepare_class = (!experiment.prepared?) ? l_button : l_button+" button-disabled"
+    l_start_class = (experiment.prepared?) ? l_button : l_button+" button-disabled"
+    l_stop_class = (experiment.started?) ? l_button : l_button+" button-disabled"
     l_prepare = content_tag(:div, "Prepare", :id => "prepare-experiment-button", :class=>l_prepare_class)
     l_start = content_tag(:div, "Start", :id => "start-experiment-button", :class=>l_start_class)
     l_stop = content_tag(:div, "Stop", :id => "stop-experiment-button", :class=>l_stop_class)

@@ -7,7 +7,7 @@ class ResourcesMap < ActiveRecord::Base
 end
 
 class Experiment < ActiveRecord::Base 
-  attr_accessible :description, :status, :created_at, :updated_at, :resources_map, :user
+  attr_accessible :description, :status, :created_at, :updated_at, :resources_map, :user, :runs
   belongs_to :ed
   belongs_to :phase
   belongs_to :user
@@ -17,9 +17,10 @@ class Experiment < ActiveRecord::Base
   has_many :sys_images, :through => :resources_map
   has_many :testbeds, :through => :resources_map
   scope :finished, where("status = 2 or status = 3") 
-  scope :prepared, where("status = 0 ")
+  scope :prepared, where("status = 0 or status = 3")
   scope :started, where("status = 1")
   scope :running, where("status = 0 or status = -1 or status = 1")
+  scope :active, where("status != 2")
 
   def finished?
     return true if (status == 2 or status == 3)
@@ -30,7 +31,7 @@ class Experiment < ActiveRecord::Base
   end
 
   def prepared?
-    return true if (status == 0 )
+    return true if (status == 0 or status == 3)
   end
 
   def preparing?

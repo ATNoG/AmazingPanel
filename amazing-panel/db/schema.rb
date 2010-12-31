@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101206020453) do
+ActiveRecord::Schema.define(:version => 20101224155133) do
 
   create_table "device_kinds", :force => true do |t|
     t.integer "inventory_id",               :null => false
@@ -57,6 +57,7 @@ ActiveRecord::Schema.define(:version => 20101206020453) do
     t.string   "user_id"
     t.integer  "phase_id"
     t.integer  "project_id"
+    t.integer  "runs"
   end
 
   create_table "inventories", :force => true do |t|
@@ -154,6 +155,8 @@ ActiveRecord::Schema.define(:version => 20101206020453) do
   create_table "testbeds", :force => true do |t|
     t.string "name", :limit => 128, :null => false
   end
+
+  add_index "testbeds", ["name"], :name => "node_domain", :unique => true
 
   create_table "users", :force => true do |t|
     t.string   "email",                               :default => "",    :null => false

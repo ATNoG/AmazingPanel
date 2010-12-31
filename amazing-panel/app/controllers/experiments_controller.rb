@@ -5,9 +5,13 @@ class ExperimentsController < ApplicationController
   include OMF::Experiments
   include Library::SysImagesHelper
 
-  layout 'experiments'
+  #layout 'experiments'
   before_filter :authenticate
   respond_to :html, :js
+
+  def queue
+    @experiments = Experiment.active
+  end 
   
   def index
     @has_exp_in_cache = (session[:experiment].nil? ) ? false : true;

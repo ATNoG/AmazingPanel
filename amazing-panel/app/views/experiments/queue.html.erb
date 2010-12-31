@@ -1,0 +1,30 @@
+<% content_for :content do %>
+  <% if @experiments.nil? or @experiments.length == 0 %>
+    No Experiments.
+  <% else %>
+  <table id="experiments" class="grid-view">
+    <%= generate_table_headers(@experiments, experiments_path, :fields => ["id","project_id", "creator", "ed", "duration", ""], :labels => { "id" => "#", "project_id" => "Project", "ed"=>"Description" }) %>
+    <tbody>
+    <% @experiments.each do |exp| %>
+      <tr>	
+        <td><%= link_to exp.id, exp %></td>
+        <% creator = exp.user %>
+        <% project = exp.project %>
+        <td><%= add_image_action(project_path(project), project_logo_path(project), project.name, { :link => true } ) %></td>
+        <td><%= link_to creator.name, user_path(:id => creator.id)  %></td>
+        <td><%= exp.ed.description %></td>
+        <td><%= exp.duration %></td>
+        <td>
+	      <div class="table-actions">
+            <%= add_image_action(experiment_path(exp, :format => "js")+"?resources",
+                         'network2.png', '', { :remote => true, :link => true, "original-title" => "See Resource Map in this experiment" }) %>
+            <%= delete_action(exp, {:link => true, :text => false, "original-title" => "Delete Experiment"}) %>
+      	  </div>
+        </td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+  <% end %>
+  <%= modal_dialog("", "modal-dialog") %>
+<% end %>

@@ -7,12 +7,16 @@
 
 <% content_for :sub_actions do %> 
   <% sub_toolbar do %>
-    <%= add_image_action(experiment_path(@experiment)+"?reset",
-                         'clear.png', 'Reset', { :method => "put" }) %>
+    <% unless @experiment.status.nil? %>
+      <%= add_image_action(experiment_path(@experiment)+"?reset",
+                           'clear.png', 'Reset', { :method => "put" }) %>
+    <% end %>
     <%= add_image_action(experiment_path(@experiment, :format => "js")+"?resources",
                          'network2.png', 'Resource Mapping', { :remote => "true" }) %>
-    <%= add_image_action(experiment_path(@experiment, :format => "pdf"),
+<!--    
+  <%= add_image_action(experiment_path(@experiment, :format => "pdf"),
                          'pdf.png', 'Report Download') %>
+-->
   <% end %>
 <% end %>
 
@@ -39,16 +43,27 @@
     <%= link_to "[See Ed]", "#", :class=>"more-ed-anchor", :ed => @experiment.ed.id %>
     <%= @experiment.ed.description %>
   </p>        
+  
+  <p>
+    <b>Runs:</b>
+    <%= @experiment.runs %>
+  </p>        
   <hr/>
 <% # EXPERIMENT STATUS %>
 <ul id="experiment-widget-tabs" class="tabs">
 	<li><a href="#status">Status</a></li>
+<% if @experiment.finished? %>
+	<li><a href="#results">Results</a></li>
+<% end %>
 	<li><a href="#log">Log</a></li>
 </ul>
 <div id="status" class="tab">
 <%= experiment_widget(@experiment, @nodes) %>
-<% # GRAPHS %> 
+</div>
 <% if @experiment.finished? %>
+<div id="results" class="tab">
+<% # GRAPHS %> 
+
   <%= content_tag :div, :id => "graph-choose-box" do %>   
     <%= content_tag :div, :id => "graph-choose-source" do %>
       <span class="bold">Source:</span>
@@ -152,8 +167,9 @@ $("#clear-data-set-button").live('click', function(){
   chart.redraw();
 });
 </script>
-<% end %>  
 </div>
+<% end %>  
+
 <div id="log" class="tab">
 <% unless @experiment.status.nil? %>
   <textarea id="log_area">

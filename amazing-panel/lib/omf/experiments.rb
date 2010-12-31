@@ -175,8 +175,8 @@ module OMF
       end
 
       def start
-        ActiveRecord::Base.verify_active_connections!
 		experiment = Experiment.find(@id)
+        exp_id = "#{@id.to_s}_#{experiment.runs}"
         unless lock_testbed(testbeds)
           @@logger.debug("Error: Failed to Lock on Start Experiment")
           return false 
@@ -199,7 +199,8 @@ module OMF
         File.copy("#{APP_CONFIG['omlserver_tmp']}omf-log.xml", "#{APP_CONFIG['exp_results']}#{@id}-prepare.xml")
         File.copy("#{APP_CONFIG['omlserver_tmp']}#{@id}.log", "#{APP_CONFIG['exp_results']}#{@id}.log")
         @@logger.debug("FINISHING!")
-        status(2)
+        status(3)
+        inc_runs()
         unlock_testbed(testbeds)
       end
 
@@ -284,9 +285,10 @@ module OMF
 
 	  def log(slice="", from_line=-1)
         e = Experiment.find(@id)
+        runs = e.runs
         preparing_file = "#{APP_CONFIG['omlserver_tmp']}#{slice}.log"
-        running_file = "#{APP_CONFIG['omlserver_tmp']}#{@id}.log"
-        finished_file = "#{APP_CONFIG['inventory']}/experiments/#{@id}.log"
+        running_file = "#{APP_CONFIG['omlserver_tmp']}#{@id}_#{runs}.log"
+        finished_file = "#{APP_CONFIG['inventory']}/experiments/#{@id}_#{runs}.log"
         
         lines = IO::readlines(running_file) if e.started? and File.exists?(running_file)
         lines = IO::readlines(preparing_file) if e.preparing? and File.exists?(preparing_file)

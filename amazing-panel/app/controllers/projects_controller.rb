@@ -22,6 +22,7 @@ class ProjectsController < ApplicationController
   # GET /projects/1.xml
   def show
     @project = Project.find(params[:id])
+    @experiments = Experiment.where(:project_id => params[:id])
   end
 
   # GET /projects/new

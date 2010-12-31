@@ -34,8 +34,8 @@
       <ul id="menu-global">
           <%= add_nav_action(image_tag("home-icon-2.png", :align => "middle"), root_path, {:controller => "pages"}, {:action_class => ["home-item"]}) %>
           <%= add_nav_action("Testbeds", testbeds_path, {:controller => "testbeds"}) %>
-          <%= add_nav_action("Experiments", experiments_path, {:controller => "experiments"}) %>
-          <%= add_nav_action("Projects", projects_path, {:controller => "projects"}) %>
+          <%= add_nav_action("Queue", queue_experiments_path, {:controller => "experiments", :action => "queue", :has_action => true}) %>
+          <%= add_nav_action("Workspaces", projects_path, {:controller => ["projects"]}) %>
           <%= add_nav_action("Library", library_index_path, {:controller => ["library/library", "library/eds", "library/sys_images"]}) %>
           <% if current_user.admin? %>
             <%= add_nav_action("Admin", admin_admin_index_path, {:controller => ["admin/admin", "admin/users", "admin/eds", "admin/sys_images", "admin/registrations", "admin/testbeds"]}) %>

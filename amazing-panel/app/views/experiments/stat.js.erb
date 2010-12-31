@@ -22,5 +22,5 @@ function experiment_stat() {
   $("#caption-experiment > .text").html("<p>Experiment Finished! <%= escape_javascript(link_to 'See Results', experiment_path(@experiment)) %></p>");
   $("#caption-experiment > img").hide(); 
   $("#stop-experiment-button").addClass("button-disabled");
-  $("#start-experiment-button").addClass("button-disabled");
+  $("#start-experiment-button").removeClass("button-disabled");
 <% end %>
