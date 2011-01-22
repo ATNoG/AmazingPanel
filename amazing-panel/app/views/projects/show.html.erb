@@ -16,7 +16,7 @@
   <div class="profile" summary="Profile information">
     <div class="main">
       <h1>
-        <img align="center" alt="jmartins" class="project" width="50" height="50" src="<%= project_logo_path(@project) %>">
+        <img align="center" alt="jmartins" class="profile-project" width="50" height="50" src="<%= project_logo_path(@project) %>">
       </h1>
     </div>
     <div class="sidebar round">
@@ -25,15 +25,21 @@
 	<%= @project.name %>
       </p>
 
+	<b>URL:</b>
+	<%= link_to project_path(@project), project_path(@project) %>
+      </p>
+
       <p>
 	<b>Description:</b>
 	<%= @project.description %>
       </p>
 
-      <%= render :partial => 'users', :locals => { :title => "Users:", :with_assignment_check => false, :disabled => true, :make_leader => true, :users => @project.users } %>
+      <%= render :partial => 'users', :locals => { :grid => false, :search => false, :title => "Users:", :with_assignment_check => false, :disabled => true, :make_leader => true, :users => @project.users } %>
+    <% if @experiments.size > 0 %>
     <p>
       <b>Experiments: </b>
       <%= render :partial => 'experiments'  %>
     </p>
+    <% end %>
     </div>
 <% end %>

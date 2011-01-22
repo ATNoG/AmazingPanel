@@ -16,12 +16,20 @@
       <%= text_area_tag :code, @content.readlines, :cols => 60, :rows => 30 %> 
     </div>
   <% end %>
-  <% if multipart == true %>
+  
+<% if multipart == true %>
     <div class="field">
       <%= label_tag :file %>
       <%= file_field_tag :file %>
     </div>
   <% end %>
+  <br/> 
+  
+  <p>   
+    <%= render :partial => 'oedl', :locals => { :args => {} } %>
+  </p>  
+  <br/> 
+
 
   <div class="actions">
     <%= f.submit %>

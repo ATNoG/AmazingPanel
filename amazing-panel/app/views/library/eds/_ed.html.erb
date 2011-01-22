@@ -1,4 +1,5 @@
   <% creator = User.find(@ed.user_id) %>
+  <% code = @content.readlines %>
   <p>
     <b>Creator:</b>
     <%= link_to creator.name, user_path(:id => creator.id) %>
@@ -14,6 +15,6 @@
     <%= @ed.description %>
   </p>        
 
-  <p>    
-  <%= text_area_tag :code, @content.readlines, :cols => 40, :rows => 30 %> 
+  <p>
+    <%= render :partial => 'oedl', :locals => { :args => { :code => code } } %>
   </p>    

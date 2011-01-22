@@ -26,3 +26,12 @@ $(".node[description]").live('mouseover mouseout', function(event) {
 });
 <% end %>
 
+<% if params.has_key?("data") %>
+  <% unless @results.nil? %>
+  data = {
+    <% @results.each do |k,v| %>
+    "<%= k %>" : <%= v[:set].to_json.html_safe %>,
+    <% end %>
+  }
+  <% end %>
+<% end %>

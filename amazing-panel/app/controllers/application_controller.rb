@@ -21,4 +21,8 @@ class ApplicationController < ActionController::Base
     def permission_denied(path)
       redirect_to(path, :notice => "You don't have permission to modify this resource")
     end
+
+    def save_previous_path
+      session[:previous] = self.request.headers['PATH_INFO']
+    end
 end

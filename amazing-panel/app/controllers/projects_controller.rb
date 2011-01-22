@@ -36,10 +36,30 @@ class ProjectsController < ApplicationController
     @project = Project.find(params[:id])
   end
 
+  def users
+    @project = Project.find(params[:id])
+    term = params[:term]    
+    name = params[:name]
+    username = params[:username]
+    email = params[:email]
+    fields = "id,name,email,username"
+    #if params.has_key?('name')
+    if (params.has_key?(:type) and params[:type] == "unassigned")
+      select = User.select(fields).limit(50)
+      query = (term.nil? or term.length==0) ? select.all : select.where(["name LIKE :name", {:name => "%#{term}%"}])
+      @users = query.delete_if { |u| project_is_user_assigned?(@project, u.id) == false }
+    else
+      select = Project.find(params[:id]).users.select(fields+",leader").limit(50)
+      query = (term.nil? or term.length==0)  ? select.all : select.where(["name LIKE :name", {:name => "%#{term}%"}])
+      @users = query
+    end
+      render :json => @users    
+  end
+
   # GET /projects/1/assign
   def assign
     @project = Project.find(params[:id])
-    @users = User.all
+    @users = User.all.delete_if { |u| project_is_user_assigned?(@project, u.id) == false }
   end
 
   # POST /projects

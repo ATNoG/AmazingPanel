@@ -14,6 +14,7 @@ gem 'will_paginate', '~> 3.0.pre2'
 gem 'ruby_parser', '2.0.5'
 gem 'prawn'
 gem 'prawn_rails'
+gem 'rack-raw-upload'
 #gem 'spawn'
 #gem 'pdfkit'
 # Use unicorn as the web server

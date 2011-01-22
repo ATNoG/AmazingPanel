@@ -3,11 +3,12 @@ AmazingPanel::Application.routes.draw do
   devise_for :users, :controllers => { :sessions => "users/sessions", :registrations => "users/registrations" }    
   
   scope :module => "users" do
-    resources :users, :only => [:index, :show, :destroy]
+    resources :users, :only => [:index, :show, :destroy, :edit, :update]
   end
   
-  resources :projects do
+  resources :projects, :path => "workspaces" do
     member do
+      get 'users'
       get 'assign'
       put 'user/:user_id', :action => "assign_user"
       put 'user/:user_id/leader', :action => "make_leader"      
@@ -19,8 +20,10 @@ AmazingPanel::Application.routes.draw do
   
   scope :module => "library" do
     resources :library, :only => [:index]
-    resources :sys_images    
     resources :eds
+    resources :sys_images do
+      post 'image', :action => 'image', :on => :member
+    end
   end
   
   resources :testbeds
@@ -39,6 +42,7 @@ AmazingPanel::Application.routes.draw do
   end
  
   resources :experiments do
+    get 'run', :action => 'prepare', :on => :member
     get 'prepare', :action => 'prepare', :on => :member
     get 'start', :action => 'start', :on => :member
     get 'stop', :action => 'stop', :on => :member

@@ -1,13 +1,18 @@
+<% _controller = self.request.parameters[:controller] %>
+<% _action = self.request.parameters[:action] %>
+<% _path = self.request.headers["PATH_INFO"] %>
+
 <!DOCTYPE html>
 <html>
 <head>
   <title>AMazINg Panel</title>
-  <%= stylesheet_link_tag :all, :media => 'all' %>  
-  <%= stylesheet_link_tag "/stylesheets/custom.css?c="+self.request.parameters[:controller]+"&a="+self.request.parameters[:action]+"&p="+self.request.headers["PATH_INFO"], :media => 'all' %>
-  <%= javascript_include_tag :defaults %>    
-  <%= javascript_include_tag "/javascripts/application.js?c="+self.request.parameters[:controller]+"&a="+self.request.parameters[:action]+"&p="+self.request.headers["PATH_INFO"] %>
-  <%= yield :head %>
+  <%= stylesheet_link_tag :all, :media => 'all', :cache => true %>  
+  <%= javascript_include_tag :defaults, :cache => true %>
+  
+  <%= javascript_include_tag "/javascripts/application.js?c=#{_controller}&a=#{_action}&p=#{_path}" %>
+  <%= stylesheet_link_tag "/stylesheets/custom.css?c=#{_controller}&a=#{_action}&p=#{_path}", :media => 'all' %> 
 
+  <%= yield :head %>
   <%= csrf_meta_tag %>
 </head>
 <body>
@@ -57,7 +62,7 @@
     </div>
     
     <div id="footer">
+      <%= yield(:footer) %>
     </div>
-    <%= yield(:footer) %>
 </body>
 </html>

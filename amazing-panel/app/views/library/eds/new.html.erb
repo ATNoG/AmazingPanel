@@ -1,3 +1,7 @@
+<% content_for :head do %>
+  <% javascript_include_tag :ed_editor %>
+<% end %>
+
 <% content_for :sub_actions do %>
   <ul id="toolbar-action-list">
     <li class="action">
@@ -11,4 +15,17 @@
 
 <% content_for :content do %>
   <%= render :partial => 'form', :locals => { :target => eds_path, :multipart => true, :remote => false} %> 
+<% end %>
+
+<% content_for :footer do %>
+<div class="debug">
+</div>
+<div class="contextMenu" id="nodeCtxMenu">
+  <ul>
+    <li id="application">Add Application</li>
+    <li id="group">Select Group</li>
+    <li id="properties">Properties</li>
+  </ul>
+</div>
+<%= modal_dialog("", "modal-dialog") %>
 <% end %>

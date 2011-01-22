@@ -27,10 +27,18 @@
     <%= f.text_area :description %>
   </div>
 
-  <% if multipart == true %>
+  <% if multipart == true or ajax_upload == true%>
     <div class="field">
       <%= label_tag 'System Image' %><br />
-      <%= file_field_tag :file %>
+      <% if ajax_upload == false %>
+        <%= file_field_tag :file %>     
+      <% else %>
+        <input id="file" name="" type="file">        
+        <div class="progress-container">
+          <span id="image-progress-text" class="progress_text"></span>
+          <div  id="image-progress-bar" class="progress_bar" style="width: 0%"></div>
+        </div> 
+      <% end %>
     </div> 
   <% end %> 
   

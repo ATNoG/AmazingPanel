@@ -65,16 +65,17 @@ module Library::ResourceHelper
   end
   
   def modal_dialog(title, id, &block)            
+    close_button = content_tag(:div, "x", :class=>"close-button button", :onclick => "closeDialog('#"+id+"')");
     title_box = content_tag(:div, title.html_safe, :class=>"title-box")    
-    close_button = content_tag(:div, "Close", :class=>"button", :onclick => "closeDialog('#"+id+"')");
-    actions = content_tag(:div, close_button, :class=>"modal-actions")
+    #actions = content_tag(:div, close_button, :class=>"modal-actions")
     if block_given?
       content = with_output_buffer(&block) 
     else 
       content = ""
     end
     container = content_tag(:div, content, :class=>"modal-container")    
-    modal = content_tag(:div, title_box+container+actions, :class=>"modal", :id => id)
+    #modal = content_tag(:div, title_box+container+actions, :class=>"modal", :id => id)
+    modal = content_tag(:div, title_box+close_button+container, :class=>"modal", :id => id)
     return modal
   end
 

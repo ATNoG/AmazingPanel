@@ -105,6 +105,15 @@ a:link {
   font-weight: bold;
 }
 
+.info {
+  background: #DBE3FF url(/images/info.png) no-repeat 1px 1px;
+  border: 1px solid #A2B4EE;
+  color: #556652;
+  padding-left: 20px;
+  margin: 5px;
+  border-radius: 5px;
+}
+
 .notice {
   background: #FFFBCC url(/images/warn.png) no-repeat 1px 1px;
   border: 1px solid #E6DB55;
@@ -163,7 +172,7 @@ a:link {
 }
 
 #nav-global{
-/*   /*background-color: #999;*/
+/*background-color: #999;*/
   border: 1px solid #A4A4A4;
   border-left: none;
   border-right: none;
@@ -173,6 +182,69 @@ a:link {
   background: -webkit-gradient(linear, left top, left bottom, from(#d1d1d1), to(#eee)); /* for webkit browsers */
   background: -moz-linear-gradient(top,  #d1d1d1,  #eeeeee) !important; /* for firefox 3.6+ */
 
+}
+
+.tabs {
+	margin: 0;
+    padding: 0;
+    float: left;
+    list-style: none;
+    height: 20px;
+    border-bottom: 1px solid #999;
+    border-left: 1px solid #999;
+    width: 100%;
+}
+
+.tabs li {
+	float: left;
+	list-style: none;
+    margin: 0;
+    padding: 0;
+    height: 20px;
+    line-height: 20px;
+    border: 1px solid #999;
+    border-left: none;
+    margin-top: -1px;
+    background: #e0e0e0;
+    overflow: hidden;
+    position: relative;
+ }
+
+.tabs li a {
+    text-decoration: none;
+    color: #000;
+    display: block;
+    font-size: 12px;
+    padding: 0 20px;
+    border: 1px solid #fff;
+    outline: none;
+    font-weight: normal;
+    line-height: 20px;
+}
+
+.tabs li a:hover {
+    background: #ccc;
+}   
+
+.tabs li.tab-active a {
+  font-weight: bold;
+}
+
+.tabs li.tab-active, ul.tabs li.tab-active a:hover  {
+    background: #fff;
+    border-bottom: 1px solid #fff;
+    font-weight: bold;
+}
+.tab {
+  background: white;
+  border-bottom-left-radius: 5px 5px;
+  border-bottom-right-radius: 5px 5px;
+  border-top: none;
+  clear: both;
+  padding: 10px;
+  border: 1px solid #999;
+  border-top:none;
+  height: 90%;
 }
 
 .flash-msg-integrated {
@@ -373,12 +445,10 @@ ul#omni-menu {
   margin-bottom: 5px;
 }
 
+.user-search > * {
+  float: left;
+}
 
-/**
-  * Custom CSS
-  *
-  * @category = Testbeds
-  */
 ul.users {
   list-style: none;
 }
@@ -388,6 +458,20 @@ ul.users {
   border: 1px dashed #c0c0c0;  
   overflow: auto;
   margin: 5px;
+  width: 120px;
+  padding-left: 5px;
+}
+
+.profile-project {
+  margin: 7px;
+  border: 1px dashed #c0c0c0;  
+  height: 50px;
+  width: 50px;
+  vertical-align: middle;
+}
+
+#edit-profile-button {
+  float: left;
 }
 
 .project img {
@@ -450,6 +534,18 @@ hr.space {
   background:#fff;
   color:#fff;
   visibility:hidden;
+}
+
+.ui-autocomplete {
+  list-style: none;
+  padding: 2px;
+  margin: 0;
+  float:left;  
+  border-radius: 4px;
+  border: 1px solid #DDD;
+  background: #EEE;
+  color: #333;
+  width: 250px;
 }
 
 /**
@@ -517,8 +613,8 @@ ul#action-list > li {
 
 .CodeMirror-line-numbers {
   width: 2.2em;
-  color: #fff;
-  background-color: #000;
+  color: #1e1e1e;
+  background-color: #eee;
   text-align: right;
   padding: .4em;
   margin: 0;
@@ -527,6 +623,123 @@ ul#action-list > li {
   font-family: consolas, monospace;
 }
 
+#design {
+  height: 310px;
+}
+
+#design > .sidebar {
+  width: 10%;
+  height: 95%;
+  border: 1px solid #A4A4A4;
+  padding: 5px 5px 5px 0px;
+  float: left;
+  background: #f0f0f0;
+}
+
+#design > .sidebar > .ed-editor-button {
+  border-radius: 10px;
+  border: 1px solid #A4A4A4;
+  text-align: center;
+  line-height: 20px;
+  height: 20px;
+  font-family: sans;
+  font-size: 10px;
+  width: 40px; 
+  background: #999; /* for non-css3 browsers */
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#d1d1d1', endColorstr='#eee'); /* for IE */
+  background: -webkit-gradient(linear, left top, left bottom, from(#d1d1d1), to(#eee)); /* for webkit browsers */
+  background: -moz-linear-gradient(top,  #d1d1d1,  #eeeeee) !important; /* for firefox 3.6+ */
+  margin: 2px;
+  cursor: pointer;
+}
+
+#design > .sidebar > .node-add-action {
+  border-radius: 10px;
+  float: left;
+  margin-left: 5px;
+}
+
+#design > .sidebar > .preferences-button {
+  position: absolute;
+  top: 86%;
+  border-radius: 0px;
+  width: 98px;
+  margin-left: -1px;
+}
+
+#design > .sidebar > .ed-editor-context-menu-node {
+  position : fixed;
+  border : 1px solid gray;
+  background-color : #fefefe;
+  padding : 3px;
+  z-index: 1000;
+  max-width: 200px; 
+  font-size: 10px;
+  display: none;
+}
+
+#design > .canvas {
+  margin-left: 5px;
+  width: 86%;
+  background-color: #ffffff;
+  float: left;
+  height: 100%;
+  padding: 5px;
+}
+
+.node, .node-label {
+  text-anchor: middle;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.node {
+  stroke-width: 1.5;
+  fill: #fff;
+  stroke: black;
+}
+
+.node-box {
+  display:none;
+  cursor: move;
+}
+
+.node-box > rect {
+  stroke-width: 0.5;
+  stroke: #bfbfbf;
+  fill: #fff;
+}
+
+.node-box > .node-box-close-button {
+  stroke-width: 0.5;
+  stroke: #bfbfbf;
+  fill: #fff;
+  cursor: pointer;
+}
+
+.node-box > .node-box-close-button:hover {
+  opacity: 0.8;
+  stroke-width: 2;
+  stroke: red;
+}
+
+/*
+#oedl-design-viewer {
+  height: 20px;
+}
+
+#oedl-design-viewer > li {
+  height: 20px;
+  line-height: 20px;
+}
+
+#oedl-design-viewer > li > a {
+  font-size: 12px;
+  font-weight: normal;
+  line-height: 20px;
+}
+
+*/
 #toolbar {  
   border: 1px solid #A4A4A4;  
   height: 24px;
@@ -595,14 +808,11 @@ a.action > img {
 }
 
 .main {
-  width: 10%;
-}
-
-.sidebar {
-  width: 80%;
+  width: 7%;
 }
 
 .profile > .sidebar {
+  width: 80%;
   margin-left: 10px;
   padding-left: 10px;
   border-left: 1px solid #c0c0c0;
@@ -623,6 +833,14 @@ a.action > img {
   overflow-y: auto;
   height: 30px;
   width: 450px;
+}
+
+.name-cell, .email-cell {
+  width: 251px;
+}
+
+.resource-description {
+  width: 300px;
 }
 
 .grid-view > thead {
@@ -697,7 +915,7 @@ a.action > img {
 
 .modal-container {
   background-color: white;
-  height: 223px;
+  height: 263px;
   overflow: auto;
 }
 
@@ -725,6 +943,17 @@ a.action > img {
 
 .button a {
   color: white;
+}
+
+.close-button {
+  background: #EE1111;
+  border: 1px solid #DD5555;
+  font-size: 10px;
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  width: 18px;
+  line-height: 18px;
 }
 
 .dialog-active {
@@ -994,6 +1223,12 @@ a.action > img {
   float:left;
 }
 
+#download-data-set-button {
+  float:left;
+  margin: 5px;
+  width: 100px;
+}
+
 #choose-data-set-button {
   float:left;
   margin: 5px;
@@ -1004,20 +1239,34 @@ a.action > img {
   margin: 5px;
 }
 
+#graph-choose-run {
+  float: left;
+  padding: 2px;
+  text-align: center;
+}
+
 .resources-map-dialog {
   width: 700px;
-  height: 700px;
+  height: 640px;
   top: 5%;
   left: 25%;
 }
 
 .resources-map-dialog-container {
-  height: 623px;
+  height: 605px;
 }
 
 .more-ed-anchor {
   font-size: 9px;
-  color:#3E5C6B;
+  color:#3e5c6b;
+}
+
+.show-dump-anchor {
+  font-size: 9px;
+  color: #3e5c6b;
+  float: left;
+  margin: 9px;
+  padding: 2px;
 }
 
 .node-UP {
@@ -1036,62 +1285,8 @@ a.action > img {
   color: green;
 }
 
-.tabs {
-		margin: 0;
-    padding: 0;
-    float: left;
-    list-style: none;
-    height: 32px;
-    border-bottom: 1px solid #999;
-    border-left: 1px solid #999;
-    width: 100%;
-}
-
-.tabs li {
-		float: left;
-		list-style: none;
-    margin: 0;
-    padding: 0;
-    height: 31px;
-    line-height: 31px;
-    border: 1px solid #999;
-    border-left: none;
-    margin-bottom: -1px;
-    background: #e0e0e0;
-    overflow: hidden;
-    position: relative;
- }
-
-.tabs li a {
-    text-decoration: none;
-    color: #000;
-    display: block;
-    font-size: 1.2em;
-    padding: 0 20px;
-    border: 1px solid #fff;
-    outline: none;
-}
-.tabs li a:hover {
-    background: #ccc;
-}   
-.tabs li.tab-active, ul.tabs li.tab-active a:hover  {
-    background: #fff;
-    border-bottom: 1px solid #fff;
-}
-.tab {
-  background: white;
-  border-bottom-left-radius: 5px 5px;
-  border-bottom-right-radius: 5px 5px;
-  border-top: none;
-  clear: both;
-  padding: 20px;
-  border: 1px solid #999;
-  border-top:none;
-  height: 100%;
-}
-
 #status, #results, #log {
-  height: 480px;
+  height: 550px;
 }
 
 #log_area {
@@ -1100,3 +1295,6 @@ a.action > img {
   resize: none;
 }
 
+.ui-autocomplete {
+  display: none !important;
+}

@@ -38,9 +38,12 @@ module ExperimentsHelper
   def experiment_widget(experiment, nodes)
     status = experiment.status
     l_button = "button giant-button"
+    l_run_class= (experiment.finished? or experiment.prepared? or experiment.status.nil?) ? l_button : l_button+" button-disabled"
     l_prepare_class = (!experiment.prepared?) ? l_button : l_button+" button-disabled"
     l_start_class = (experiment.prepared?) ? l_button : l_button+" button-disabled"
     l_stop_class = (experiment.started?) ? l_button : l_button+" button-disabled"
+    
+    l_run = content_tag(:div, "Run", :id => "run-experiment-button", :class=>l_run_class)
     l_prepare = content_tag(:div, "Prepare", :id => "prepare-experiment-button", :class=>l_prepare_class)
     l_start = content_tag(:div, "Start", :id => "start-experiment-button", :class=>l_start_class)
     l_stop = content_tag(:div, "Stop", :id => "stop-experiment-button", :class=>l_stop_class)
@@ -58,6 +61,7 @@ module ExperimentsHelper
     capt_exp  = content_tag(:div, img+text, :id => "caption-experiment")
     err_exp  = content_tag(:div, error+err_text, :id => "error-experiment", :class =>"hidden")
     container = content_tag(:div, l_prepare+l_start+l_stop+capt_exp+err_exp, :id => "experiment-briefing")
+    #container = content_tag(:div, l_run+l_stop+capt_exp+err_exp, :id => "experiment-briefing")
     nodes_str = "".html_safe
     nodes.each do |k,v|
        lbl = content_tag(:span, "node-#{k}:", :class => "image-label bold")

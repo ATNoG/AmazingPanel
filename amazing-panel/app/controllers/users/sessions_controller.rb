@@ -10,7 +10,7 @@ class Users::SessionsController < Devise::SessionsController
 	super
       end    
     else      
-      redirect_to new_user_session_path, :notice => "Wrong username."
+      redirect_to new_user_session_path, :alert => "Wrong username."
     end
   end
 end

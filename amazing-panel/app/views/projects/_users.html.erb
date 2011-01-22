@@ -1,6 +1,15 @@
 <% if title != nil and (users.empty? == false) %>
-  <b><%= title %></b><br/>
+
+  <div class="user-search">
+    <b><%= title %></b>
+    <% if search == true %>
+      <input class="name" type=text rel="<%= id %>" />
+    <% end %>
+    <br/>
+  </div>
+
 <% end %>
+<% if grid.nil? or grid == false %>
 <% i = 0 %>
 <ul class="users">
   <% users.each do |user| %>
@@ -49,3 +58,56 @@
     <p>All users were assigned in this project.</p>
   <% end %>
 </ul>
+<% else %>
+<table id="<%= id %>" class="users grid-view">
+  <%= generate_table_headers(users, users_path, :fields => ["id", "name", "email", "username", ""], 
+                             :labels => { "id" => "#", "name" => "Name", "email" => "Email", "username" => "Username" }) %>
+  <tbody>
+    <% users.each do |user| %>
+    <% if with_assignment_check == true %>      
+      <% next if project_is_user_assigned?(@project, user.id) == false %>
+    <% end %>
+    <tr>
+<!--
+     <td><%= link_to user.id, user_path(user)  %></td>
+     <td class="name-cell" ><%= link_to user.name, user_path(user)  %></td>
+     <td class="email-cell"><%= user.email %></td>
+     <td><%= user.username %></td>
+-->
+     <td><%= user.id %></td>
+     <td class="name-cell" ><%= user.name %></td>
+     <td class="email-cell"><%= user.email %></td>
+     <td><%= user.username %></td>
+     <td>
+	    <div class="table-actions">
+    	<% if disabled == false %>
+    	  <% if is_user_leader(@project, current_user) %> 	    
+    	    <% if make_leader == true %>
+    		  <% if not is_user_leader(@project, user) %>       
+    	    	  <%= add_image_action(project_leader_path(@project, user), 'star.png', "", 
+                        { 
+                          :link => true, 
+                          :method => :put,
+                          "title" => "Make manager of project #{user.name}" 
+                        }) %>
+        	  <% end %>
+    	    <% end %>
+    	    
+            <% if unassign == true %>
+    	      <%= add_image_action( project_user_path(@project, user), 'disable.png', "", { :link => true, :method => :delete,
+    		    	    "title" => "Unassign #{user.name} to project" }) %>
+    	    <% end %>
+    	    <% if assign == true %>
+    		  <%= add_image_action(project_user_path(@project, user), 'enable.png', "", { :link => true, :method => :put,
+    		    	    "title" => "Assign #{user.name} to project" }) %>
+    	    <% end %>
+
+    	  <% end %>
+    	<% end %>
+        </div>
+    </td>  
+    </tr>
+    <% end %>
+  </tbody>
+</table>
+<% end %>

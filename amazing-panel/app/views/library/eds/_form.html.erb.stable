@@ -1,0 +1,32 @@
+<%= form_for(@ed, :as => :ed, :url => target, :html => {:multipart => multipart, :remote => remote}) do |f| %>
+  <%= render 'shared/error_messages', :object => f.object %>
+  <div class="field">
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+  </div>
+
+  <div class="field">
+    <%= f.label :description %><br />
+    <%= f.text_field :description %>
+  </div>
+  
+  <% if !@content.nil? %>
+    <div class="field">
+      <%= label_tag :code %><br />      
+      <%= text_area_tag :code, @content.readlines, :cols => 60, :rows => 30 %> 
+    </div>
+  <% end %>
+  
+<% if multipart == true %>
+    <div class="field">
+      <%= label_tag :file %>
+      <%= file_field_tag :file %>
+    </div>
+  <% end %>
+  <br/> 
+  
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+
+<% end %>

@@ -1,7 +1,7 @@
 <% params.merge!(Rails.application.routes.recognize_path(params[:p])) %>
 var nodes = $('.testbed');
 if (nodes.length > 0) {
-  setTimeout(updateStatus, 10000);  
+  setTimeout(updateStatus, 5000);  
 } 
 <% if @c == "admin/testbeds" %>
 $(".node").live('click', function(evt){

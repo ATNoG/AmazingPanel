@@ -1,0 +1,48 @@
+<% params.merge!(Rails.application.routes.recognize_path(params[:p])) %>
+var assgn_autocomplete = $(".name[rel=assigned-users]").autocomplete({
+    source : "<%= users_project_path(:id => params[:id]) %>",
+    minLength : "0",
+    selector : "#assigned-users",
+  }).data("autocomplete");
+var uassgn_autocomplete = $(".name[rel=unassigned-users]").autocomplete({
+    source : "<%= users_project_path(:id => params[:id], :type => "unassigned") %>",
+    minLength : "0",
+    selector : "#unassigned-users"
+  }).data("autocomplete");
+
+renderMenu = function( ul, items ) {
+      var self = this;
+      var table = $(this.options.selector);
+      var head = $("thead", table);
+      var body = $("tbody", table);
+      $("*", body).remove();
+      $.each( items, function( index, item ) {
+        self._renderItem( ul, item );
+        self._renderTableItem(head, body, item);
+      });
+};
+
+renderItem = function( ul, item ) {
+      var tmp = $("#autocomplete-line").tmpl(item)
+      return tmp.appendTo(ul);
+};
+
+if (assgn_autocomplete != undefined) {
+  assgn_autocomplete._renderMenu = renderMenu
+  assgn_autocomplete._renderItem = renderItem
+  assgn_autocomplete._renderTableItem = function( thead, tbody, item ) {
+      return $("#assigned-table-line")
+        .tmpl(item)
+        .appendTo(tbody);
+  };
+}
+if (uassgn_autocomplete != undefined) {
+  uassgn_autocomplete._renderMenu = renderMenu
+  uassgn_autocomplete._renderItem = renderItem
+  uassgn_autocomplete._renderTableItem = function( thead, tbody, item ) {
+      return $("#unassigned-table-line")
+        .tmpl(item)
+        .appendTo(tbody);
+  };
+
+}

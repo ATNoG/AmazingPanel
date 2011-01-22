@@ -24,17 +24,21 @@ class Experiment < ActiveRecord::Base
 
   def finished?
     return true if (status == 2 or status == 3)
+    return false;
   end
 
   def started?
     return true if (status == 1)
+    return false;
   end
 
   def prepared?
     return true if (status == 0 or status == 3)
+    return false;
   end
 
   def preparing?
     return true if (status == -1)
+    return false;
   end
 end

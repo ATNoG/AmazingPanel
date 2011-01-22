@@ -1,3 +1,17 @@
+<% content_for :head do %>
+  <%= javascript_include_tag 'jquery.tmpl.min.js' %>
+  <%= stylesheet_link_tag 'jquery.autocomplete', :media => 'all' %>  
+  <script id="autocomplete-line" type="x-jquery-tmpl">
+    <%=  raw(autocomplete_line)  %>
+  </script>
+  <script id="unassigned-table-line" type="x-jquery-tmpl">
+    <%=  raw(user_unassigned_table_line_template(@project.id)) %>
+  </script>
+  <script id="assigned-table-line" type="x-jquery-tmpl">
+    <%=  raw(user_assigned_table_line_template(@project.id))  %>
+  </script>
+<% end %>
+
 <% content_for :sub_actions do %>
   <%= sub_toolbar do %>
     <%= back_action(@project) %>
@@ -19,7 +33,7 @@
   <div class="profile" summary="Profile information">
     <div class="main">
       <h1>
-        <img align="center" alt="jmartins" class="project" width="50" height="50" src="<%= project_logo_path(@project) %>">
+        <img align="center" alt="jmartins" class="profile-project" width="50" height="50" src="<%= project_logo_path(@project) %>">
       </h1>
     </div>
     <div class="sidebar round">
@@ -29,12 +43,12 @@
       </p><br />
 
       <% if project_users_empty?(@project) == false %>
-	<%= render :partial => 'users', :locals => { :title => "Assigned Users:", :with_assignment_check => false, 
-		  :disabled => false, :make_leader => true, :assign => false, :unassign => true, :users => @project.users } %>
+    	<%= render :partial => 'users', :locals => { :id => "assigned-users", :search => true, :grid => true, :title => "Assigned Users:", :with_assignment_check => false, 
+	  	  :disabled => false, :make_leader => true, :assign => false, :unassign => true, :users => @project.users } %>
       <% end %>
-
+      <br/>
       <% if @users.empty?  == false %>
-	<%= render :partial => 'users', :locals => { :title => "Users:", :with_assignment_check => true, 
+	    <%= render :partial => 'users', :locals => { :id => "unassigned-users", :search => true, :grid => true, :title => "Users:", :with_assignment_check => true, 
 		  :disabled => false, :make_leader => false, :assign => true, :unassign => false, :users => @users } %>
       <% end %>
     </div>

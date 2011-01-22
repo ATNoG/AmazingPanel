@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101224155133) do
+ActiveRecord::Schema.define(:version => 20110113171441) do
 
   create_table "device_kinds", :force => true do |t|
     t.integer "inventory_id",               :null => false
@@ -177,6 +177,7 @@ ActiveRecord::Schema.define(:version => 20101224155133) do
     t.string   "username"
     t.string   "intention"
     t.string   "name"
+    t.string   "institution"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true

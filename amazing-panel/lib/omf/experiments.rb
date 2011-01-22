@@ -73,10 +73,10 @@ module OMF
       end
       
       attr_accessor :tables, :config
-      def initialize(experiment, app={})
+      def initialize(experiment, args, app={})
         @config = { 
           :adapter => "sqlite3", 
-          :database => "#{APP_CONFIG['exp_results']}#{experiment.id}.sq3" }
+          :database => "#{APP_CONFIG['exp_results']}/#{experiment.id}/#{args[:run]}/#{experiment.id}_#{args[:run]}.sq3" }
         @tables = { }
         if (app == {})
           load_models(self.class)
@@ -175,8 +175,11 @@ module OMF
       end
 
       def start
+        @@logger.debug("Start Experiment: Invoked")
 		experiment = Experiment.find(@id)
-        exp_id = "#{@id.to_s}_#{experiment.runs}"
+        runs = experiment.runs
+        exp_id = "#{@id.to_s}_#{runs}"
+        @@logger.debug("Start Experiment: Locking experiment")
         unless lock_testbed(testbeds)
           @@logger.debug("Error: Failed to Lock on Start Experiment")
           return false 
@@ -190,14 +193,11 @@ module OMF
         status(1)
 
         @@logger.debug("STARTING! #{Process.pid}")
-        ret = system("omf exec -e #{@id} #{OMF::Workspace.ed_for(experiment.ed.user, experiment.ed.id.to_s)}");
+        ret = system("omf exec -e #{exp_id} #{OMF::Workspace.ed_for(experiment.ed.user, experiment.ed.id.to_s)}");
 		@@logger.debug("start: #{ret.to_s}")
         #sleep 5 # 'XXX' - REMOVE DUMMY
-        get_results
-        File.copy("#{APP_CONFIG['omlserver_tmp']}#{@id}.sq3", "#{APP_CONFIG['exp_results']}#{@id}.sq3")
-        File.copy("#{APP_CONFIG['omlserver_tmp']}#{@id}-state.xml", "#{APP_CONFIG['exp_results']}#{@id}-state.xml")
-        File.copy("#{APP_CONFIG['omlserver_tmp']}omf-log.xml", "#{APP_CONFIG['exp_results']}#{@id}-prepare.xml")
-        File.copy("#{APP_CONFIG['omlserver_tmp']}#{@id}.log", "#{APP_CONFIG['exp_results']}#{@id}.log")
+		@@logger.debug("get_results: #{exp_id.to_s}")
+        get_results(exp_id, experiment, runs)
         @@logger.debug("FINISHING!")
         status(3)
         inc_runs()
@@ -283,6 +283,12 @@ module OMF
         return msg
 	  end
 
+      def runs        
+        entries = Pathname.new("#{APP_CONFIG['exp_results']}/#{@id}").children.select{|e| e.directory?}.map{|d| d.basename.to_s}
+        #@@logger.debug(entries.inspect)
+        return entries
+      end
+
 	  def log(slice="", from_line=-1)
         e = Experiment.find(@id)
         runs = e.runs
@@ -326,6 +332,11 @@ module OMF
 		cmd = "omf load -i users/#{img.sys_image.user.username}/#{img.sys_image_id}.ndz -t #{comma_nodes}"
        	ret = system(cmd)
         @@logger.debug("#{cmd} => #{ret}")
+      end
+
+      def inc_runs
+        experiment = Experiment.find(@id)
+        experiment.update_attributes(:runs => experiment.runs.to_i + 1)
       end
 
       def current_lock(t_ids)
@@ -391,14 +402,32 @@ module OMF
         return ret
       end
 
-      def get_results
+      def get_results(exp_id, experiment, run)
         http = Net::HTTP.new(APP_CONFIG['aggmgr_url'])
         root_path = '/result/'
         path = "#{root_path}/dumpDatabase?expID=#{@id}"
         request = Net::HTTP::Get.new(path)
+        exp_path = "#{APP_CONFIG['exp_results']}/#{experiment.id}/#{run}"
+        tmp_basename = "#{APP_CONFIG['omlserver_tmp']+exp_id.to_s}"
+        exp_basename = "#{exp_path}/#{exp_id.to_s}"
         #response = http.request(request)
-        FileUtils.cp("#{APP_CONFIG['omlserver_tmp']+@id.to_s}.sq3", "#{APP_CONFIG['exp_results']+@id.to_s}.sq3")
-        puts "cp #{APP_CONFIG['omlserver_tmp']+@id.to_s}.sq3 #{APP_CONFIG['exp_results']+@id.to_s}.sq3"
+        FileUtils.mkdir_p(exp_path)
+        File.copy("#{tmp_basename}.sq3", "#{exp_basename}.sq3")
+        @@logger.debug("File.copy(#{tmp_basename}.sq3, #{exp_basename}.sq3)")
+
+        File.copy("#{tmp_basename}-state.xml", "#{exp_basename}-state.xml")
+        @@logger.debug("File.copy(#{tmp_basename}-state.xml, #{exp_basename}-state.xml)")
+
+        File.copy("#{APP_CONFIG['omlserver_tmp']}omf-log.xml", "#{exp_basename}-prepare.xml")
+        @@logger.debug("File.copy(#{tmp_basename}omf-log.xml, #{exp_basename}-prepare.xml)")
+
+        File.copy("#{tmp_basename}.log", "#{exp_basename}.log")
+        @@logger.debug("File.copy(#{tmp_basename}.log, #{exp_basename}.log)")
+        #File.copy("#{APP_CONFIG['omlserver_tmp']}#{@id}.sq3", "#{APP_CONFIG['exp_results']}#{@id}.sq3")
+        #File.copy("#{APP_CONFIG['omlserver_tmp']}#{@id}-state.xml", "#{APP_CONFIG['exp_results']}#{@id}-state.xml")
+        #File.copy("#{APP_CONFIG['omlserver_tmp']}omf-log.xml", "#{APP_CONFIG['exp_results']}#{@id}-prepare.xml")
+        #File.copy("#{APP_CONFIG['omlserver_tmp']}#{@id}.log", "#{APP_CONFIG['exp_results']}#{@id}.log")
+        #@@logger.debug("cp #{APP_CONFIG['omlserver_tmp']+@id.to_s}.sq3 #{APP_CONFIG['exp_results']+@id.to_s}.sq3")
         #if response.status == 200
         #  FileUtils.cp("#{APP_CONFIG['omlserver_tmp']+@id}.sq3", "#{APP_CONFIG['exp_results']+@id}.sq3")
         #end
@@ -406,11 +435,11 @@ module OMF
     end
     
     # Get the appropiate results for the experiment
-    def self.results(experiment)
+    def self.results(experiment, args)
       ed = experiment.ed
       ed_content = OMF::Workspace.open_ed(ed.user, "#{ed.id}.rb")
       parser = OMF::Experiments::OEDLParser.new(ed_content)
-      data = OMF::Experiments::GenericResults.new(experiment)
+      data = OMF::Experiments::GenericResults.new(experiment, args)
       return { :metrics => parser.getApplicationMetrics(), :results => data }
     end
   end

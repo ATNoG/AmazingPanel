@@ -1,13 +1,52 @@
 <% if user_signed_in? %>
 $(document).ready(function(){
-  $(".action").tipsy({ live: true });
+  $("a, .action").tipsy({ live: true });
   $(".flash-msg-integrated").slideDown(500).delay(5000).slideUp(200);
-  <% if (@c == "library/eds") and (@a == "show" or @a =="edit") %>
-    <%= render :partial => 'library' %>
+  if ($(".tabs").length > 0) {
+      $(".tab").hide();
+      $(".tab:eq(0)").show();
+      $(".tabs li:first-child").addClass("tab-active");
+      $(".tabs li").live('click', function(evt){
+        var active_tab = $($(this).find("a").attr("href"));
+    	$(".tab").hide();
+     	$(".tabs li").removeClass("tab-active");
+    	$(this).addClass("tab-active");
+        active_tab.fadeIn();
+  	    active_tab.focus();
+      });
+}
+  <% if (@c == "projects") %>
+    <%= render :partial => 'projects' %>
   <% end %>
+
+  <% if (@c == "library/eds") %>
+    <% if (@a == "new") %>
+      <%= render :partial => 'ed_editor' %>
+    <% end %>
+    <% if (@a == "show" or @a =="edit") %>
+      <%= render :partial => 'library' %>
+    <% end %>
+  <% end %>
+
+  <% if (@c == "library/sys_images") and (@a == "edit" or @a == "new")%>
+    <% params.merge!(Rails.application.routes.recognize_path(params[:p])) %>
+    $("#sys_image_edit").submit(function(){
+      var target = "<%= sys_image_path(:id=>params[:id]) %>";
+      var data = $("#sys_image_edit").serialize();
+      $.post(target, data, function(data, statusCode, req){             
+          if (!upload_sys_image()) {
+            window.location.href = "<%= sys_image_path(params[:id]) %>";
+          }
+        }
+      );
+      return false;
+    });
+  <% end %>
+
   <% if (((@c == "testbeds") or (@c == "admin/testbeds")) and (@a == "show")) %>
     <%= render :partial => 'network' %>
   <% end %>
+
   <% if (@c == "experiments") %>
     <%= render :partial => 'experiments' %>    
   <% end %>
@@ -86,6 +125,51 @@ function setStringComparatorFilterExpression(path, id){
 function filter_path(path, field, cmp, value){
   return path+"?filter=field&field="+field+"&op="+cmp+"&value="+value;
 }
+
+  <% if (@c == "library/sys_images") and (@a == "edit" or @a == "new")%>
+function AJAXUploadSupport(){
+    return supportFileAPI() && supportAjaxUploadProgressEvents();
+
+    function supportFileAPI() {
+        var fi = document.createElement('INPUT');
+        fi.type = 'file';
+        return 'files' in fi;
+    };
+
+    function supportAjaxUploadProgressEvents() {
+        var xhr = new XMLHttpRequest();
+        return !! (xhr && ('upload' in xhr) && ('onprogress' in xhr.upload));
+    };
+
+}
+function upload_sys_image(){      
+  var fileInput = document.getElementById('file');
+  var file = fileInput.files[0];
+  if (file == undefined){
+    return false;
+  }
+  var xhr = new XMLHttpRequest();
+  file.name = "file";
+  xhr.upload.addEventListener('progress', onprogressHandler, false);
+  xhr.upload.addEventListener('load', onloadHandler, false);
+  xhr.open('POST', "<%= image_sys_image_path(:id => params[:id]) %>", true);
+  xhr.setRequestHeader("Content-Type", "application/octet-stream");
+  xhr.setRequestHeader("X-File-Name", file.name);
+  xhr.send(file);
+  return true;
+}
+
+function onprogressHandler(evt){
+  var percent = evt.loaded/evt.total*100;
+  $("#image-progress-text").html(percent);
+  $("#image-progress-bar").css("width", percent+"%");
+}   
+
+function onloadHandler(evt) {
+  window.location.href = "<%= sys_image_path(params[:id]) %>";
+} 
+  <% end %>
+
   <% if ((@c == "testbeds") or (@c == "admin/testbeds")) and (@a == "show")%>
 function updateStatus() { 
   var testbed = $('.testbed')

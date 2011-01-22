@@ -82,15 +82,17 @@ class Library::SysImagesController < Library::ResourceController
     #File.open(path, 'w') do |file|
       #file.write(uploaded_io.read)
     #end
-
-    if @sys_image.save
-      write_resource(@sys_image, uploaded_io.read, "ndz")
-      @sys_image.size = File.size(get_path(@sys_image,"ndz").to_s)
-      OMF::Workspace.create_sysimage(@sys_image, get_path(@sys_image, "ndz")) 
-      flash["success"] = 'Sys image was successfully created.'
-      redirect_to(@sys_image) 
-    else
-      render :action => "new" 
+    _size = File.size(uploaded_io)
+    if _size > 0
+      @sys_image.size = _size
+      if @sys_image.save
+        write_resource(@sys_image, uploaded_io.read, "ndz")
+        OMF::Workspace.create_sysimage(@sys_image, get_path(@sys_image, "ndz")) 
+        flash["success"] = 'Sys image was successfully created.'
+        redirect_to(@sys_image) 
+      else
+        render :action => "new" 
+      end
     end
   end
 
@@ -98,11 +100,22 @@ class Library::SysImagesController < Library::ResourceController
   # PUT /sys_images/1.xml
   def update
     @sys_image = resource_find(params[:id])
+    uploaded_io = params[:file]
     if (params[:sys_image_id] != -1)
       @sys_image.sys_image_id = params[:sys_image_id]
     end
 
+    unless uploaded_io.nil?
+      _size = File.size(uploaded_io)    
+      params[:sys_image].merge!({:size => _size}) 
+    end
+
     if @sys_image.update_attributes(params[:sys_image])
+      unless uploaded_io.nil?
+        OMF::Workspace.remove_sysimage(@sys_image) 
+        write_resource(@sys_image, uploaded_io.read, "ndz")
+      end  
+
       flash["success"] = 'Sys image was successfully updated.'
       redirect_to(@sys_image) 
     else
@@ -122,5 +135,15 @@ class Library::SysImagesController < Library::ResourceController
       flash[:error] = "Error deleting System image"      
     end
      redirect_to(sys_images_path) 
+  end
+
+  # POST /sys_images/1/image  
+  # POST /sys_images/1/image.xml
+  def image
+    @sys_image = resource_find(params[:id])
+    uploaded_io = params[:file]
+    _size = File.size(uploaded_io)
+    write_resource(@sys_image, uploaded_io.read, "ndz")
+    redirect_to(@sys_image) 
   end
 end

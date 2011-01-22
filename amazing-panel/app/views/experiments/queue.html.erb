@@ -1,7 +1,14 @@
 <% content_for :content do %>
-  <% if @experiments.nil? or @experiments.length == 0 %>
+  <% if @num_exps == 0 %>
     No Experiments.
   <% else %>
+  <p>
+  <b>Prepared: </b>
+    <% @experiments_prepared.each do |exp| %>
+      <%= link_to exp.id.to_s, exp %> 
+    <% end %>
+  </p><br/>
+  <p>
   <table id="experiments" class="grid-view">
     <%= generate_table_headers(@experiments, experiments_path, :fields => ["id","project_id", "creator", "ed", "duration", ""], :labels => { "id" => "#", "project_id" => "Project", "ed"=>"Description" }) %>
     <tbody>
@@ -25,6 +32,7 @@
     <% end %>
     </tbody>
   </table>
+  </p>
   <% end %>
   <%= modal_dialog("", "modal-dialog") %>
 <% end %>

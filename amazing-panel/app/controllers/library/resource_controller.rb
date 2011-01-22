@@ -2,6 +2,7 @@ class Library::ResourceController < ApplicationController
   layout 'library'
   respond_to :html
   before_filter :authenticate
+  after_filter :save_previous_path
   append_before_filter :has_resource_permission, :only => [:update, :destroy, :edit]
   append_before_filter :filter_resources, :only => [:index]
 
@@ -169,8 +170,8 @@ class Library::ResourceController < ApplicationController
       return File.open(path, 'r')
     end
 
-    def delete_resource(resource, extension="")
-      path = get_path(@ed, extension)
+    def delete_resource(resource, extension="", has_permissions=true)
+      path = get_path(resource, extension)
       File.delete(path.to_s)
     end
 end

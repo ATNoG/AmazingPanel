@@ -21,7 +21,7 @@ class Admin::UsersController < Users::UsersController
       redirect_to admin_users_path
     end
   end
-  
+    
   def new    
   end
   

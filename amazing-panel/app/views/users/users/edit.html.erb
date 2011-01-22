@@ -1,0 +1,27 @@
+<div id="toolbar" class="invisible">
+</div>
+<%= clear %>
+
+<div id="sub-toolbar">
+  <% sub_toolbar do %>
+  <%= back_action( user_path(:id=>params[:id]) ) %>
+  <% end %>
+</div>
+
+<%= clear %>
+<%= form_for(@user, :url => user_path(@user), :html => { :method => :put }) do |f| %>
+  <%= render 'shared/error_messages', :object => f.object %>
+  <div class="field">
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+  </div>
+  
+  <div class="field">
+    <%= f.label :institution %><br />
+    <%= f.text_field :institution %>
+  </div>
+  
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

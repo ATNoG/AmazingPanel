@@ -1,0 +1,5 @@
+<% if !@experiment.prepared? %>
+  <% render :action => "prepare" %>
+<% elsif @experiment.prepared? %>
+  <% render :action => "start %>
+<% end %>

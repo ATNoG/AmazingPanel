@@ -4,7 +4,8 @@ class User < ActiveRecord::Base
   devise :database_authenticatable, :registerable, :recoverable, :rememberable, :trackable, :validatable
 
   # Setup accessible (or protected) attributes for your model
-  attr_accessible :email, :username, :intention, :password, :password_confirmation, :remember_me, :activated, :name, :leader   
+  attr_accessible :email, :username, :intention, :password, :password_confirmation, :remember_me, 
+                  :activated, :name, :leader, :institution
   scope :ge, lambda { |column, value| { :conditions => [column+" >= " + value] } }
   scope :le, lambda { |column, value| { :conditions => [column+" <= " + value] } }
   scope :l, lambda { |column, value| { :conditions => [column+" < " + value] } }

@@ -10,7 +10,11 @@ class ExperimentsController < ApplicationController
   respond_to :html, :js
 
   def queue
-    @experiments = Experiment.active
+    not_init = Experiment.where(:status => nil) 
+    @experiments_not_init = not_init
+    @experiments_prepared = Experiment.prepared
+    @experiments = Experiment.active + not_init
+    @num_exps = @experiments_not_init.size + @experiments_prepared.size
   end 
   
   def index
@@ -22,12 +26,12 @@ class ExperimentsController < ApplicationController
       @experiments = Experiment.finished
     else
       @experiments = Experiment.all
-    end    
+    end
   end
 
   def show
     @experiment = Experiment.find(params[:id])
-
+    ec = OMF::Experiments::ExperimentControllerProxy.new(params[:id].to_i)
   	@status = @experiment.status
     @nodes = Hash.new()
     @experiment.resources_map.each do |rm|
@@ -41,14 +45,31 @@ class ExperimentsController < ApplicationController
     
     case 
     when params.has_key?("resources")
-      @resources = @experiment.resources_map      
+      @resources = @experiment.resources_map
       @testbed = @resources.first.testbed
       @nodes = OMF::GridServices.testbed_status(@testbed.id)
     when @experiment.finished?
-      ret = fetch_results(@experiment)
+      run = params[:run]      
+      ret = run.nil? ? fetch_results(@experiment) : fetch_results(@experiment, run) 
+      @raw_results = ec.runs
       @results = ret[:results]
       @seq_num = ret[:seq_num]
     end
+    respond_to do |format|
+      format.sq3 {
+        id = @experiment.id
+        exp_id = params[:run].nil? ? "#{id}_#{ec.runs.first}.sq3" : "#{id}_#{params[:run]}.sq3"
+        #render :file => "#{APP_CONFIG['exp_results']}#{id}/#{params[:run]}/#{exp_id}"
+        results = "#{APP_CONFIG['exp_results']}#{id}/#{params[:run]}/#{exp_id}"       
+        if params[:dump].nil? or params[:dump] == "false"
+          send_file results, :type => "application/octet-stream", :x_sendfile => true
+        else
+          render :text => IO.popen("sqlite3 #{results} .dump").read
+        end
+      }
+      format.html
+      format.js
+    end 
   end
   
   def new
@@ -83,6 +104,7 @@ class ExperimentsController < ApplicationController
     @is_last_phase = (@current_phase == Phase.last)
     if @is_last_phase
       @experiment = session[:experiment][:cache]
+      @experiment.runs = 0
       @experiment.save
       testbed = session[:experiment]["nodes"]["testbed"]
       session[:experiment]["nodes"].each do |k,v|
@@ -132,6 +154,26 @@ class ExperimentsController < ApplicationController
     #phase_step
   end
 
+  def run
+    ec = OMF::Experiments::ExperimentControllerProxy.new(params[:id].to_i)
+    @experiment = Experiment.find(params[:id])
+    @error = "Another Experiment is running"
+    if ec.check(:init)
+      @error = nil
+      pid = fork {
+        ret = ec.check(:prepared)
+        if !ret
+          ret = ec.prepare()
+        end
+        sleep 5 
+        ec.start()
+        render :nothing=>true
+      }
+	  Process.detach(pid)
+    end
+    
+  end
+
   def prepare
     ec = OMF::Experiments::ExperimentControllerProxy.new(params[:id].to_i)
     @error = "Another Experiment is running"
@@ -142,6 +184,30 @@ class ExperimentsController < ApplicationController
         render :nothing=>true
       }
 	  Process.detach(pid)
+    end
+  end
+
+  def start
+    ec = OMF::Experiments::ExperimentControllerProxy.new(params[:id].to_i)
+    @error = "Another Experiment is running";
+    if ec.check(:prepared)
+      @error = nil
+	  	pid = fork { 
+        ec.start()
+        @experiment = Experiment.find(params[:id])
+        experiment_conclusion(user, @experiment)
+        render :nothing => true
+      }
+	  Process.detach(pid)
+    end
+  end
+
+  def stop
+    ec = OMF::Experiments::ExperimentControllerProxy.new(params[:id].to_i)
+    @error = "Another Experiment is running";
+    if ec.check(:started) or ec.check(:prepared)
+      @error = nil
+      ec.stop()
     end
   end
 
@@ -170,28 +236,6 @@ class ExperimentsController < ApplicationController
 	@ec = ec
   end
   
-  def start
-    ec = OMF::Experiments::ExperimentControllerProxy.new(params[:id].to_i)
-    @error = "Another Experiment is running";
-    if ec.check(:prepared)
-      @error = nil
-	  	pid = fork { 
-        ec.start()
-        render :nothing => true
-      }
-	  Process.detach(pid)
-    end
-  end
-
-  def stop
-    ec = OMF::Experiments::ExperimentControllerProxy.new(params[:id].to_i)
-    @error = "Another Experiment is running";
-    if ec.check(:started) or ec.check(:prepared)
-      @error = nil
-      ec.stop()
-    end
-  end
-
   private    
 
   def reset
@@ -208,8 +252,12 @@ class ExperimentsController < ApplicationController
     redirect_to new_experiment_path
   end
 
-  def fetch_results(e)
-    _tmp = OMF::Experiments.results(e)
+  def last_run(e)
+    return e.runs - 1 
+  end
+
+  def fetch_results(e, run=last_run(e))
+    _tmp = OMF::Experiments.results(e, {:run => run})
     db = _tmp[:results]
     metrics = _tmp[:metrics]
     results = Hash.new()

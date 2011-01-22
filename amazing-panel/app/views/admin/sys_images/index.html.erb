@@ -111,7 +111,7 @@
 	  <td><%= link_to sys_image.name, admin_sys_image_path(sys_image) %></td>
 	  <td><%= sys_image.kernel_version_os %></td>
 	  <td><%= sys_image.size %></td>
-	  <td><%= sys_image.description %></td>
+	  <td><div class="resource-description description"><%= sys_image.description %></div></td>
 	  <td><%= sys_image.updated_at.strftime("%Y-%m-%d %H:%M:%S") %></td>
 	  <td>
 	    <div class="table-actions">

@@ -5,8 +5,13 @@
       </h1>
     </div>
     <div class="sidebar round">
-      <strong>Name</strong> <%= @user.name %><br />
-      <strong>URL</strong>  <%= link_to user_path(@user), @user %><br />
+      <strong>URL:</strong>  <%= link_to user_path(@user), @user %><br />
+      <strong>Name:</strong> <%= @user.name %><br />
+      <strong>Institution:</strong> <%= @user.institution %><br />
       <strong>Projects</strong> <%= generate_projects(@user) %>
+      <%= content_tag :div, :id => "edit-profile-button", :class => "button" do %>
+        <%= link_to "Edit", edit_user_path %>
+      <% end %>
     </div>
+
 </div>

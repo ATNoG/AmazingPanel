@@ -1,0 +1,19 @@
+<ul id="oedl-design-viewer" class="tabs">
+  <li class="tab-active"><a href="#design">Design</a></li>
+  <li><a href="#source">Source</a></li>
+</ul>
+<div id="design" class="oedl-tab tab">
+  <div class="oedl-actions sidebar">
+    <div class="node-add-action button">Node</div>
+    <div class="preferences-view-action ed-editor-button preferences-button">Preferences</div>
+<!--    <div class="ed-editor-context-menu-node">A Context Menu</div> -->
+  </div>
+  <div class="canvas">
+  </div>
+</div>
+<div id="source" class="oedl-tab tab">
+  <% if args.has_key?(:code) %>
+    <%= text_area_tag :code, args[:code], :cols => 40, :rows => 30 %>     
+  <% end %>
+</div>
+

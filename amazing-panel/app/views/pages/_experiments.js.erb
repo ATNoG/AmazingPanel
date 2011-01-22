@@ -77,23 +77,49 @@ $(".more-ed-anchor").live("click", function(evt){
   var tmp = $("#modal-dialog, .modal-container")
   tmp.css("width","500px"); 
   $("#modal-dialog").css("height","500px").css("top","20%").css("left", "30%");
-  $(".modal-container").css("height","423px"); 
+  $(".modal-container").css("height","465px"); 
   $.getScript("<%= ed_path(experiment.ed, :format=>"js")  %>");
 	$("#modal-dialog").fadeIn();
   $("#modal-dialog").toggleClass("dialog-active");
 
 });
 
-$(".tab").hide();
-$(".tab:eq(0)").show();
-$(".tabs li:first-child").addClass("tab-active");
-$(".tabs li").live('click', function(evt){
-	var active_tab = $($(this).find("a").attr("href"));
-	$(".tab").hide();
-	$(".tabs li").removeClass("tab-active");
-	$(this).addClass("tab-active");
-	active_tab.fadeIn();
-	active_tab.focus();
+$(".show-dump-anchor").live("click", function(evt){
+  $("#modal-dialog > .title-box").html("Results SQlite3 Database Dump");
+  $("#modal-dialog > .modal-container").html("<textarea id=\"dump\" cols=\"0\" rows=\"0\"></textarea>");
+  var tmp = $("#modal-dialog, .modal-container")
+  tmp.css("width","700px"); 
+  $("#modal-dialog").css("height","500px").css("top","20%").css("left", "30%");
+  $(".modal-container").css("height","465px"); 
+  var run = $("#runs option:selected").text();
+  $("#modal-dialog > .modal-container > #dump").load("<%= experiment_path(experiment, :format=>"sq3") %>?run="+run+"&dump=true",
+    function(){
+      if (CodeMirror != undefined) {
+        CodeMirror.fromTextArea('dump', {
+          parserfile: ["../parsesql.js"],
+          stylesheet: "/stylesheets/codemirror/sqlcolors.css",
+          path: "/javascripts/codemirror/base/",
+          lineNumbers: false,
+          textWrapping: false,
+          indentUnit: 2,
+          parserConfig: {},
+          readOnly: true,
+          height: "465px",
+          width: "100%"
+        }, 0);
+      }        
+      $("#modal-dialog").fadeIn();
+      $("#modal-dialog").toggleClass("dialog-active");
+    }
+  );  
+
+});
+
+$("#run-experiment-button").live('click', function(evt){
+    $.getScript("<%= run_experiment_path(experiment) %>", function(evt){  
+      $("#run-experiment-button").addClass("button-disabled");
+      $("#stop-experiment-button").removeClass("button-disabled");
+      });
 });
 
 $("#prepare-experiment-button").live('click', function(evt){
@@ -113,7 +139,17 @@ $("#start-experiment-button").live('click', function(evt){
 $("#stop-experiment-button").live('click', function(evt){
     $.getScript("<%= stop_experiment_path(experiment) %>");
 });
-<% unless experiment.finished? %>
-    $.getScript("<%= stat_experiment_path(experiment) %>");
+
+<% if experiment.finished? %>
+$("select#runs").change(function(){      
+  var _this = $(this);  
+  var run = _this.val();
+  var download_link = "<%= experiment_path(:id => experiment.id , :format => "sq3") %>?run="+run;
+  var data_link = "<%= experiment_path(:id => experiment.id , :format => "js") %>?data&run="+run;
+  $("#run-download-link").attr("href", download_link);
+  $.getScript(data_link);
+});
+<% else %>
+  $.getScript("<%= stat_experiment_path(experiment) %>");
 <% end %>
 <% end %>

@@ -74,7 +74,10 @@ class Library::EdsController < Library::ResourceController
           #file.write(uploaded_io.read)
         #end
         write_resource(@ed, uploaded_io.read, "rb")
-        format.html { redirect_to(eds_path, :notice => 'Ed was successfully created.') }
+        format.html { 
+          flash["success"] = 'Ed was successfully created.'
+          redirect_to(eds_path)  
+        }
       else
         format.html { render :action => "new" }
       end
@@ -101,8 +104,9 @@ class Library::EdsController < Library::ResourceController
     #  end
     #end
     write_resource(@ed, content, "rb")
-    if @ed.update_attributes(params[:ed])        
-      redirect_to(ed_path(@ed.id), :notice => 'Ed was successfully updated.')
+    if @ed.update_attributes(params[:ed])
+      flash[:success] = 'Ed was successfully updated.'
+      redirect_to(ed_path)
     else
       render :action => "edit"
     end
@@ -127,4 +131,8 @@ class Library::EdsController < Library::ResourceController
     end
     redirect_to(eds_path, :error => 'Error removing Experiment Definition');
   end 
+  
+  def code
+  end
+  
 end

@@ -1,0 +1,136 @@
+function EdEditorUI() {
+  var canvas = $(".canvas")
+  this.engine = EdEditorEngine();
+  this.graph = new Graph();
+  this.renderer = new Graph.Renderer.Raphael(canvas[0], this.graph, canvas.css("width"), canvas.css("height"));
+  this.last_id = -1;
+  this.ctx_menu_open = false;
+  this.ctx_dy = 0;
+  this.ctx_dx = 0;
+}
+
+EdEditorUI.NODE_COORD = 10;
+EdEditorUI.NODE_INTERVAL_X = 75;
+EdEditorUI.NODE_INTERVAL_Y = 75;
+EdEditorUI.NODE_SIZE = 30;
+EdEditorUI.prototype.node_actions = [
+  {name:"Choose Application", cb: "selectApplication"}, 
+  {name:"Select Group", cb: "selectGroup"}, 
+  {name:"Properties", cb: "selectProperties"}
+];
+
+EdEditorUI.prototype.renderMenu = function(r,set) {
+  var src = set[0];
+  var x = src.attr("cx");
+  var y = src.attr("cy");
+  var ctx = r.rect(x, y, 100,100);
+  ctx.mouseout(this.ctxClose.bind({set:set}))
+  var st = r.set();
+  set.push(ctx);
+  for(i=0;i<this.node_actions.length;++i){
+    var action = this.node_actions[i]; 
+    var fn = this[action.cb];
+    var node_r = r.text(x + 50, y + 20 + i*20, action.name)
+    node_r.click(fn.bind(this));
+    $(node_r.node).svg().addClass("node-link");
+    set.push(node_r);
+  }
+}
+
+EdEditorUI.prototype.ctxRender = function(evt) {
+  $(".node-context-menu, .node-link").show();
+}
+
+EdEditorUI.prototype.ctxClose = function(evt) { 
+  $(".node-context-menu, .node-link").hide();
+}
+
+EdEditorUI.prototype.renderNode = function(r, n) {
+  var x = EdEditorUI.NODE_COORD + EdEditorUI.NODE_INTERVAL_X;
+  var y = EdEditorUI.NODE_COORD + EdEditorUI.NODE_INTERVAL_Y;
+  var size = EdEditorUI.NODE_SIZE;
+  var set = r.set().push(r.circle(x,y,size)).push(r.text(x,y,n.label));
+  /*var label = r.text(x,y,n.label).attr( { opacity:0.8 });
+  var set = r.set().push(r.circle(x,y,size).attr({"fill": "#fff", "stroke-width": 1.5})).push(label);*/
+  this.renderMenu(r, set);
+  var text = $(set[1].node).svg();
+  var circle = $(set[0].node).svg();
+  var ctx_menu = $(set[2].node).svg();
+  text.addClass("node-label");
+  circle.addClass("node");
+  ctx_menu.addClass("node-context-menu");
+  /* make the label show only on hover
+  set.hover(function(){label.animate({ opacity: 1, "fill-opacity": 1 }, 500);}, 
+            function(){label.animate({ opacity: 0.4 }, 300);}); */  
+  fn_context = {
+    ui: this,
+    set: set,
+    r: r
+  }
+  circle.click(this.ctxRender.bind(fn_context));
+  text.click(this.ctxRender.bind(fn_context));
+  return set;
+}
+
+/** 
+  * Draw using dracula graph lib 
+  */
+EdEditorUI.prototype.addNode = function(x,y) {
+  var id = this.last_id = this.last_id + 1;
+  var _render = this.renderNode
+  var node = {
+    label: id,
+    render: _render.bind(this)
+  };
+  var node = this.graph.addNode(id, node);
+  this.renderer.draw();
+  $(".node-context-menu, .node-link").show();
+  var node = this.graph.nodes[id].shape;
+}
+
+EdEditorUI.prototype.selectApplication = function() {
+  var modal = $(".modal");
+  var title = $(".title-box", modal).html("Select an Application");
+  modal.addClass("dialog-active");
+  modal.show();
+}
+
+EdEditorUI.prototype.selectGroup = function() {
+  var modal = $(".modal");
+  var title = $(".title-box", modal).html("Select an Group");
+  modal.addClass("dialog-active");
+  modal.show();
+}
+
+EdEditorUI.prototype.selectProperties = function() {
+  var modal = $(".modal");
+  var title = $(".title-box", modal).html("Select Properties");
+  modal.addClass("dialog-active");
+  modal.show();
+}
+
+EdEditorUI.prototype.loadPreferences = function() {
+  var modal = $(".modal");
+  var title = $(".title-box", modal).html("Experiment Definition Properties");
+  modal.addClass("dialog-active");
+  modal.show();
+}
+
+EdEditorUI.prototype.onNodeAdd = function(evt) {  
+  evt.data.editor.addNode();
+}
+
+EdEditorUI.prototype.onGroupAdd = function(evt) {
+  evt.data.editor.addGroup();
+}
+
+EdEditorUI.prototype.onPreferencesOpen = function(evt) {  
+  evt.data.editor.loadPreferences();
+}
+
+EdEditorUI.prototype.bindEvents = function(editor) {
+  $(".node-add-action").live("click", {editor : this}, this.onNodeAdd)
+  $(".group-add-action").live("click", {editor : this}, this.onGroupAdd)
+  $(".preferences-view-action").live("click", {editor : this}, this.onPreferencesOpen)
+}
+

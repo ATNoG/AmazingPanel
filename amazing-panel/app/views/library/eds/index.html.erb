@@ -65,7 +65,7 @@
 	  <td><%= link_to ed.id, ed, :class=>"underline" %></td>
 	  <td><%= link_to creator.name, user_path(:id => creator.id) %></td>
 	  <td><%= link_to ed.name, ed %></td>
-	  <td><%= ed.description %></td>
+	  <td><div class="description"><%= ed.description %></div></td>
 	  <td><%= ed.updated_at %></td>
 	  <td>
 	    <div class="table-actions">
