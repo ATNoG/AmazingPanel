@@ -19,8 +19,8 @@ module OMF
     
     module ScriptHandler
       def self.exec(exp_id, ed)
-        script = OMF::Workspace.open_ed(ed.user, ed.name)
-        file = OMF::Workspace.ed_for(ed.user, ed.name)
+        script = OMF::Workspace.open_ed(ed.user, "#{ed.id.to_s}.rb")
+        file = OMF::Workspace.ed_for(ed.user, "#{ed.id.to_s}.rb")
         c = Context.new(exp_id)
         eval(script, c.getBinding(), file)
         pp c 
@@ -30,7 +30,7 @@ module OMF
     # Get the appropiate results for the experiment
     def self.results(experiment)
       ed = experiment.ed
-      ed_content = OMF::Workspace.open_ed(ed.user, ed.name)
+      ed_content = OMF::Workspace.open_ed(ed.user, "#{ed.id.to_s}.rb")
       parser = OMF::Experiments::OEDLParser.new(ed_content)
       data = OMF::Experiments::GenericResults.new(experiment)
       return { :metrics => parser.getApplicationMetrics(), :results => data }
