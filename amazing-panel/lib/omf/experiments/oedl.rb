@@ -101,7 +101,7 @@ module OMF
           super(ref)
           @net = self
           @group = name
-          ref.properties[:groups][name][:node] = { :application => Hash.new(), :net => Hash.new()}
+          ref.properties[:groups][name][:node] = { :applications => Hash.new(), :net => Hash.new()}
           @ref = ref
         end
       
