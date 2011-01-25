@@ -57,11 +57,13 @@ module OMF
     end
     
     def self.properties_file_str(id)
-      return "#{APP_CONFIG['inventory']}/testbeds/#{id}.yml"
+      app_config = YAML.load_file("#{Rails.root}/config/config.yml")[Rails.env]
+      return "#{app_config['inventory']}/testbeds/#{id}.yml"
     end
     
     def self.testbed_rel_file_str(id, extension="yml")
-      return "#{APP_CONFIG['inventory']}/testbeds/#{id}.#{extension}"
+      app_config = YAML.load_file("#{Rails.root}/config/config.yml")[Rails.env]
+      return "#{app_config['inventory']}/testbeds/#{id}.#{extension}"
     end
     
     def self.testbed_status(id)

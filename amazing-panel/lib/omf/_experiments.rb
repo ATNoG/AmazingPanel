@@ -36,26 +36,6 @@ module OMF
       data = OMF::Experiments::GenericResults.new(experiment)
       return { :metrics => parser.getApplicationMetrics(), :results => data }
     end
-    
-    # Prepare an experiment
-    def self.prepare(id)
-      begin
-        puts "Preparing experiment #{id}"
-
-        images = experiment.sys_images.group(:id).inspect
-        images.each do |i|
-          nodes = experiment.resources_map.find(:sys_image => i.id)       
-        end
-        return true
-      rescue
-        return false
-      end
-    end
-
-    # Start an experiment
-    def self.start
-      return true
-    end
   end
 end
 
