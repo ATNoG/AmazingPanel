@@ -16,19 +16,12 @@ EdEditor.NODE_COORD = 10;
 EdEditor.NODE_INTERVAL_X = 75;
 EdEditor.NODE_INTERVAL_Y = 75;
 EdEditor.NODE_SIZE = 30;
+
 EdEditor.prototype.node_actions = [
   {name:"Choose Application", cb: "selectApplication"}, 
   {name:"Select Group", cb: "selectGroup"}, 
   {name:"Properties", cb: "selectProperties"}
 ];
-
-EdEditor.prototype.ctxRender = function(evt) {
-  $(".node-context-menu, .node-link").show();
-}
-
-EdEditor.prototype.ctxClose = function(evt) { 
-  $(".node-context-menu, .node-link").hide();
-}
 
 EdEditor.prototype.addNode = function(x,y) {
   var id = this.engine.groups.default.getId();
@@ -131,14 +124,16 @@ EdEditor.prototype.onPreferencesOpen = function(evt) {
   evt.data.editor.loadPreferences();
 }
 
-EdEditor.prototype.bindings = {
-  application : selectApplication, 
-  group : selectGroup.bind, 
-  properties : selectProperties
-}
-
+EdEditor.prototype.bindings =
 EdEditor.prototype.bindEvents = function() {
-  $(".node").contextMenu('nodeCtxMenu', this.bindings);
+  var editor = this;
+  $(".node").contextMenu('nodeCtxMenu', { 
+    bindings : {
+      'application' : editor.selectApplication,
+      'group' : editor.selectGroup,
+      'properties' : editor.selectProperties
+    }
+  });
   $(".node-add-action").live("click", {editor : this}, this.onNodeAdd)
   $(".group-add-action").live("click", {editor : this}, this.onGroupAdd)
   $("li.group").live("click", {editor : this}, this.onGroupSelection)
