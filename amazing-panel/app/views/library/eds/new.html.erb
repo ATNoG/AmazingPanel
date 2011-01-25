@@ -1,5 +1,6 @@
 <% content_for :head do %>
-  <% javascript_include_tag :ed_editor %>
+  <%= javascript_include_tag :ed_editor %>
+  <%= javascript_include_tag 'codemirror/base/codemirror' %>
 <% end %>
 
 <% content_for :sub_actions do %>
@@ -14,7 +15,7 @@
 <% end %>
 
 <% content_for :content do %>
-  <%= render :partial => 'form', :locals => { :target => eds_path, :multipart => true, :remote => false} %> 
+  <%= render :partial => 'form', :locals => { :target => eds_path, :multipart => true, :editor => true, :remote => false} %> 
 <% end %>
 
 <% content_for :footer do %>

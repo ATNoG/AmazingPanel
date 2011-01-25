@@ -1,21 +1,39 @@
+// Some Array and String utilities
 Array.prototype.remove = function(from, to) {
   var rest = this.slice((to || from) + 1 || this.length);
   this.length = from < 0 ? this.length + from : from;
   return this.push.apply(this, rest);
 };
 
-function Resource(id){
-  this.id = id;
+String.prototype.trim = function() {
+  return this.replace(/^\s+|\s+$/g,"");
+}
+String.prototype.ltrim = function() {
+  return this.replace(/^\s+/,"");
+}
+String.prototype.rtrim = function() {
+  return this.replace(/\s+$/,"");
 }
 
-Resource.prototype.getProperties = function(){
-  return this.properties;
+/**
+ * Designer engine
+ */
+function Resource(id){
+  this.id = id;
 }
 
 Resource.merge = function merge(obj1, obj2) {
     for(attr in obj1)
         obj2[attr]=obj1[attr];
     return obj2;
+}
+
+Resource.getOMFApplications = function(){
+  
+}
+
+Resource.prototype.getProperties = function(){
+  return this.properties;
 }
 
 Resource.common_inet_parameters = { 
@@ -72,6 +90,12 @@ Group.prototype.addResource = function(resource) {
   ++this.nid;
 }
 
+Group.prototype.addResources = function(resources) {
+  for (i = 0; i<resources.length; ++i) {
+    this.addResource(resources[i]);
+  }
+}
+
 Group.prototype.removeResource = function(resource) {
   delete this.nodes[resource.id];
   this.ids.remove(resource.id);
@@ -89,6 +113,10 @@ function Engine() {
   this.resources = {}
 }
 
+Engine.prototype.addResources = function(groupname, resources){  
+  var group = this.groups[groupname]
+  group.addResources(resources)
+}
 
 Engine.prototype.addResource = function(groupname, resource){  
   return this.groups[groupname].addResource(resource);
@@ -105,4 +133,9 @@ Engine.prototype.addGroup = function(name){
   this.groups[name] = new Group(name)
   this.group_keys.push(name);
   return 0;
+}
+
+Engine.prototype.getGeneratedCode = function(){
+  var engine = this;
+  $.post("/eds/code.js", { meta : { groups : engine.group_keys }});
 }

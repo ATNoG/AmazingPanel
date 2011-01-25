@@ -20,7 +20,9 @@ AmazingPanel::Application.routes.draw do
   
   scope :module => "library" do
     resources :library, :only => [:index]
-    resources :eds
+    resources :eds do
+      post 'code', :action => 'code', :on => :collection
+    end
     resources :sys_images do
       post 'image', :action => 'image', :on => :member
     end

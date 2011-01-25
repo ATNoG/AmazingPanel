@@ -5,6 +5,12 @@ function createDialog(title, options){
   return modal;
 }
 
+function hideDialog(){
+  var modal = $(".modal");
+  modal.removeClass("dialog-active");
+  modal.hide();  
+}
+
 function EdEditor() {
   var canvas = $(".canvas")
   this.engine = new Engine();
@@ -29,20 +35,24 @@ EdEditor.prototype.addNode = function(x,y) {
   this.engine.addResource('default', resource);
   /*
   var node = this.graph.node(id);  
-  */
-
   node.bindings.application = this.selectApplication.bind({id:node.id});
   node.bindings.group = this.selectGroup.bind({id:node.id, groups : this.engine.group_keys});
   node.bindings.properties = this.selectProperties.bind({id:node.id});
+  */
+
 }
 
 EdEditor.prototype.addGroup = function(name) {  
   this.engine.addGroup(name);
 }
 
+EdEditor.prototype.addNodesToGroup = function(group, nodes) {  
+  this.engine.addResources(group, nodes);
+}
+
 EdEditor.prototype.selectApplication = function(t) {
   var modal = createDialog("Select an application for Node");
-  var container = $(".modal-container", dialog).html("<form id=\"application\"></form>");  
+  var container = $(".modal-container", modal).html("<form id=\"application\"></form>");  
   $("#application").buildForm(
   {
     "elements" : 
@@ -64,12 +74,13 @@ EdEditor.prototype.selectApplication = function(t) {
 }
 
 EdEditor.prototype.selectGroup = function(t) {
-  var modal = createDialog("Select a Group for the node");
-  var groups = ""
-  var i = 0;
-  var total = this.groups.length;
-  for (i=this.groups.length;i>0;--i){
-    groups = groups + "<li class=\"group\"><div class=\"group-color\" style=\"background-color: "+rgb_color(i/total)+"\"></div>  "+this.groups[i-1]+"</li>";
+  var engine = this.engine;
+  var modal = createDialog("Select a Group for the node"), 
+      i = 0, 
+      total = engine.group_keys.length, 
+      groups = "";
+  for (i=engine.group_keys.length;i>0;--i){
+    groups = groups + "<li class=\"group\"><div class=\"group-color\" style=\"background-color: "+rgb_color(i/total)+"\"></div>  "+engine.group_keys[i-1]+"</li>";
   }
   var container = $(".modal-container", modal).html("<form id=\"add-group\"></form><div class=\"clear\"></div><ul id=\"groups\">"+groups+"</ul>");
   $("#add-group").buildForm(
@@ -111,13 +122,13 @@ EdEditor.prototype.onNodeAdd = function(evt) {
 EdEditor.prototype.onGroupAdd = function(evt) {  
   var params = $("#add-group").formParams();
   evt.data.editor.addGroup(params.group.name);
-  var modal = $(".modal");
-  modal.removeClass("dialog-active");
-  modal.hide();  
+  hideDialog();
 }
 
 EdEditor.prototype.onGroupSelection = function(evt) {
-  
+  var text = $(evt.target).text().trim(), nodes = $("node-selected");
+  evt.data.editor.addNodesToGroup(text, nodes);
+  hideDialog();
 }
 
 EdEditor.prototype.onPreferencesOpen = function(evt) {  
@@ -127,17 +138,27 @@ EdEditor.prototype.onPreferencesOpen = function(evt) {
 EdEditor.prototype.bindings =
 EdEditor.prototype.bindEvents = function() {
   var editor = this;
+  $(".node").live("click", function(e){
+      $(e.target).toggleClass("node-selected");
+  });
   $(".node").contextMenu('nodeCtxMenu', { 
+    onContextMenu : function(e) {
+      $(e.target).addClass("node-selected");
+      return true;
+    },
     bindings : {
-      'application' : editor.selectApplication,
-      'group' : editor.selectGroup,
-      'properties' : editor.selectProperties
+      'application' : editor.selectApplication.bind(editor),
+      'group' : editor.selectGroup.bind(editor),
+      'properties' : editor.selectProperties.bind(editor)
     }
   });
   $(".node-add-action").live("click", {editor : this}, this.onNodeAdd)
   $(".group-add-action").live("click", {editor : this}, this.onGroupAdd)
-  $("li.group").live("click", {editor : this}, this.onGroupSelection)
+  $("#groups > li.group").live("click", {editor : this}, this.onGroupSelection)
   $(".preferences-view-action").live("click", {editor : this}, this.onPreferencesOpen)
+  $("#source").focus({editor:this}, function(evt){
+    evt.data.editor.engine.getGeneratedCode();
+  });
   
 }
 

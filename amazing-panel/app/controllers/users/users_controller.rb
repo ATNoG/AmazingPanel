@@ -21,6 +21,14 @@ class Users::UsersController < Library::ResourceController
       return User.new(model)
     end
   end 
+  # Only the owner or the admins can write/edit resource
+  def has_resource_permission()
+    resource = resource().find(params[:id])
+    unless (current_user.admin? or current_user == resource)
+      return head(:forbidden)
+    end
+    return true
+  end
   
   def show
     @user = User.find(params[:id])

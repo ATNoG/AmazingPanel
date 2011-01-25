@@ -22,13 +22,15 @@
       <%= label_tag :file %>
       <%= file_field_tag :file %>
     </div>
-  <% end %>
+<% end %>
   <br/> 
   
+<% if editor == true %>
   <p>   
     <%= render :partial => 'oedl', :locals => { :args => {} } %>
   </p>  
   <br/> 
+<% end %>
 
 
   <div class="actions">

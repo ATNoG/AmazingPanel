@@ -1,4 +1,4 @@
-$("#code").html("<%= escape_javascript(text_area_tag(:code, @content.readlines, :cols => 0, :rows => 30)) %>")
+$("#source").html("<%= escape_javascript(text_area_tag(:code, @code, :cols => 0, :rows => 30)) %>")
 if (CodeMirror != undefined){
   CodeMirror.fromTextArea('code', {
     parserfile: ["../tokenizeruby.js", "../parseruby.js"],

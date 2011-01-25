@@ -139,10 +139,13 @@ class Library::EdsController < Library::ResourceController
     redirect_to(eds_path, :error => 'Error removing Experiment Definition');
   end 
   
-  # POST /eds/new/code.js
+  # POST /eds/code.js
   def code
-    params[:groups].each do |g|
-    end     
-  end
-  
+    meta = params[:meta]
+    ruby2ruby = Ruby2Ruby.new
+    @code = ""
+    meta[:groups].each do |group|
+      @code += ruby2ruby.process(s(:block, s(:call, nil, "defGroup".to_sym, s(:arglist, s(:str, group.to_s)))))
+    end 
+  end  
 end
