@@ -132,9 +132,9 @@ EdEditor.prototype.onPreferencesOpen = function(evt) {
 }
 
 EdEditor.prototype.bindings = {
-  application : this.selectApplication.bind(this), 
-  group : this.selectGroup.bind(this), 
-  properties : this.selectProperties.bind(this)
+  application : selectApplication, 
+  group : selectGroup.bind, 
+  properties : selectProperties
 }
 
 EdEditor.prototype.bindEvents = function() {

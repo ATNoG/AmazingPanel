@@ -18,27 +18,25 @@ module OMF
         end
         
         attr_accessor :tables, :config
-        def initialize(experiment, app={})
+        def initialize(experiment, args, app={})
           @config = { 
             :adapter => "sqlite3", 
-            :database => "#{Rails.root}/inventory/experiments/#{experiment.id}.sq3" 
-          }
-          
-          @tables = {}
+            :database => "#{APP_CONFIG['exp_results']}/#{experiment.id}/#{args[:run]}/#{experiment.id}_#{args[:run]}.sq3" }
+          @tables = { }
           if (app == {})
             load_models(self.class)
           else
             create_models(app)
           end
         end
-        
+      
         def select_model_by_metric(app, metrics)
           ts = Array.new()
           Data.connection.tables.each do |t|
             if (app.select {|e| t.include?(e) }).length > 0         
             #pp "for <#{t}> --> #{has_app}"
-              if (metrics.select {|mt| t.include?(mt[:name]) }).length > 0
-                ts.push(t)
+            if (metrics.select {|mt| t.include?(mt[:name]) }).length > 0
+                  ts.push(t)
               end
             end
           end
@@ -55,17 +53,18 @@ module OMF
         end
         
         protected
-        def load_models(klass)
-          klass.constants.each do |rt|
-            rt_class = klass.const_get(rt)
-            rt_superclass = rt_class.superclass
+          def load_models(klass)
+            klass.constants.each do |rt|
+              rt_class = klass.const_get(rt)
+              rt_superclass = rt_class.superclass
               unless rt_superclass != DataGenerated
-              #puts "Class: #{rt_class}"
-              rt_class.establish_connection(@config)
-              @tables[rt_class.to_s] = rt_class
+                #puts "Class: #{rt_class}"
+                rt_class.establish_connection(@config)
+                @tables[rt_class.to_s] = rt_class
+              end
             end
-          end
-        end   
+          end   
       end
   end
 end
+

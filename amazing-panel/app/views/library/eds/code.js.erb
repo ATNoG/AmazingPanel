@@ -1,0 +1,15 @@
+$("#code").html("<%= escape_javascript(text_area_tag(:code, @content.readlines, :cols => 0, :rows => 30)) %>")
+if (CodeMirror != undefined){
+  CodeMirror.fromTextArea('code', {
+    parserfile: ["../tokenizeruby.js", "../parseruby.js"],
+    stylesheet: "/stylesheets/codemirror/rubycolors.css",
+    path: "/javascripts/codemirror/base/",
+    lineNumbers: false,
+    textWrapping: true,
+    indentUnit: 2,
+    parserConfig: {},
+    readOnly: true,
+    height: "465px",
+    width: "100%"
+  }, 0);
+}

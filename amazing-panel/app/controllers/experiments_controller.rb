@@ -2,7 +2,7 @@ load 'omf.rb'
 load 'omf/experiments.rb'
 
 class ExperimentsController < ApplicationController
-  include OMF::Experiments
+  include OMF::Experiments::Controller
   include Library::SysImagesHelper
 
   #layout 'experiments'
@@ -31,7 +31,7 @@ class ExperimentsController < ApplicationController
 
   def show
     @experiment = Experiment.find(params[:id])
-    ec = OMF::Experiments::ExperimentControllerProxy.new(params[:id].to_i)
+    ec = OMF::Experiments::Controller::Proxy.new(params[:id].to_i)
   	@status = @experiment.status
     @nodes = Hash.new()
     @experiment.resources_map.each do |rm|
@@ -39,7 +39,7 @@ class ExperimentsController < ApplicationController
     end
     
     unless params.has_key?("resources")    
-      #@log = OMF::Experiments::ExperimentControllerProxy.new(params[:id].to_i).log
+      #@log = OMF::Experiments::Controller::Proxy.new(params[:id].to_i).log
       @log = ""
     end
     
@@ -155,7 +155,7 @@ class ExperimentsController < ApplicationController
   end
 
   def run
-    ec = OMF::Experiments::ExperimentControllerProxy.new(params[:id].to_i)
+    ec = OMF::Experiments::Controller::Proxy.new(params[:id].to_i)
     @experiment = Experiment.find(params[:id])
     @error = "Another Experiment is running"
     if ec.check(:init)
@@ -175,7 +175,7 @@ class ExperimentsController < ApplicationController
   end
 
   def prepare
-    ec = OMF::Experiments::ExperimentControllerProxy.new(params[:id].to_i)
+    ec = OMF::Experiments::Controller::Proxy.new(params[:id].to_i)
     @error = "Another Experiment is running"
     if ec.check(:init)
       @error = nil
@@ -188,7 +188,7 @@ class ExperimentsController < ApplicationController
   end
 
   def start
-    ec = OMF::Experiments::ExperimentControllerProxy.new(params[:id].to_i)
+    ec = OMF::Experiments::Controller::Proxy.new(params[:id].to_i)
     @error = "Another Experiment is running";
     if ec.check(:prepared)
       @error = nil
@@ -203,7 +203,7 @@ class ExperimentsController < ApplicationController
   end
 
   def stop
-    ec = OMF::Experiments::ExperimentControllerProxy.new(params[:id].to_i)
+    ec = OMF::Experiments::Controller::Proxy.new(params[:id].to_i)
     @error = "Another Experiment is running";
     if ec.check(:started) or ec.check(:prepared)
       @error = nil
@@ -212,7 +212,7 @@ class ExperimentsController < ApplicationController
   end
 
   def stat 
-    ec = OMF::Experiments::ExperimentControllerProxy.new(params[:id].to_i)
+    ec = OMF::Experiments::Controller::Proxy.new(params[:id].to_i)
 	@experiment = Experiment.find(params[:id])
 	status = @experiment.status
     slice = nil

@@ -24,37 +24,31 @@ module OMF
         c = Context.new(exp_id)
         #pp c 
         eval(script, c.getBinding(), file)
-        pp c 
+        return c 
       end
     end
 
     # Get the appropiate results for the experiment
-    def self.results(experiment)
+    def self.results(experiment,args)
       ed = experiment.ed
       ed_content = OMF::Workspace.open_ed(ed.user, "#{ed.id.to_s}.rb")
-      parser = OMF::Experiments::OEDLParser.new(ed_content)
-      data = OMF::Experiments::GenericResults.new(experiment)
-      return { :metrics => parser.getApplicationMetrics(), :results => data }
-    end
-    
-    # Prepare an experiment
-    def self.prepare(id)
-      begin
-        puts "Preparing experiment #{id}"
-
-        images = experiment.sys_images.group(:id).inspect
-        images.each do |i|
-          nodes = experiment.resources_map.find(:sys_image => i.id)       
+      #parser = OMF::Experiments::OEDLParser.new(ed_content)
+      script = OMF::Experiments::ScriptHandler.exec(experiment.id, ed)
+      # Iterate over groups
+      app_metrics = Array.new()
+      script.properties[:groups].each do |group,v|
+        apps = v[:node][:applications]
+        metrics = Array.new();
+        pp apps
+        apps.each do |app, properties|
+          properties[:metrics].each do |name, options|
+            metrics.push({:name => name})
+          end          
+          app_metrics.push({:app => app, :metrics => metrics });
         end
-        return true
-      rescue
-        return false
-      end
-    end
-
-    # Start an experiment
-    def self.start
-      return true
+      end      
+      data = OMF::Experiments::GenericResults.new(experiment, args)
+      return { :metrics => app_metrics, :results => data }
     end
   end
 end
