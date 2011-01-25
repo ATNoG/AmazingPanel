@@ -1,27 +1,17 @@
-Array.remove = function(array, from, to) {
-  var rest = array.slice((to || from) + 1 || array.length);
-  array.length = from < 0 ? array.length + from : from;
-  return array.push.apply(array, rest);
+Array.prototype.remove = function(from, to) {
+  var rest = this.slice((to || from) + 1 || this.length);
+  this.length = from < 0 ? this.length + from : from;
+  return this.push.apply(this, rest);
 };
 
-function Node(id){
-  this.id = this.properties.id = id;
+function Node(g, id){
+  this.id = id;
+  this.graph = g;
 }
 
-Node.prototype.properties = {
-  id: 0,
-  group: "",
-  application: "",
-  net : {
-    w0 : {
-      
-    }
-  }
-}
-
-Node.prototype.render = function(paper,x,y){
+Node.prototype.render = function(x,y){
   var id = this.id;
-  var svg = paper;
+  var svg = this.graph.paper;
   var g = svg.group({id : id+"", transform: 'translate(0, 0)'});
   g.id = id;
   var gbbox = svg.group(g);
@@ -37,6 +27,7 @@ Node.prototype.render = function(paper,x,y){
         var svg = $(evt.target).parents('svg');
         var el = $("#"+evt.data.id, svg)
         el.remove();
+        this.graph.nodes.remove(id);
       }, 
       show_bbox: function(evt){    
         var svg = $(evt.target).parents('svg');
@@ -51,9 +42,9 @@ Node.prototype.render = function(paper,x,y){
     }
   }
 
-  node.close_cross.click({id:id},node.cb.del_node);
-  node.circle.mouseout({id:id},node.cb.show_bbox);
-  node.close_cross.mouseenter({id:id},node.cb.show_bbox);
+  node.close_cross.click({id:id},node.cb.del_node.bind(this));
+  node.circle.mouseout({id:id},node.cb.show_bbox.bind(this));
+  node.close_cross.mouseenter({id:id},node.cb.show_bbox.bind(this));
   $(gbbox).mouseout({id:id},node.cb.hide_bbox);
   $(gbbox).bind('drag',function(evt,o){
     var p_move = g.getAttribute('transform').replace(/\(|\)|[a-z ]/g,"");        
@@ -91,14 +82,14 @@ Graph.prototype = {
 }
 
 Graph.prototype._createNode = function(x, y, id){
-  var node = new Node(id)
-  node.render(this.paper,x,y);
+  var node = new Node(this, id)
+  node.render(x,y);
   return node;
 }
 
-Graph.prototype.node = function(render){
+Graph.prototype.node = function(id, render){
   var graph = this;
-  var id = graph.nid
+  graph.nid = id;
   var node = (render == undefined) ? graph._createNode(100,100,id) : render(100,100,id);  
   nid = id + 1;
   if (graph.nodes == undefined){

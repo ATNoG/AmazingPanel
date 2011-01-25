@@ -104,6 +104,9 @@ GEM
       ruby-debug-base (~> 0.10.3.0)
     ruby-debug-base (0.10.3)
       linecache (>= 0.3)
+    ruby2ruby (1.2.5)
+      ruby_parser (~> 2.0)
+      sexp_processor (~> 3.0)
     ruby_parser (2.0.5)
       sexp_processor (~> 3.0)
     sexp_processor (3.0.5)
@@ -136,6 +139,7 @@ DEPENDENCIES
   rspec (= 2.2.0)
   rspec-rails (= 2.2.1)
   ruby-debug
+  ruby2ruby
   ruby_parser (= 2.0.5)
   single_test
   sqlite3-ruby

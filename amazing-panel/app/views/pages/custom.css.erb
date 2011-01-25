@@ -659,6 +659,42 @@ ul#action-list > li {
   margin-left: 5px;
 }
 
+#add-group {
+  border-top: 1.5px solid #A4A4A4;
+  border-bottom: 1.5px solid #A4A4A4;
+  height: 30px;
+  padding: 5px;
+}
+
+#add-group > .group-add-action {
+  margin-top: -25px;
+  margin-left: 5px;
+}
+
+#groups {
+  overflow: auto;
+}
+
+#groups > .group {
+  height: 30px; 
+  font-size: 11px;
+  font-weight: bold;
+  color: black;
+  border-bottom: 1px solid #a4a4a4;
+  padding: 2px;  
+}
+
+#groups > .group:hover {  
+  background-color: #ffdd88;
+  cursor: pointer;
+}
+#groups > .group > .group-color {
+  height: 20px;
+  width: 20px;
+  float:left;
+  padding: 2px;
+}
+
 #design > .sidebar > .preferences-button {
   position: absolute;
   top: 86%;
@@ -687,42 +723,47 @@ ul#action-list > li {
   padding: 5px;
 }
 
-.node, .node-label {
+
+/** OEDL Designer SVG CSS
+  *
+  */
+/*
+circle.node, text.node-label {
   text-anchor: middle;
   font-size: 10px;
   cursor: pointer;
 }
 
-.node {
+circle.node {
   stroke-width: 1.5;
   fill: #fff;
   stroke: black;
 }
 
-.node-box {
+g.node-box {
   display:none;
   cursor: move;
 }
 
-.node-box > rect {
+g.node-box > rect {
   stroke-width: 0.5;
   stroke: #bfbfbf;
   fill: #fff;
 }
 
-.node-box > .node-box-close-button {
+g.node-box > path.node-box-close-button {
   stroke-width: 0.5;
   stroke: #bfbfbf;
   fill: #fff;
   cursor: pointer;
 }
 
-.node-box > .node-box-close-button:hover {
+g.node-box > path.node-box-close-button:hover {
   opacity: 0.8;
   stroke-width: 2;
   stroke: red;
 }
-
+*/
 /*
 #oedl-design-viewer {
   height: 20px;
@@ -1029,7 +1070,7 @@ a.action > img {
 
 <% if params[:c] == "admin/testbeds" and params[:a] == "show" %>  
   <%= render :partial => "testbeds", :locals => { :selectable => true, :toggleable => false} %>
-<% elsif params[:c] == "experiments" %> 
+<% elsif params[:c] == "experiments" or (params[:c] == "library/eds" and params[:a] == "new") %>
   <%= render :partial => "testbeds", :locals => { :selectable => true, :toggleable => true } %>
 <% elsif params[:c] == "testbeds" %> 
   <%= render :partial => "testbeds", :locals => { :selectable => true, :toggleable => false } %>

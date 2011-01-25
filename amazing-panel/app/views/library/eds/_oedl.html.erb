@@ -3,13 +3,15 @@
   <li><a href="#source">Source</a></li>
 </ul>
 <div id="design" class="oedl-tab tab">
+  <%= render :partial => 'testbeds/map' %>
+<!--
   <div class="oedl-actions sidebar">
     <div class="node-add-action button">Node</div>
     <div class="preferences-view-action ed-editor-button preferences-button">Preferences</div>
-<!--    <div class="ed-editor-context-menu-node">A Context Menu</div> -->
   </div>
   <div class="canvas">
-  </div>
+  </div>  
+-->
 </div>
 <div id="source" class="oedl-tab tab">
   <% if args.has_key?(:code) %>

@@ -22,6 +22,7 @@ module OMF
         script = OMF::Workspace.open_ed(ed.user, "#{ed.id.to_s}.rb")
         file = OMF::Workspace.ed_for(ed.user, "#{ed.id.to_s}.rb")
         c = Context.new(exp_id)
+        #pp c 
         eval(script, c.getBinding(), file)
         pp c 
       end

@@ -119,12 +119,11 @@ module OMF
       end
       
       def defGroup(name, selector=nil, &block)
-        if @properties[:groups] != Hash
+        if @properties[:groups].class != Hash
           @properties[:groups] = Hash.new()
         end
         @properties[:groups][name] = {:selector => selector}
         block.call(Node.new(self, name))
-        pp self
       end      
       
       def defEvent(name, interval = 5, &block)

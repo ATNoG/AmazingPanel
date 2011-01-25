@@ -1,9 +1,14 @@
+function createDialog(title, options){
+  var modal = $(".modal");
+  var title = $(".title-box", modal).html(title);
+  modal.addClass("dialog-active");
+  return modal;
+}
+
 function EdEditor() {
   var canvas = $(".canvas")
-  this.engine = EdEditorEngine();
-  /*this.paper = new Raphael(canvas[0], canvas.css("width"), canvas.css("height"))
-  this.graph = this.paper.graph;*/
-  this.graph = new Graph(".canvas") 
+  this.engine = new Engine();
+  /*this.graph = new Graph(".canvas")*/
   this.last_id = -1;
 }
 
@@ -24,33 +29,33 @@ EdEditor.prototype.ctxRender = function(evt) {
 EdEditor.prototype.ctxClose = function(evt) { 
   $(".node-context-menu, .node-link").hide();
 }
-/*
-EdEditor.prototype.renderNode = function(r, n) {
-  text.addClass("node-label");
-  circle.addClass("node");
-  ctx_menu.addClass("node-context-menu");
-  return set;
-}
-*/
 
 EdEditor.prototype.addNode = function(x,y) {
-  var node = this.graph.node();  
-  node.g.circle.contextMenu('nodeCtxMenu', node);
+  var id = this.engine.groups.default.getId();
+  var resource = new Resource(id);
+  this.engine.addResource('default', resource);
+  /*
+  var node = this.graph.node(id);  
+  */
+
   node.bindings.application = this.selectApplication.bind({id:node.id});
-  node.bindings.group = this.selectGroup.bind({id:node.id});
+  node.bindings.group = this.selectGroup.bind({id:node.id, groups : this.engine.group_keys});
   node.bindings.properties = this.selectProperties.bind({id:node.id});
 }
 
+EdEditor.prototype.addGroup = function(name) {  
+  this.engine.addGroup(name);
+}
+
 EdEditor.prototype.selectApplication = function(t) {
-  var modal = $(".modal");
-  var title = $(".title-box", modal).html("Select an application for Node");
-  var container = $(".modal-container", modal).html("<form id=\"add-application\"></form>");
-  $("#add-application").buildForm(
+  var modal = createDialog("Select an application for Node");
+  var container = $(".modal-container", dialog).html("<form id=\"application\"></form>");  
+  $("#application").buildForm(
   {
     "elements" : 
       [{
         "type" : "select",
-        "name" : "application",
+        "name" : "resource[application]",
         "caption" : "Application",
         "options" : {
           "otr2" : "OMF Traffic Receiver",
@@ -66,8 +71,28 @@ EdEditor.prototype.selectApplication = function(t) {
 }
 
 EdEditor.prototype.selectGroup = function(t) {
-  var modal = $(".modal");
-  var title = $(".title-box", modal).html("Select a Group for the node");
+  var modal = createDialog("Select a Group for the node");
+  var groups = ""
+  var i = 0;
+  var total = this.groups.length;
+  for (i=this.groups.length;i>0;--i){
+    groups = groups + "<li class=\"group\"><div class=\"group-color\" style=\"background-color: "+rgb_color(i/total)+"\"></div>  "+this.groups[i-1]+"</li>";
+  }
+  var container = $(".modal-container", modal).html("<form id=\"add-group\"></form><div class=\"clear\"></div><ul id=\"groups\">"+groups+"</ul>");
+  $("#add-group").buildForm(
+  { "elements" : [{
+        "name" : "group[name]",
+        "caption" : "Group",
+        "type" : "text"
+      }, {
+        "type" : "div",
+        "class" : "clear",
+      }, {
+        "type" : "div",
+        "class" : "group-add-action button",
+        "html" : "Add"
+      }]
+  });  
   modal.addClass("dialog-active");
   modal.show();
 }
@@ -90,17 +115,34 @@ EdEditor.prototype.onNodeAdd = function(evt) {
   evt.data.editor.addNode();
 }
 
-EdEditor.prototype.onGroupAdd = function(evt) {
-  evt.data.editor.addGroup();
+EdEditor.prototype.onGroupAdd = function(evt) {  
+  var params = $("#add-group").formParams();
+  evt.data.editor.addGroup(params.group.name);
+  var modal = $(".modal");
+  modal.removeClass("dialog-active");
+  modal.hide();  
+}
+
+EdEditor.prototype.onGroupSelection = function(evt) {
+  
 }
 
 EdEditor.prototype.onPreferencesOpen = function(evt) {  
   evt.data.editor.loadPreferences();
 }
 
-EdEditor.prototype.bindEvents = function(editor) {
+EdEditor.prototype.bindings = {
+  application : this.selectApplication.bind(this), 
+  group : this.selectGroup.bind(this), 
+  properties : this.selectProperties.bind(this)
+}
+
+EdEditor.prototype.bindEvents = function() {
+  $(".node").contextMenu('nodeCtxMenu', this.bindings);
   $(".node-add-action").live("click", {editor : this}, this.onNodeAdd)
   $(".group-add-action").live("click", {editor : this}, this.onGroupAdd)
+  $("li.group").live("click", {editor : this}, this.onGroupSelection)
   $(".preferences-view-action").live("click", {editor : this}, this.onPreferencesOpen)
+  
 }
 

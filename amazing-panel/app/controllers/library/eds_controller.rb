@@ -1,3 +1,8 @@
+require 'ruby_parser'
+require 'ruby2ruby'
+require 'pp'
+require 'omf.rb'
+
 class Library::EdsController < Library::ResourceController
   def resource_group()
     return "eds"
@@ -52,6 +57,8 @@ class Library::EdsController < Library::ResourceController
   # GET /eds/new.xml
   def new
     @ed = Ed.new
+    @testbed = Testbed.first 
+    @nodes = OMF::GridServices::TestbedService.new(@testbed.id).mapping();
   end
 
   # GET /eds/1/edit
@@ -132,7 +139,10 @@ class Library::EdsController < Library::ResourceController
     redirect_to(eds_path, :error => 'Error removing Experiment Definition');
   end 
   
+  # POST /eds/new/code.js
   def code
+    params[:groups].each do |g|
+    end     
   end
   
 end
