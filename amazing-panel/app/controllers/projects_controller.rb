@@ -1,10 +1,12 @@
 class ProjectsController < ApplicationController
   include ProjectsHelper
   before_filter :authenticate
-  append_before_filter :is_project_leader, :only => [:assign, :unassign, :make_leader, :update, :destroy]
+  append_before_filter :is_project_leader, :only => [:assign, :assign_user, :make_leader, :update, :destroy]
+  append_before_filter :is_only_leader, :only => [:unassign_user]
 
   layout 'general'
   respond_to :html
+
   # GET /projects
   # GET /projects.xml
   def index    
@@ -168,9 +170,29 @@ class ProjectsController < ApplicationController
   private
   def is_project_leader
     project = Project.find(params[:id])
+    begin
     if (project.users.find(current_user.id).leader == "1" or current_user.admin?)
       return true
     end
-    head :forbidden
+    rescue ActiveRecord::RecordNotFound
+      render 'shared/403', :status => 403
+      return false
+    end
+  end
+  
+  def is_only_leader  
+    if !is_project_leader
+      return false
+    end
+    if params[:user_id].to_i != current_user.id
+      return true
+    end
+    leaders = ProjectsUsers.where({:project_id => params[:id], :leader => '1'})
+    if leaders.length == 1
+      flash["info"] = "There's only one manager. Cannot unassign user."
+      redirect_to(assign_project_path(@project))
+      return false
+    end
+    return true
   end
 end
