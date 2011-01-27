@@ -20,7 +20,7 @@
     <li>     
       <% if make_leader == true %>
         <% if is_user_leader(@project, user) %>
-          <%= image_tag('star.png', :class => "leader-badge") %>
+          <%= image_tag('star.png', :class => "leader-badge", :title => "Manager") %>
         <% end %>
       <% end %>    
       <div class="user-info">	
@@ -74,8 +74,8 @@
      <td class="email-cell"><%= user.email %></td>
      <td><%= user.username %></td>
 -->
-     <td><%= user.id %></td>
-     <td class="name-cell" ><%= user.name %></td>
+     <td><%= link_to user.id, user_path(user) %></td>
+     <td class="name-cell" ><%= link_to user.name, user_path(user) %></td>
      <td class="email-cell"><%= user.email %></td>
      <td><%= user.username %></td>
      <td>
@@ -88,7 +88,7 @@
                         { 
                           :link => true, 
                           :method => :put,
-                          "title" => "Make manager of project #{user.name}" 
+                          "title" => "Make manager of project #{@project.name}" 
                         }) %>
         	  <% end %>
     	    <% end %>

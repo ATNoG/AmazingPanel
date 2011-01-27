@@ -4,6 +4,7 @@ load 'omf/experiments.rb'
 class ExperimentsController < ApplicationController
   include OMF::Experiments::Controller
   include Library::SysImagesHelper
+  include ProjectsHelper
 
   #layout 'experiments'
   before_filter :authenticate
@@ -47,7 +48,8 @@ class ExperimentsController < ApplicationController
     when params.has_key?("resources")
       @resources = @experiment.resources_map
       @testbed = @resources.first.testbed
-      @nodes = OMF::GridServices.testbed_status(@testbed.id)
+      @nodes = OMF::GridServices::TestbedService.new(@testbed.id).mapping();
+      #@nodes = OMF::GridServices.testbed_status(@testbed.id)
     when @experiment.finished?
       run = params[:run]      
       ret = run.nil? ? fetch_results(@experiment) : fetch_results(@experiment, run) 
@@ -81,6 +83,8 @@ class ExperimentsController < ApplicationController
     if (params.key?('reset') or
         session[:phase].nil? or 
        (session[:phase] == Phase.first and session[:phase_status] == 0))
+       @projects = Project.all.select { |p| !project_is_user_assigned?(p, current_user.id) ? true : false }.collect { |p| [p.name, p.id] }
+       @eds = Ed.all.collect {|e| [ e.name, e.id ] }
       reset()
     else
       if (@current_phase == Phase.MAP)
@@ -136,7 +140,7 @@ class ExperimentsController < ApplicationController
   def destroy
     @exp = Experiment.find(params[:id])
     @exp.destroy
-    redirect_to(experiments_url) 
+    redirect_to(project_path(@experiment.project)) 
   end
 
   def update
@@ -195,7 +199,7 @@ class ExperimentsController < ApplicationController
 	  	pid = fork { 
         ec.start()
         @experiment = Experiment.find(params[:id])
-        experiment_conclusion(user, @experiment)
+        Mailers.experiment_conclusion(user, @experiment)
         render :nothing => true
       }
 	  Process.detach(pid)

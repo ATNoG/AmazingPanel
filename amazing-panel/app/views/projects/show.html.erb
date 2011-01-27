@@ -5,9 +5,9 @@
       <%= new_action(new_experiment_path(:reset => 1), {"original-title" => "New Experiment"} ) %> 
     <% end %>
     <% if is_user_leader(@project, current_user) %>
-      <%= edit_action(edit_project_path(@project)) %>
-      <%= assign_action(assign_project_path(@project)) %>
-      <%= delete_action(@project, { :confirm => "Are you sure?" }) %>
+      <%= edit_action(edit_project_path(@project), {"original-title" => "Edit workspace"} ) %>
+      <%= assign_action(assign_project_path(@project), {"original-title" => "Assign users to workspace"} ) %>
+      <%= delete_action(@project, { :confirm => "Are you sure you want to delete this project?\nAll associated experiments will also be deleted.", "original-title" => "Delete workspace" }) %>
     <% end %>
   <% end %>
 <% end %>
@@ -42,4 +42,9 @@
     </p>
     <% end %>
     </div>
+    </div>
+<% end %>
+
+<% content_for :footer do %>
+<%= modal_dialog("", "modal-dialog") %>
 <% end %>

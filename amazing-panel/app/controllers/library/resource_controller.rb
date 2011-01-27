@@ -152,7 +152,7 @@ class Library::ResourceController < ApplicationController
     def has_resource_permission()
       resource = resource().find(params[:id])
       unless (current_user.admin? or current_user == resource.user)
-        return head(:forbidden)
+        return render 'shared/403', :status => 403
       end
       return true
     end

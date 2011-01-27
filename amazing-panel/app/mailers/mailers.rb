@@ -11,6 +11,6 @@ class Mailers < ActionMailer::Base
     @user = user
     @experiment = experiment
     mail(:to => user.email,
-         :subject => "[AMazINg] Experiment ##{experiment.id}, Run #{experiment.runs}")
+         :subject => "[AMazINg] Experiment ##{experiment.id}, Run #{experiment.runs.to_i - 1}")
   end
 end

@@ -13,7 +13,7 @@
         <div class="table-actions">
           <%= add_image_action(experiment_path(exp, :format => "js")+"?resources",
                        'network2.png', '', { :remote => true, :link => true, "original-title" => "See Resource Map in this experiment" }) %>
-          <%= delete_action(exp, {:link => true, :text => false, "original-title" => "Delete Experiment"}) %>
+          <%= delete_action(exp, {:link => true, :text => false, "original-title" => "Delete Experiment", :confirm => "Are you sure?"}) %>
     	  </div>
       </td>
     </tr>

@@ -7,6 +7,7 @@ module ProjectsHelper
     projects_path.to_s+"/#{project.id}/user/#{user.id}/leader"
   end
   
+  # 'XXX' method returns the opposite
   def project_is_user_assigned?(project, id)
      return (project.user_ids.index(id).nil?)
   end  
@@ -43,8 +44,8 @@ module ProjectsHelper
 
   def user_unassigned_table_line_template(project_id)
     return ("<tr>"+
-    "<td>${user.id}</td>"+
-    "<td class=\"name-cell\">${user.name}</td>"+
+    "<td><a href=\"/users/${user.id}\">${user.id}</a></td>"+
+    "<td class=\"name-cell\"><a href=\"/users/${user.id}\">${user.name}</a></td>"+
     "<td class=\"email-cell\">${user.email}</td>"+
     "<td>${user.username}</td>"+
     "<td><div class=\"table-actions\">"+
@@ -55,8 +56,8 @@ module ProjectsHelper
   
   def user_assigned_table_line_template(project_id)
      return ("<tr>"+
-          "<td>${user.id}</td>"+
-          "<td class=\"name-cell\">${user.name}</td>"+
+          "<td><a href=\"/users/${user.id}\">${user.id}</a></td>"+
+          "<td class=\"name-cell\"><a href=\"/users/${user.id}\">${user.name}</a></td>"+
           "<td class=\"email-cell\" >${user.email}</td>"+
           "<td>${user.username}</td>"+
           "<td><div class=\"table-actions\">"+        

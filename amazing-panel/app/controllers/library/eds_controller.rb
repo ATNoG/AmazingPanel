@@ -1,9 +1,9 @@
-require 'ruby_parser'
-require 'ruby2ruby'
-require 'pp'
 require 'omf.rb'
 
 class Library::EdsController < Library::ResourceController
+  include OMF::GridServices
+  include OMF::Experiments::OEDL
+
   def resource_group()
     return "eds"
   end
@@ -141,11 +141,7 @@ class Library::EdsController < Library::ResourceController
   
   # POST /eds/code.js
   def code
-    meta = params[:meta]
-    ruby2ruby = Ruby2Ruby.new
-    @code = ""
-    meta[:groups].each do |group|
-      @code += ruby2ruby.process(s(:block, s(:call, nil, "defGroup".to_sym, s(:arglist, s(:str, group.to_s)))))
-    end 
+    scriptgen = OEDLScript.new(params[:meta])
+    @code = scriptgen.toRuby();
   end  
 end

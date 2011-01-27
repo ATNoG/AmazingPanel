@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+  </head>
+  <style>
+    pre {font-family:arial, helvetica; font-size:12px;}      
+  </style>
+  <body>
+  <pre>
+Dear <% @user.name %>, the experiment #<%= experiment.id %>has finished.
+
+  Sign in <%= link_to "here", experiment_path(@experiment)+"#results" %> to see your results.
+
+Best Regards,
+AMazINg Team
+  </pre>
+  </body>
+</html>

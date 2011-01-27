@@ -1,58 +1,62 @@
 module OMF
   module Experiments
     module OEDL
-
-      class OEDLParser < RubyParser
-        attr_accessor :apps
-
-        def initialize(ed)
-          super()
-          @raw = process(ed)
-          @apps = Array.new
-        end
-
-        def getApplicationMetrics()
-          @apps = @apps.clear()
-          getApplications()
-          getMetrics()
-          ret = Array.new()
-          @apps.each do |app|
-            ret.push({:app => app[:name], :metrics => app[:metrics]})
-          end
-          return ret
-        end
-
-        def getApplications()
-          @raw.each_of_type(:iter) do |i|
-            app = i[1]
-            if (app[2] == :addApplication)
-              app = { :sexp => app, :locals => app[1], :name => app[3][1][1].split(":"), :block => i[3], :metrics => Array.new() }
-              if @apps.index(app).nil? 
-                @apps.push(app)
-              end
-            end
+      class OEDLScript
+        attr_accessor :meta
+        
+        def initialize(args)
+          @meta = args
+          unless @meta.has_key?(:duration)
+            @meta[:duration] = 30
           end
         end
-
-        def getDuration        
+        
+        # Generates --
+        # defGroup(name, nodes) do |node|
+        # end
+        def createGroup(name)
+          return s(:block, s(:call, nil, "defGroup".to_sym, s(:arglist, s(:str, name.to_s))))
         end
-
-        def getSenderGroups
+        
+        #-Generates --
+        #  onEvent(:ALL_UP_AND_INSTALLED) do |node|
+        #   info "This is my first OMF experiment"
+        #   wait 10
+        #   allGroups.startApplications
+        #   info "All my Applications are started now..."
+        #   wait 5
+        #   allGroups.stopApplications
+        #   info "All my Applications are stopped now."
+        #   Experiment.done
+        #  end
+        def all_up()
+          startApplications = s(:call,  s(:call, nil, :allGroups, s(:arglist)), :startApplications, s(:arglist))
+          stopApplications = s(:call, s(:call, nil, :allGroups, s(:arglist)),:stopApplications, s(:arglist))
+          expDuration = s(:call, nil, :wait, s(:arglist, s(:lit, @meta[:duration])))
+          expDone = s(:call, s(:const, :Experiment), :done, s(:arglist))
+          onEvent = s(:call, nil, :onEvent, s(:arglist, s(:lit, :APP_UP_AND_INSTALLED)))
+          iterNode = s(:lasgn, :node)
+          all_up_block = s(:iter, onEvent, iterNode, s(:block, startApplications, expDuration, stopApplications, expDone))
+          return all_up_block
         end
-
-        def defReceiverGroups
+        
+        def toRuby()          
+          require 'ruby_parser'
+          require 'ruby2ruby'
+          require 'pp'
+          code = ""
+          ruby2ruby = Ruby2Ruby.new()
+          pp @meta
+          # generate groups
+          @meta[:groups].each do |group|
+            code += ruby2ruby.process(createGroup(group))
+          end 
+          # generate ALL_UP event
+          ruby2ruby = Ruby2Ruby.new()
+          code += ruby2ruby.process(all_up())
+          return code
         end
-
-        def getMetrics()
-          @apps.each do |app|
-            app[:block].each_of_type(:call) do |call|
-              if (call[2] == :measure)
-                app[:metrics].push({:name => call[3][1][1]})
-              end
-            end
-          end
-        end
-      end
+      end      
 
       class Experiment
       end

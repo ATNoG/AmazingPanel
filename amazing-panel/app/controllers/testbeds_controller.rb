@@ -23,7 +23,7 @@ class TestbedsController < ApplicationController
       past_timestamp = Integer(params['timestamp'])
       @interval = current_timestamp - past_timestamp
     end
-
+    flash['info'] = "Status in about 5 seconds"
     respond_with(@nodes)
   end
 end

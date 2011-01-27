@@ -3,12 +3,12 @@
 
   <div class="field">
     <%= f.label :ed, "From Library: "  %>
-    <%= f.select :ed_id, Ed.all.collect {|e| [ e.name, e.id ] } %>
+    <%= f.select :ed_id, @eds %>
   </div>
   
   <div class="field">
     <%= f.label :project, "Project: "  %>
-    <%= f.select :project_id, Project.all.collect {|p| [ p.name, p.id ] } %>
+    <%= f.select :project_id, options_for_select(@projects, session[:project_id].to_i) %>
   </div>
   
   <div class="field">

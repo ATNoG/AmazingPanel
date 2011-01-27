@@ -4,7 +4,8 @@ module Users::UsersHelper
     _projects = ""
     projects.each do |p|
       _p = Project.find(p.project_id)
-      li = content_tag(:li, image_tag(project_logo_path(_p)) + link_to(_p.name, project_path(_p)), :class => "project")
+      _name = link_to(_p.name, project_path(_p)) + (p.leader? ? image_tag('star.png', :class=>"leader-badge-profile") : "")
+      li = content_tag(:li, image_tag(project_logo_path(_p)) + _name, :class => "project")
       _projects += li.html_safe
     end    
     ul = content_tag(:ul, _projects.html_safe)

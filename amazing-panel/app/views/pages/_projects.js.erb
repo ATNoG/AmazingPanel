@@ -15,7 +15,7 @@ renderMenu = function( ul, items ) {
       var table = $(this.options.selector);
       var head = $("thead", table);
       var body = $("tbody", table);
-      $("*", body).remove();
+      $("*", body).remove();      
       $.each( items, function( index, item ) {
         self._renderItem( ul, item );
         self._renderTableItem(head, body, item);

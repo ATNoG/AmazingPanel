@@ -2,6 +2,14 @@
 $(document).ready(function(){
   $("a, .action").tipsy({ live: true });
   $(".flash-msg-integrated").slideDown(500).delay(5000).slideUp(200);
+  var descs = $("div.description"), sep = 50;
+  for (i=0;i<descs.length; ++i){
+    var text = $(descs[i]).html();
+    if (text.length > sep){
+      text = text.slice(0,sep);
+      $(descs[i]).html(text+"(...)");
+    }
+  }
   if ($(".tabs").length > 0) {
       $(".tab").hide();
       $(".tab:eq(0)").show();
@@ -15,7 +23,7 @@ $(document).ready(function(){
   	    active_tab.focus();
       });
 }
-  <% if (@c == "projects") %>
+  <% if (@c == "projects" and @a == "assign")%>
     <%= render :partial => 'projects' %>
   <% end %>
 

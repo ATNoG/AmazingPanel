@@ -44,7 +44,7 @@ li > a {
   padding: 0px 10px 0px 10px;
 }
 
-select, input[type=text], input[type=password] {
+select, input[type=text], input[type=file], input[type=password] {
   border:1px solid #ccc;  
   border-radius:5px;  
   -moz-border-radius:5px;  
@@ -458,7 +458,7 @@ ul.users {
   border: 1px dashed #c0c0c0;  
   overflow: auto;
   margin: 5px;
-  width: 120px;
+  width: 122px;
   padding-left: 5px;
 }
 
@@ -472,12 +472,6 @@ ul.users {
 
 #edit-profile-button {
   float: left;
-}
-
-.project img {
-  height: 36px;
-  width: 36px;
-  vertical-align: middle;
 }
 
 table {
@@ -866,14 +860,29 @@ a.action > img {
   height: 16px;
 }
 
+.leader-badge-profile {
+  float:right;
+  margin-top:6px;
+  margin-right:1px;
+  width: 16px !important;
+  height: 16px !important;
+}
+
+.project img {
+  height: 36px;
+  width: 36px;
+  vertical-align: middle;
+}
+
 .user-info {
   margin-left: 20px;  
 }
 
-.description {
-  overflow-y: auto;
-  height: 30px;
-  width: 450px;
+div.description {
+  overflow: hidden;
+  height: 20px;
+  width: 350px;
+  float: left !important;
 }
 
 .name-cell, .email-cell {
@@ -889,7 +898,7 @@ a.action > img {
 }
 
 .grid-view > thead > tr {
-  height: 30px;
+  height: 20px;
 }
 
 .grid-view > thead > tr > th {
@@ -1070,10 +1079,10 @@ a.action > img {
 
 <% if params[:c] == "admin/testbeds" and params[:a] == "show" %>  
   <%= render :partial => "testbeds", :locals => { :selectable => true, :toggleable => false} %>
-<% elsif params[:c] == "experiments" or (params[:c] == "library/eds" and params[:a] == "new") %>
+<% elsif params[:c] == "experiments" or params[:c] == "projects" or (params[:c] == "library/eds" and params[:a] == "new") %>
   <%= render :partial => "testbeds", :locals => { :selectable => true, :toggleable => true } %>
 <% elsif params[:c] == "testbeds" %> 
-  <%= render :partial => "testbeds", :locals => { :selectable => true, :toggleable => false } %>
+  <%= render :partial => "testbeds", :locals => { :selectable => false, :toggleable => false } %>
 <% end %>
 
 /** Experiments
@@ -1324,6 +1333,10 @@ a.action > img {
 
 .node-SUCCESS {
   color: green;
+}
+
+.prepared {
+  background-color: #C0FF94;
 }
 
 #status, #results, #log {

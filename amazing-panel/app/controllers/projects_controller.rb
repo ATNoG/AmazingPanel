@@ -23,6 +23,7 @@ class ProjectsController < ApplicationController
   def show
     @project = Project.find(params[:id])
     @experiments = Experiment.where(:project_id => params[:id])
+    session[:project_id] = params[:id]
   end
 
   # GET /projects/new
@@ -53,6 +54,7 @@ class ProjectsController < ApplicationController
       query = (term.nil? or term.length==0)  ? select.all : select.where(["name LIKE :name", {:name => "%#{term}%"}])
       @users = query
     end
+      @users = @users.length == 0 ? [{}] : @users;
       render :json => @users    
   end
 
@@ -126,7 +128,7 @@ class ProjectsController < ApplicationController
      Project.find(params[:id]).users.delete(@user)
      ProjectsUsers.create({:project_id => params[:id], :user_id => params[:user_id], :leader => 't'})
      
-     flash["success"] = @user.name.to_s + ' is also leader on ' + @project.name.to_s
+     flash["success"] = @user.name.to_s + ' is manager on ' + @project.name.to_s
      redirect_to(assign_project_path(@project)) 
   end
 

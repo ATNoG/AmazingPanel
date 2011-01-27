@@ -130,7 +130,8 @@ module OMF
           when s == "FAILED"
           msg = "Node failed to load..."
           end
-          nodes[id.to_s] ={ :progress => v["percentage"], :state => v["status"], :msg => msg } 
+          p = v["percentage"]
+          nodes[id.to_s] ={ :progress => (p.nil? ? "0" : p), :state => v["status"], :msg => msg } 
         end
         end
           state = ""

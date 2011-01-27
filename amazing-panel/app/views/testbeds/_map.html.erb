@@ -1,3 +1,12 @@
+<% if defined?(legend) and legend == true%>
+<div class="testbed-legend">
+  <p> Legend: </p>
+  <div class="node-state"><div class="node off"></div><span>Off</span></div>
+  <div class="node-state"><div class="node run"></div><span>On</span></div>
+  <div class="node-state"><div class="node on"></div><span>Booting</span></div>
+</div>
+<% end %>
+
 <%= content_tag :center do %>
   <%= content_tag :div, :id => "testbed-"+@testbed.id.to_s, :class => "testbed", 
     :style => "background-image: url('/images/testbeds/testbed-#{@testbed.id.to_s}.png');", :timestamp => Time.now.strftime("%s").to_s do %>
