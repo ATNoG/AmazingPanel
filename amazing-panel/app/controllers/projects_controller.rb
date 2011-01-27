@@ -69,17 +69,22 @@ class ProjectsController < ApplicationController
   def create
     @project = Project.new(params[:project])
     uploaded_io = params[:file]
-    if @project.save and ProjectsUsers.create({:project_id => @project.id, :user_id => current_user.id, :leader => 't'})
-      unless uploaded_io.nil?
-        path = project_logo_path_for(@project)
-        File.open(path, 'wb') do |file|
-          file.write(uploaded_io.read)
+    begin
+      if @project.save and ProjectsUsers.create({:project_id => @project.id, :user_id => current_user.id, :leader => 't'})
+        unless uploaded_io.nil?
+          path = project_logo_path_for(@project)
+          File.open(path, 'wb') do |file|
+            file.write(uploaded_io.read)
+          end
         end
+       flash["success"] = 'Project was successfully created.'
+       return redirect_to(@project)
       end
-     flash["success"] = 'Project was successfully created.'
-     return redirect_to(@project)
+    rescue ActiveRecord::StatementInvalid
+      @project.errors[:name] = "Already been taken"
+    ensure
+      render :action => "new"
     end
-    render :action => "new"
   end
 
   # PUT /projects/1

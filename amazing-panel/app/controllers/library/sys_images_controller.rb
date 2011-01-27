@@ -128,7 +128,7 @@ class Library::SysImagesController < Library::ResourceController
   def destroy
     @sys_image = resource_find(params[:id])
     @username = User.find(@sys_image.user_id).username
-    if @esys_image.destroy
+    if @sys_image.destroy
       delete_resource(@sys_image, "ndz")
       OMF::Workspace.remove_sysimage(@sys_image) 
     else

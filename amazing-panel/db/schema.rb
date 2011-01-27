@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110113171441) do
+ActiveRecord::Schema.define(:version => 20110127183123) do
 
   create_table "device_kinds", :force => true do |t|
     t.integer "inventory_id",               :null => false
@@ -117,6 +117,8 @@ ActiveRecord::Schema.define(:version => 20110113171441) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "projects", ["name"], :name => "index_projects_on_name", :unique => true
 
   create_table "projects_users", :id => false, :force => true do |t|
     t.integer "project_id"

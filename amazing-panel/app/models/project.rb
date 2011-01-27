@@ -1,6 +1,6 @@
 class Project < ActiveRecord::Base
-  validates_presence_of :name, :description
-  validate :name, :uniqueness => { :case_sensitive => false }
+  validates_presence_of  :description
+  validates :name, :presence => true, :uniqueness => true 
 
   has_and_belongs_to_many :users
   
