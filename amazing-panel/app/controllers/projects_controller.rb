@@ -1,4 +1,8 @@
+load 'omf.rb'
+load 'omf/experiments.rb'
+
 class ProjectsController < ApplicationController
+  include OMF::Experiments::Controller
   include ProjectsHelper
   before_filter :authenticate
   append_before_filter :is_project_leader, :only => [:assign, :assign_user, :make_leader, :update, :destroy]
