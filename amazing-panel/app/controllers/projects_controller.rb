@@ -168,6 +168,8 @@ class ProjectsController < ApplicationController
   # DELETE /projects/1.xml
   def destroy
     @project = Project.find(params[:id])
+    @experiments = Experiment.where("project_id = :project_id", {:project_id => @project.id})
+    @experiments.delete_all
     @project.destroy
 
     redirect_to(projects_url) 
