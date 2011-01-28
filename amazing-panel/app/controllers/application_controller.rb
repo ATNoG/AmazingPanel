@@ -1,7 +1,13 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
+
+  rescue_from ActionController::RoutingError, :with => :route_not_found
   
   private
+    def route_not_found
+      render "shared/404", :status => :not_found
+    end
+  
     def authenticate
       redirect_to new_user_session_path, :notice => "Please sign in to access this page." unless user_signed_in?
     end

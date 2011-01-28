@@ -67,10 +67,12 @@
 	  <td><%= link_to ed.name, ed %></td>
 	  <td><div class="description"><%= ed.description %></div></td>
 	  <td><%= ed.updated_at %></td>
-	  <td>
+	  <td>        
 	    <div class="table-actions">
-          <%= edit_action(edit_ed_path(ed), {:link => true, :text => false, "original-title" => "Edit Exp. Definition settings"} ) %>
-          <%= delete_action(eds_path, { :confirm => "Are you sure?", :link => true, :text => false, "original-title" => "Delete Exp. Definition"}) %>
+          <% if (current_user.admin? or current_user.id == creator.id) %>
+            <%= edit_action(edit_ed_path(ed), {:link => true, :text => false, "original-title" => "Edit Exp. Definition settings"} ) %>
+            <%= delete_action(eds_path, { :confirm => "Are you sure?", :link => true, :text => false, "original-title" => "Delete Exp. Definition"}) %>
+          <% end %>
 	    </div>
 	  </td>
 	</tr>

@@ -134,7 +134,7 @@ class Library::EdsController < Library::ResourceController
 
     if @ed.destroy
       delete_resource(@ed, extension="")      
-      redirect_to(eds_path, :notice => 'Ed was successfully deleted');      
+      return redirect_to(eds_path, :notice => 'Ed was successfully deleted');      
     end
     redirect_to(eds_path, :error => 'Error removing Experiment Definition');
   end 

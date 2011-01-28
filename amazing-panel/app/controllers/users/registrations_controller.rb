@@ -8,7 +8,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
     if resource.save
       #puts Rails.root.class
-      set_flash_message :notice, "Your account has been created! Wait until further activation."
+      set_flash_message :notice, "Your account has been created! Your registation intention will be analyzed and your account will be activated in case of approval, and notified by email."
       redirect_to(:root)
     else
       clean_up_passwords(resource)

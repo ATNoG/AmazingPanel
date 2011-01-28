@@ -140,7 +140,7 @@ class ExperimentsController < ApplicationController
   def destroy
     @exp = Experiment.find(params[:id])
     @exp.destroy
-    redirect_to(project_path(@experiment.project)) 
+    redirect_to(project_path(@exp.project)) 
   end
 
   def update

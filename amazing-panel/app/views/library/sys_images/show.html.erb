@@ -1,6 +1,14 @@
 <% creator = User.find(@sys_image.user_id) %>
 
 <% content_for :sub_actions do %>
+  <% sub_toolbar do %>
+    <%= back_action(sys_images_path) %>
+    <% if (current_user.admin? or current_user.id == @sys_image.user_id) %>
+      <%= edit_action(edit_sys_image_path(@sys_image)) %>
+      <%= delete_action(sys_images_path) %>
+    <% end %>
+  <% end %>
+  <!--
   <ul id="toolbar-action-list">
     <li class="action">
       <%= link_to (edit_sys_image_path(@sys_image), :class => "action")  do %>
@@ -21,6 +29,7 @@
       <% end %> 
     </li>
   </ul>
+  -->
 <% end %>
 
 <% content_for :content do %>

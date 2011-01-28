@@ -1,5 +1,7 @@
 module Library::ResourceHelper
   def generate_table_headers(base_model, path, options={}, &block)
+    namespace = options[:namespace]
+    namespace = namespace.nil? ? "" : options[:namespace]
     filters = options[:filters]
     labels = options[:labels]
     refs = options[:refs]
@@ -24,7 +26,7 @@ module Library::ResourceHelper
 	    filter = value[0] unless value.nil?
 	    value = value[1] unless value.nil?
 	    m = self.method(filter+"_filter")
-	    f = (modal_filter_dialog(k_attr) do 
+	    f = (modal_filter_dialog(k_attr, namespace) do 
 	      case filter
 	      when "integer_field_select"
 		concat(m.call(path, k_attr, base_model.all))
@@ -80,15 +82,18 @@ module Library::ResourceHelper
   end
 
   
-  def modal_filter_dialog(field, &block)            
+  def modal_filter_dialog(field, namespace="", &block)
+    _field = namespace+field 
     f_title = "Filter by: " + content_tag(:span, field, :class=>"column")
+    close_button = content_tag(:div, "x", :class=>"close-button button", :onclick => "$('.filter-link + #"+_field+"-filter').removeClass('dialog-active')");
     title_box = content_tag(:div, f_title.html_safe, :class=>"title-box")    
-    close_button = content_tag(:div, "Close", :class=>"button", :onclick => "$('#"+field+"-filter').removeClass('dialog-active')");
+    #close_button = content_tag(:div, "Close", :class=>"button", :onclick => "$('#"+field+"-filter').removeClass('dialog-active')");
     actions = content_tag(:div, close_button, :class=>"modal-actions")
     content = with_output_buffer(&block)
     container = content_tag(:div, content, :class=>"modal-container")    
-    modal = content_tag(:div, title_box+container+actions, :class=>"modal", :id => field+"-filter")
-    return ("<a class=\"filter-link\" href=\"#\" onclick=\"$('.filter-link + #"+field+"-filter').addClass('dialog-active')\"><img src=\"/images/right.gif\"/></a>" + modal).html_safe
+    #modal = content_tag(:div, title_box+container, :class=>"modal", :id => field+"-filter")
+    modal = content_tag(:div, title_box+close_button+container, :class=>"modal", :id => _field+"-filter")
+    return ("<a class=\"filter-link\" href=\"#\" onclick=\"$('.filter-link + #"+_field+"-filter').addClass('dialog-active')\"><img src=\"/images/right.gif\"/></a>" + modal).html_safe
   end
 
   def field_filter(&block)
