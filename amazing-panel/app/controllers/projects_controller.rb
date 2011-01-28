@@ -110,7 +110,6 @@ class ProjectsController < ApplicationController
       end
     rescue ActiveRecord::StatementInvalid
       @project.errors[:name] = "Already been taken"
-    ensure
       render :action => "new"
     end
   end
