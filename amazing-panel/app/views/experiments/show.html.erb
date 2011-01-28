@@ -41,6 +41,7 @@
     <b>Description:</b>
     <%= link_to "[See Ed]", "#nav-global", :class=>"more-ed-anchor", :ed => @experiment.ed.id %>
     <%= @experiment.ed.description %>
+    <%= link_to "[Edit Ed]", edit_ed_path(@experiment.ed), :class => "more-ed-anchor" %>
   </p>        
   
   <p>

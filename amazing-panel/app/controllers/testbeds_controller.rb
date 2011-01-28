@@ -11,9 +11,10 @@ class TestbedsController < ApplicationController
   end
   
   def show
+    @testbeds = Testbed.all
     @testbed = Testbed.find(params[:id])
     unless ["js", "html"].include?(params[:format])
-      @nodes = OMF::GridServices.testbed_status(params[:id])
+      @nodes = OMF::GridServices::TestbedService.new(@testbed.id).mapping();
     end
 
     if params[:timestamp].nil? == false

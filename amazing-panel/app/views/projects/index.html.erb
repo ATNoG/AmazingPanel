@@ -1,12 +1,13 @@
 <% content_for :sub_actions do %>
   <%= sub_toolbar do %>
-    <%= new_action(new_project_path) %>
+    <%= new_action(new_project_path, { "original-title" => "New Workspace"}) %>
   <% end %>
 <% end %>
 
 <% content_for :content do %>
   <% if @projects.length > 0 %>
-  <table id="sysimages" class="grid-view">
+  <p><b>Assigned:</b></p>
+  <table id="assigned-projects" class="grid-view">
     <%= will_paginate @projects, :previous_label => "Previous", :next_label =>"Next" %>
     <%= generate_table_headers(Project, projects_path, :fields => [ "", "id", "name", "description", "updated_at", "__actions"], :labels => { "id" => "#" }, 
 			      :filters => { "id" => 'integer_field_select', "updated_at" => 'text_field'}) %>
@@ -21,9 +22,9 @@
 	<% if is_user_leader(project, current_user) %>
 	<td>
 	  <div class="table-actions">
-        <%= edit_action(edit_project_path(project), {:link => true, :text => false, "original-title" => "Edit Project Settings"} ) %>
-        <%= delete_action(project, { :confirm => "Are you sure?", :link => true, :text => false, "original-title" => "Delete Project"}) %>
-        <%= assign_action(assign_project_path(project), { :link => true, :text => false, "original-title" => "Assign users to Project"}) %>
+        <%= edit_action(edit_project_path(project), {:link => true, :text => false, "original-title" => "Edit Workspace Settings"} ) %>
+        <%= delete_action(project, { :confirm => "Are you sure?", :link => true, :text => false, "original-title" => "Delete Workspace"}) %>
+        <%= assign_action(assign_project_path(project), { :link => true, :text => false, "original-title" => "Assign users to Workspace"}) %>
 	  </div>
 	</td>
 	<% else %>
@@ -35,4 +36,24 @@
   </table>
   <% end %>
   <br />
+  <% if @public_projects.length > 0 %>
+  <p><b>Public:</b></p>
+  <table id="public-projects" class="grid-view">
+    <%= will_paginate @public_projects, :previous_label => "Previous", :next_label =>"Next" %>
+    <%= generate_table_headers(Project, projects_path, :fields => [ "", "id", "name", "description", "updated_at", "__actions"], :labels => { "id" => "#" }, 
+			      :filters => { "id" => 'integer_field_select', "updated_at" => 'text_field'}) %>
+    <tbody>
+    <% @public_projects.each do |project| %>
+      <tr>
+	<td><%= image_tag project_logo_path(project), {:height => 32, :width => 32} %></td>
+	<td class="underline"><%= link_to project.id, project %></td>
+	<td><%= link_to project.name, project %></td>
+	<td><div class="description"><%= project.description %></div></td>
+	<td><%= project.updated_at.strftime("%Y-%m-%d %H:%M:%S") %></td>
+	<td></td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+  <% end %>
 <% end %>

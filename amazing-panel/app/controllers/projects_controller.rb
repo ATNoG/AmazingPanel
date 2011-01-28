@@ -15,7 +15,18 @@ class ProjectsController < ApplicationController
       current_page = '1'
     end
 
-    @projects = Project.paginate(:page => current_page)
+    _ps = []
+    _pub_ps = []
+    Project.all.select do |p| 
+      if !project_is_user_assigned?(p, current_user.id)
+        _ps.push(p)
+      else
+        _pub_ps.push(p)
+      end
+    end
+    @projects = _ps.paginate(:page => current_page)
+    @public_projects = _pub_ps.paginate(:page => current_page)
+    #@public_projects = Project.all.select { |p| !project_is_user_assigned?(p, current_user.id) ? true : false }.collect { |p| [p.name, p.id] }
     #puts @projects[0].attributes.inspect
     @users = User.all
   end
@@ -25,6 +36,17 @@ class ProjectsController < ApplicationController
   def show
     @project = Project.find(params[:id])
     @experiments = Experiment.where(:project_id => params[:id])
+    _res = Hash.new() 
+    @experiments.each do |e|
+      if e.finished?
+        _res[e.id] = false
+        runs = OMF::Experiments::Controller::Proxy.new(e.id).runs.length
+        if runs > 0
+          _res[e.id] = true
+        end
+      end
+    end
+    @results = _res
     session[:project_id] = params[:id]
   end
 

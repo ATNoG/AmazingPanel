@@ -11,12 +11,7 @@
 
 <% content_for :sub_actions do %>
   <ul id="toolbar-action-list">
-    <li class="action">
-      <%= link_to(new_admin_user_registration_path, :class => "action")  do %>
-	New
-	<%= image_tag "add.png", {:height => 16, :width => 16} %>
-      <% end %> 
-    </li>
+    <%= new_action(new_admin_user_registration_path, {"original-title" => "Register new User"} ) %>
 
     <% if @filters.length > 0 %>
       <li class="action">

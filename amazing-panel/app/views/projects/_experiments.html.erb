@@ -1,5 +1,5 @@
 <table id="experiments" class="grid-view">
-  <%= generate_table_headers(@experiments, experiments_path, :fields => ["id", "creator", "ed", "duration", ""], :labels => { "id" => "#", "ed"=>"Description" }) %>
+  <%= generate_table_headers(@experiments, experiments_path, :fields => ["id", "creator", "ed", "duration", "status", ""], :labels => { "id" => "#", "ed"=>"Description", "status"=>"Status" }) %>
   <tbody>
   <% @experiments.each do |exp| %>
     <tr>	
@@ -9,6 +9,7 @@
       <td><%= link_to creator.name, user_path(:id => creator.id)  %></td>
       <td><div class="description"><%= exp.ed.description %></div></td>
       <td><%= exp.duration %></td>
+      <td class="exp-status"><%= @results[exp.id] == true ? "Has Results" : "" %></td>
       <td>
         <div class="table-actions">
           <%= add_image_action(experiment_path(exp, :format => "js")+"?resources",

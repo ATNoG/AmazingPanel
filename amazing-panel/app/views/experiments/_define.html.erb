@@ -7,7 +7,7 @@
   </div>
   
   <div class="field">
-    <%= f.label :project, "Project: "  %>
+    <%= f.label :project, "Workspace: "  %>
     <%= f.select :project_id, options_for_select(@projects, session[:project_id].to_i) %>
   </div>
   

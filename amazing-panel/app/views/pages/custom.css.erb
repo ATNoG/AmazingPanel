@@ -788,7 +788,7 @@ g.node-box > path.node-box-close-button:hover {
 
 #toolbar a {    
   line-height: 24px;
-  color: #c1c1c1;  
+  color: #a5a5a5;  
   font-size: 10px;
   text-transform: uppercase;
 }
@@ -796,7 +796,7 @@ g.node-box > path.node-box-close-button:hover {
 #toolbar a:hover {    
   line-height: 24px;
   color: #1e1e1e;  
-  text-shadow: 2px 2px 2px #d1d1d1;
+  /*text-shadow: 2px 2px 2px #d1d1d1;*/
 }
 
 #toolbar li.active > a {    
@@ -812,9 +812,17 @@ ul#toolbar-action-list > li.action {
   list-style: none;
   float:left;
 }
+
+.highlight {
+  background-color: #FFE4B5;
+  border-radius: 5px;
+  margin: 3px;
+}
+
 a.action {
   font-weight: normal;
 }
+
 a.action > img {  
   vertical-align: sub;
   width: 16px;
@@ -891,6 +899,23 @@ div.description {
 
 .resource-description {
   width: 300px;
+}
+
+.table-title {
+  float:left;
+}
+
+.table-top-action {
+  float: right;
+  margin-bottom: 2px; 
+}
+
+.left {
+  float: left !important;
+}
+
+.table-top-action > .action {
+  list-style: none;
 }
 
 .grid-view > thead {
@@ -1166,6 +1191,13 @@ div.description {
   width: 250px;
 }
 
+#testbeds {
+  float:left;
+  position:absolute;
+  width:150px;
+  top:200px;
+}
+
 #testbed-map {
   float: left;
 }
@@ -1201,6 +1233,13 @@ div.description {
   line-height: 30px;
   height: 30px;
   padding-bottom: 10px;
+}
+
+.exp-status {
+  font-size: 11px;
+  font-weight: bold;
+  text-decoration: underline;
+  color: #3E5C6B;
 }
 
 .button-disabled {
@@ -1333,6 +1372,15 @@ div.description {
 
 .node-SUCCESS {
   color: green;
+}
+
+.testbed-selected {
+  /*
+   background-color: #FFE4C4;
+   */
+  border: 1px solid #3E56CB;
+  border-radius:10px;
+  width: 4px;
 }
 
 .prepared {

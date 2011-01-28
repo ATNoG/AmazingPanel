@@ -71,7 +71,7 @@ $("#associate-action").live("click", function(evt){
 <% end %>
 <% if (@a == 'show') %>
 <% experiment = Experiment.find(params[:id])%>
-$(".more-ed-anchor").live("click", function(evt){
+$(".more-ed-anchor[ed]").live("click", function(evt){
   $("#modal-dialog > .title-box").html("Experiment Definition");
   $("#modal-dialog > .modal-container").html("<div id=\"ed-<%= +experiment.ed.id %>\"></div>");
   var tmp = $("#modal-dialog, .modal-container")

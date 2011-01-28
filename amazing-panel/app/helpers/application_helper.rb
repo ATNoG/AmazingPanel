@@ -51,6 +51,9 @@ module ApplicationHelper
   end
   
   def new_action(link, options={})
+    if options[:highlight].nil?
+      options[:highlight] = true
+    end
     return add_image_action(link, 'add.png', "New", options)
   end
   
@@ -97,12 +100,15 @@ module ApplicationHelper
 
     html_action_class = html_options[:action_class]
     html_options[:action_class] = html_action_class.nil? ? [item_name] : html_action_class | [item_name]
-
+    
     if !context.nil?
       html_options[:action_class].push(is_active(context) ? item_active : "")
     end
 
     action_classes = html_options.delete(:action_class)
+    unless html_options[:highlight].nil? and !html_options[:highlight]
+      action_classes.push("highlight")
+    end
     ret = content_tag(:li, link_to(name, link, html_options), :class => action_classes)
     if html_options[:link] == true
       ret = link_to(name, link, html_options)

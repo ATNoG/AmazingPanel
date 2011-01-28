@@ -13,12 +13,7 @@
 
 <% content_for :sub_actions do %>
   <ul id="toolbar-action-list">
-    <li class="action">
-      <%= link_to(new_admin_sys_image_path, :class => "action")  do %>
-	New
-	<%= image_tag "add.png", {:height => 16, :width => 16} %>
-      <% end %> 
-    </li>
+    <%= new_action(new_sys_image_path, {"original-title" => "New System Image"} ) %>
 
     <% if @filters.length > 0 %>
       <li class="action">

@@ -5,5 +5,18 @@
 <% end %>
 
 <% content_for :content do %>
+  <% if @testbeds.length > 0 %>
+  <table id="testbeds" class="grid-view">
+    <%= generate_table_headers(Testbed, testbeds_path, :fields => ["id", "name"], :labels => { "id" => "#"}) %>
+    <tbody>
+    <% @testbeds.each do |testbed| %>
+      <tr >
+	<td class="<%= testbed.id == params[:id].to_i ? "testbed-selected" : "" %>" ><%= link_to testbed.id, testbed %></td>
+	<td><%= link_to testbed.name, testbed %></td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+  <% end %>
   <%= render :partial => 'map', :locals => { :legend => true } %>
 <% end %>

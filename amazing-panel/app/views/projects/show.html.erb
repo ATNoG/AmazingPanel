@@ -1,9 +1,6 @@
 <% content_for :sub_actions do %>
   <%= sub_toolbar do %>
     <%= back_action(projects_path) %>
-    <% if !project_is_user_assigned?(@project, current_user.id) %>
-      <%= new_action(new_experiment_path(:reset => 1), {"original-title" => "New Experiment"} ) %> 
-    <% end %>
     <% if is_user_leader(@project, current_user) %>
       <%= edit_action(edit_project_path(@project), {"original-title" => "Edit workspace"} ) %>
       <%= assign_action(assign_project_path(@project), {"original-title" => "Assign users to workspace"} ) %>
@@ -35,11 +32,17 @@
       </p>
 
       <%= render :partial => 'users', :locals => { :grid => false, :search => false, :title => "Users:", :with_assignment_check => false, :disabled => true, :make_leader => true, :users => @project.users } %>
+
     <% if @experiments.size > 0 %>
-    <p>
+    <p class="table-title">
       <b>Experiments: </b>
-      <%= render :partial => 'experiments'  %>
     </p>
+    <% end %>
+    <% if !project_is_user_assigned?(@project, current_user.id) %>
+      <div class="table-top-action<%= @experiments.size == 0 ? " left" : "" %>"><%= new_action(new_experiment_path(:reset => 1), {"original-title" => "New Experiment"} ) %></div>
+    <% end %>
+    <% if @experiments.size > 0 %>
+      <%= render :partial => 'experiments'  %>
     <% end %>
     </div>
     </div>
