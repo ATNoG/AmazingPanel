@@ -2,7 +2,7 @@ development:
   inventory: /var/www/amazing/inventory
   exp_results: /var/www/amazing/inventory/experiments/  
   omlserver_tmp: /tmp/
-  omf_load_log: /tmp/omf-log.xml
+  #OBSOLETE omf_load_log: /tmp/omf-log.xml
 #  aggmgr_frisbee: /home/jmartins/git/amazing-panel/tmp/frisbee.yaml
   aggmgr_frisbee: /etc/omf-aggmgr-5.3/enabled/frisbee.yaml
   aggmgr_url: "10.110.1.150:5053"
@@ -11,7 +11,7 @@ test:
   inventory: /home/jmartins/git/amazing-panel/inventory
   exp_results: /home/jmartins/git/amazing-panel/inventory/experiments/
   omlserver_tmp: /tmp/
-  omf_load_log: /tmp/omf-log.xml
+  #OBSOLETE omf_load_log: /tmp/omf-log.xml
   aggmgr_frisbee: /home/jmartins/git/amazing-panel/tmp/frisbee.yaml
   aggmgr_url: "10.110.1.150:5053"
 
@@ -19,6 +19,6 @@ production:
   inventory: /var/amazing-panel/inventory
   exp_results: /var/amazing-panel/inventory/experiments/
   omlserver_tmp: /tmp/
-  omf_load_log: /tmp/omf-log.xml
+  #OBSOLETE omf_load_log: /tmp/omf-log.xml
   aggmgr_frisbee: /etc/omf-aggmgr-5.3/enabled/frisbee.yaml
   aggmgr_url: "10.110.1.150:5053"
