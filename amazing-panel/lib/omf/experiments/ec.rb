@@ -302,17 +302,17 @@ module OMF
           exp_basename = "#{exp_path}/#{exp_id.to_s}"
           #response = http.request(request)
           FileUtils.mkdir_p(exp_path)
-          File.copy("#{tmp_basename}.sq3", "#{exp_basename}.sq3")
-          @@logger.debug("File.copy(#{tmp_basename}.sq3, #{exp_basename}.sq3)")
+          FileUtils.mv("#{tmp_basename}.sq3", "#{exp_basename}.sq3")
+          @@logger.debug("FileUtils.mv(#{tmp_basename}.sq3, #{exp_basename}.sq3)")
 
-          File.copy("#{tmp_basename}-state.xml", "#{exp_basename}-state.xml")
-          @@logger.debug("File.copy(#{tmp_basename}-state.xml, #{exp_basename}-state.xml)")
+          FileUtils.mv("#{tmp_basename}-state.xml", "#{exp_basename}-state.xml")
+          @@logger.debug("FileUtils.mv(#{tmp_basename}-state.xml, #{exp_basename}-state.xml)")
 
-          File.copy("#{tmp_basename}-prepare.xml", "#{exp_basename}-prepare.xml")
-          @@logger.debug("File.copy(#{APP_CONFIG['omlserver_tmp']}/#{@id}-prepare.xml, #{exp_basename}-prepare.xml)")
+          FileUtils.mv("#{tmp_basename}-prepare.xml", "#{exp_basename}-prepare.xml")
+          @@logger.debug("FileUtils.mv(#{APP_CONFIG['omlserver_tmp']}/#{@id}-prepare.xml, #{exp_basename}-prepare.xml)")
 
-          File.copy("#{tmp_basename}.log", "#{exp_basename}.log")
-          @@logger.debug("File.copy(#{tmp_basename}.log, #{exp_basename}.log)")
+          FileUtils.mv("#{tmp_basename}.log", "#{exp_basename}.log")
+          @@logger.debug("FileUtils.mv(#{tmp_basename}.log, #{exp_basename}.log)")
           #File.copy("#{APP_CONFIG['omlserver_tmp']}#{@id}.sq3", "#{APP_CONFIG['exp_results']}#{@id}.sq3")
           #File.copy("#{APP_CONFIG['omlserver_tmp']}#{@id}-state.xml", "#{APP_CONFIG['exp_results']}#{@id}-state.xml")
           #File.copy("#{APP_CONFIG['omlserver_tmp']}omf-log.xml", "#{APP_CONFIG['exp_results']}#{@id}-prepare.xml")
