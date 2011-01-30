@@ -107,7 +107,7 @@ module OMF
           nodes = Hash.new()
           state = ""
 
-          stat = IO::read("#{APP_CONFIG['omlserver_tmp']}/#{id}-prepare-log.xml")
+          stat = IO::read("#{APP_CONFIG['omlserver_tmp']}/#{id}-prepare.xml")
           status = Hash.from_xml(stat)
           sum_prog = Hash.new()
           slice = status["testbed"]["experiment"]["id"]
@@ -308,7 +308,7 @@ module OMF
           File.copy("#{tmp_basename}-state.xml", "#{exp_basename}-state.xml")
           @@logger.debug("File.copy(#{tmp_basename}-state.xml, #{exp_basename}-state.xml)")
 
-          File.copy("#{APP_CONFIG['omlserver_tmp']}/#{@id}-prepare.xml", "#{exp_basename}-prepare.xml")
+          File.copy("#{tmp_basename}-prepare.xml", "#{exp_basename}-prepare.xml")
           @@logger.debug("File.copy(#{APP_CONFIG['omlserver_tmp']}/#{@id}-prepare.xml, #{exp_basename}-prepare.xml)")
 
           File.copy("#{tmp_basename}.log", "#{exp_basename}.log")
