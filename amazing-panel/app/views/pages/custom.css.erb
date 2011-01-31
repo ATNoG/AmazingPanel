@@ -156,6 +156,11 @@ a:link {
   height: 4px;
 }
 
+.inside-flash {
+  color: blue;
+  font-weight: bold;
+}
+
 #logo {
   float: left;
   background-image: url(/images/amazing.png);
@@ -1411,19 +1416,19 @@ div.description {
   padding: 2px;
 }
 
-.node-UP {
+.node-UP .node-LOADING {
   color: blue;
 }
 
-.node-FAILED {
+.node-FAILED, .node-DONE_ERR {
   color: red;
 }
 
-.node-DOWN {
+.node-DOWN, .node-RESETTING {
   color: orange;
 }
 
-.node-SUCCESS {
+.node-SUCCESS, .node-DONE_OK {
   color: green;
 }
 

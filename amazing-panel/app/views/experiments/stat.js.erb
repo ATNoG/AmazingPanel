@@ -21,6 +21,16 @@ function experiment_stat() {
 <% elsif @experiment.finished? %>
   $("#caption-experiment > .text").html("<p>Experiment Finished! <%= escape_javascript(link_to 'See Results', experiment_path(@experiment)) %></p>");
   $("#caption-experiment > img").hide(); 
+  $("#stop-experiment-button").addclass("button-disabled");
+  $("#start-experiment-button").removeclass("button-disabled");
+<% elsif @experiment.preparation_failed? %>
+  $("#caption-experiment > .text").html("<p>Preparation failed: <%= @msg  %></p>");
   $("#stop-experiment-button").addClass("button-disabled");
-  $("#start-experiment-button").removeClass("button-disabled");
+  $("#start-experiment-button").addClass("button-disabled");
+  $("#prepare-experiment-button").removeClass("button-disabled");
+<% elsif @experiment.experiment_failed? %>
+  $("#caption-experiment > .text").html("<p>Experiment fcailed: <%= @msg  %></p>");
+  $("#caption-experiment > img").hide(); 
+  $("#stop-experiment-button").addclass("button-disabled");
+  $("#start-experiment-button").removeclass("button-disabled");
 <% end %>

@@ -79,6 +79,16 @@ $("#associate-action").live("click", function(evt){
 <% end %>
 <% if (@a == 'show') %>
 <% experiment = Experiment.find(params[:id])%>
+
+// anchor points "redirect"
+var url = document.location.toString();
+if (url.match('#')) { 
+    // click the navigation item corresponding to the anchor
+    var anchor = '#' + url.split('#')[1];
+    var elem = $('.tabs > li > a[href="'+anchor+'"] ');
+    elem.parent().click();
+}
+
 $(".more-ed-anchor[ed]").live("click", function(evt){
   $("#modal-dialog > .title-box").html("Experiment Definition");
   $("#modal-dialog > .modal-container").html("<div id=\"ed-<%= +experiment.ed.id %>\"></div>");

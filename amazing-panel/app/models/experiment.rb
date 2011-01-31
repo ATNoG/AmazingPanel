@@ -16,29 +16,44 @@ class Experiment < ActiveRecord::Base
   has_many :nodes, :through => :resources_map
   has_many :sys_images, :through => :resources_map
   has_many :testbeds, :through => :resources_map
-  scope :finished, where("status = 2 or status = 3") 
-  scope :prepared, where("status = 0 or status = 3")
-  scope :started, where("status = 1")
-  scope :running, where("status = 0 or status = -1 or status = 1")
-  scope :active, where("status != 2")
+  scope :finished, where("status = 4 or status = 5") 
+  scope :prepared, where("status = 2 or status = 5")
+  scope :started, where("status = 3")
+  scope :running, where("status = 1 or status = 3")
+  scope :active, where("status >= 0 and status != 4")
 
   def finished?
-    return true if (status == 2 or status == 3)
+    return true if (status == 4 or status == 5)
     return false;
   end
 
   def started?
-    return true if (status == 1)
+    return true if (status == 3)
     return false;
   end
 
   def prepared?
-    return true if (status == 0 or status == 3)
+    return true if (status == 2 or status == 5)
     return false;
   end
 
   def preparing?
-    return true if (status == -1)
+    return true if (status == 1)
     return false;
+  end
+
+  def failed?
+    return true if (status < 0)
+    return false    
+  end
+
+  def preparation_failed?
+    return true if (status==-1)
+    return false
+  end
+
+  def experiment_failed?
+    return true if (status==-2)
+    return false
   end
 end

@@ -97,6 +97,7 @@ module OMF
           stat = IO::read("#{APP_CONFIG['omlserver_tmp']}/#{id}-state.xml")
           status = Hash.from_xml(stat)
           status = status["context"]["experiment"]["status"]
+          status.strip!
           if status == "DONE"
             status(5) # experiment finished, prepared
           else
@@ -224,8 +225,10 @@ module OMF
 
         protected
         def clean_log
-          if File.exists?("#{APP_CONFIG['omlserver_tmp']}/#{@id}-prepare.log")
-            FileUtils.rm "#{APP_CONFIG['omlserver_tmp']}/#{@id}-prepare.log"
+          @logger.debug("File.exists?(#{APP_CONFIG['omlserver_tmp']}/#{@id}-prepare.xml")
+          if File.exists?("#{APP_CONFIG['omlserver_tmp']}/#{@id}-prepare.xml")
+            @logger.debug("#{@id}-prepare.xml Removed")
+            FileUtils.rm "#{APP_CONFIG['omlserver_tmp']}/#{@id}-prepare.xml"
           end
         end
 
@@ -317,14 +320,14 @@ module OMF
         def get_results(exp_id, experiment, run)
           http = Net::HTTP.new(APP_CONFIG['aggmgr_url'])
           root_path = '/result/'
-          path = "#{root_path}/dumpDatabase?expID=#{@id}"
+          path = "#{root_path}/dumpDatabase?expID=#{exp_id}"
           request = Net::HTTP::Get.new(path)
           exp_path = "#{APP_CONFIG['exp_results']}/#{experiment.id}/#{run}"
           tmp_basename = "#{APP_CONFIG['omlserver_tmp']+exp_id.to_s}"
           exp_basename = "#{exp_path}/#{exp_id.to_s}"
           #response = http.request(request)
           FileUtils.mkdir_p(exp_path)
-          FileUtils.mv("#{tmp_basename}.sq3", "#{exp_basename}.sq3")
+          FileUtils.cp("#{tmp_basename}.sq3", "#{exp_basename}.sq3")
           @@logger.debug("FileUtils.mv(#{tmp_basename}.sq3, #{exp_basename}.sq3)")
 
           FileUtils.mv("#{tmp_basename}-state.xml", "#{exp_basename}-state.xml")

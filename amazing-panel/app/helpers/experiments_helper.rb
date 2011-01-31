@@ -73,5 +73,5 @@ module ExperimentsHelper
     end
     images_loader = content_tag(:div, nodes_str, :id => "images-loading")
     return (container+images_loader).html_safe
-  end
+  end  
 end

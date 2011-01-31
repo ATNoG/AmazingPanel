@@ -12,11 +12,11 @@ class ExperimentsController < ApplicationController
   respond_to :html, :js
 
   def queue
-    not_init = Experiment.where(:status => nil) 
-    @experiments_not_init = not_init
+    #not_init = Experiment.where(:status => nil) 
+    #@experiments_not_init = not_init
     @experiments_prepared = Experiment.prepared
-    @experiments = Experiment.active + not_init
-    @num_exps = @experiments_not_init.size + @experiments_prepared.size
+    @experiments = Experiment.active
+    @num_exps = @experiments.size + @experiments_prepared.size
   end 
   
   def index
@@ -53,10 +53,12 @@ class ExperimentsController < ApplicationController
       #@nodes = OMF::GridServices.testbed_status(@testbed.id)
     when @experiment.finished?
       run = params[:run]      
-      ret = run.nil? ? fetch_results(@experiment) : fetch_results(@experiment, run) 
       @raw_results = ec.runs
-      @results = ret[:results]
-      @seq_num = ret[:seq_num]
+      if ec.runs.length > 0
+        ret = run.nil? ? fetch_results(@experiment) : fetch_results(@experiment, run) 
+        @results = ret[:results]
+        @seq_num = ret[:seq_num]
+      end
     end
     respond_to do |format|
       format.sq3 {
@@ -138,6 +140,7 @@ class ExperimentsController < ApplicationController
       @experiment.phase = @current_phase
       @experiment.user = current_user
       @experiment.project = Project.find(params[:experiment][:project_id])
+      @experiment.status = 0
       session[:experiment] = Hash.new()
       session[:experiment][:cache] = @experiment
     end
@@ -163,7 +166,7 @@ class ExperimentsController < ApplicationController
   def update
     if params.key?('reset')      
       @experiment = Experiment.find(params[:id])
-      @experiment.update_attributes(:status => nil)
+      @experiment.update_attributes(:status => 0)
     end
     redirect_to(experiment_url(@experiment)) 
     
@@ -238,7 +241,7 @@ class ExperimentsController < ApplicationController
 	status = @experiment.status
     slice = nil
 	case 
-	when (status == -1 or status == 0)
+	when (@experiment.preparing?)
       tmp = ec.prepare_status()   
 	  @nodes = tmp[:nodes]
 	  @state = tmp[:state]

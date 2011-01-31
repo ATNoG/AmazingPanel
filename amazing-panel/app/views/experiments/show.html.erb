@@ -2,11 +2,41 @@
   <%= javascript_include_tag 'highcharts/highcharts.js' %>  
   <%= javascript_include_tag 'highcharts/themes/custom.js' %>  
   <%= javascript_include_tag 'codemirror/base/codemirror' %>  
+  <!-- 'XXX' Refactoring of status -->
+  <script id="prepare-status-template" type="x-jquery-tmpl">    
+    <div id="images-loading">
+      {{each nodes}}
+      <div class="image-progress" id="image-node-${$index}">
+        <span class="image-label bold ${$value.state}">node-${$index}:</span>
+        <div class="progress-container">
+          <span class="progress_text">${$value.progress}%</span>
+          <div class="progress_bar" style="width: ${$value.progress}%"></div>
+        </div>
+        <span class="image-status">${$value.msg}</span>
+        <div class="clear"></div></div>
+      {{/each}}
+    </div>
+  </script>
+  <script id="experiment-status-template" type="x-jquery-tmpl">
+    <div id="experiment-briefing">
+      <div class="button giant-button button-disabled" id="prepare-experiment-button">Prepare</div>
+      <div class="button giant-button" id="start-experiment-button">Start</div>
+      <div class="button giant-button button-disabled" id="stop-experiment-button">Stop</div>
+      <div id="caption-experiment">
+        <img alt="Loading" src="/images/loading.gif?1292354871">
+        <span class="text">$msg</span>
+      </div>
+      <div class="hidden" id="error-experiment">
+        <img alt="Error" src="/images/error.png?1292354871">
+        <span class="text">$error</span>
+      </div>
+    </div>
+  </script>
 <% end %>
 
 <% content_for :sub_actions do %> 
   <%= sub_toolbar do %>
-    <% unless @experiment.status.nil? %>
+    <% unless (@experiment.status == 0) %>
       <%= add_image_action(experiment_path(@experiment)+"?reset",
                            'clear.png', 'Reset', { :method => "put" }) %>
     <% end %>
@@ -60,7 +90,7 @@
 <div id="status" class="tab">
 <%= experiment_widget(@experiment, @nodes) %>
 </div>
-<% if @experiment.finished? %>
+<% if @experiment.finished? and @raw_results.length > 0 %>
 <div id="results" class="tab">
 <% # GRAPHS %>
   <%= content_tag :div, :id => "graph-choose-run" do %>
@@ -182,7 +212,7 @@ $("#clear-data-set-button").live('click', function(){
 <% end %>  
 
 <div id="log" class="tab">
-<% unless @experiment.status.nil? %>
+<% unless @experiment.status == 0 %>
   <textarea id="log_area">
   </textarea>
 <% end  %>

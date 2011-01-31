@@ -1,6 +1,8 @@
 development:
-  inventory: /var/www/amazing/inventory
-  exp_results: /var/www/amazing/inventory/experiments/  
+  inventory: /home/jmartins/inventory
+  exp_results: /home/jmartins/inventory/experiments/
+#  inventory: /var/www/amazing/inventory
+#  exp_results: /var/www/amazing/inventory/experiments/  
   omlserver_tmp: /tmp/
   #OBSOLETE omf_load_log: /tmp/omf-log.xml
 #  aggmgr_frisbee: /home/jmartins/git/amazing-panel/tmp/frisbee.yaml
