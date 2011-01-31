@@ -93,7 +93,15 @@ module OMF
           @@logger.debug("get_results: #{exp_id.to_s}")
           get_results(exp_id, experiment, runs)
           @@logger.debug("FINISHING!")
-          status(3)
+
+          stat = IO::read("#{APP_CONFIG['omlserver_tmp']}/#{id}-state.xml")
+          status = Hash.from_xml(stat)
+          status = status["context"]["experiment"]["status"]
+          if status == "DONE"
+            status(5) # experiment finished, prepared
+          else
+            status(-2) # experiment failed
+          end
           inc_runs()
           unlock_testbed(testbeds)
         end
@@ -124,7 +132,6 @@ module OMF
 
           stat = IO::read("#{APP_CONFIG['omlserver_tmp']}/#{id}-prepare.xml")
           status = Hash.from_xml(stat)
-          sum_prog = Hash.new()
           slice = status["testbed"]["experiment"]["id"]
 
           # Check nodes progress
