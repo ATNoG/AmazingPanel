@@ -34,22 +34,36 @@ module OMF
             return false
           end
           trap('INT'){
-            status(nil)
+            status(-1) # prep failed
             @@logger.debug("KILLED")
             unlock_testbed(testbeds)
             exit
           }
           lock_testbed(testbeds)
           clean_log()
-          status(-1)
+          status(1) # preparing
           e = Experiment.find(@id)
           images = e.resources_map.group(:sys_image_id)
           images.each do |img|
             nodes = e.resources_map.where('sys_image_id' => img.sys_image).map! { |x| x.node.hrn }
             load_resource_map(img, nodes)
           end
+
+          stat = IO::read("#{APP_CONFIG['omlserver_tmp']}/#{id}-prepare.xml")
+          status = Hash.from_xml(stat)
           Experiment.verify_active_connections!
-          status(0)
+          state = status["testbed"]["experiment"]["status"]
+          case state
+          when "PREPARING"
+            status(1) # preparing
+          when "PREPARED"
+            status(2) # prepared successfully
+          when "FAILED"
+            status(-1) # prep failed
+          else
+            status(-1) # unknown status -> prep failed
+          end
+
           unlock_testbed(testbeds)
           return true
         end
@@ -65,12 +79,12 @@ module OMF
             return false
           end
           trap('INT'){
-            status(2)
+            status(5) # experiment finished, prepared
             @@logger.debug("KILLED")
             unlock_testbed(testbeds)
             exit
           }
-          status(1)
+          status(3) # experiment started
 
           @@logger.debug("STARTING! #{Process.pid}")
           ret = system("omf exec -e #{exp_id} #{OMF::Workspace.ed_for(experiment.ed.user, experiment.ed.id.to_s)}");
@@ -96,6 +110,7 @@ module OMF
             @@logger.debug("NO PID")
             return false
           end
+          status(-2) # experiment failed
         end
 
         def prepare_status
@@ -120,21 +135,19 @@ module OMF
               node = Node.find_by_hrn(k)
               next if node.nil?
               id = node.id
-              #if v["status"] == "SUCCESS" then v["percentage"] = 100; end;
-              sum_prog[id] = v["percentage"].to_i
-              s = v["status"]
-              msg = ""
-              case
-              when s == "LOADING"
+              case v["status"]
+              when "LOADING"
                 msg = "Loading image..."
-              when s == "RESETTING"
+              when "RESETTING"
                 msg = "Resetting node..."
-              when s == "DONE.ERR"
+              when "DONE.ERR"
                 msg = "Node failed to load"
-              when s == "DONE.TIMEDOUT"
+              when "DONE.TIMEDOUT"
                 msg = "Node timed-out"
-              when s == "DONE.OK"
+              when "DONE.OK"
                 msg = "Image loaded"
+              else
+                msg = "Ops, unknown state!"
               end
               nodes[id.to_s] ={ :progress => v["percentage"], :state => v["status"], :msg => msg }
             end
@@ -143,13 +156,15 @@ module OMF
           # Check overall progress
           # State values: PREPARING, FAILED or SUCCESS
           state = status["testbed"]["experiment"]["status"]
-          case
-          when state == "PREPARING"
-            status(-1)
-          when state == "PREPARED"
-            status(0)
-          when state == "FAILED"
-            status(nil)
+          case state
+          when "PREPARING"
+            status(1) # preparing
+          when "PREPARED"
+            status(2) # prepared successfully
+          when "FAILED"
+            status(-1) # prep failed
+          else
+            status(-1) # unknown status -> prep failed
           end
 
           return { :slice => slice, :nodes => nodes, :state => state }
