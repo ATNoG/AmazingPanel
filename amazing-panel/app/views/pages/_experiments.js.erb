@@ -34,6 +34,14 @@ $(".node").live('click', function(evt){
   $this.toggleClass("node-selected");
 });
 
+$("#remove-action").live("click", function(evt){    
+  var nodes = $(".node-selected");
+  for(i=0;i<nodes.length;++i){
+     var node = nodes[i].id.replace("node-", "");
+     $("#map-"+node).remove();
+     $("#node-"+node).removeClass("mapped").css("background-color", "gray");
+  }
+});
 $("#associate-action").live("click", function(evt){    
     var n_images = $("#experiment_sys_images").attr("last");
     var __sys_image = $("#experiment_sys_images option:selected");
@@ -48,7 +56,7 @@ $("#associate-action").live("click", function(evt){
     var select_image = $("#experiment_sys_images option:selected").text();
     selected_nodes.css("background-color", color.bg);
     selected_nodes.each(function(index, value){
-        var _id = value.innerText;
+        var _id = value.innerHTML;
         var node = { 
           id: _id, 
           selector: $("#map-"+_id), 
@@ -65,7 +73,7 @@ $("#associate-action").live("click", function(evt){
         }
     });
 
-    selected_nodes.toggleClass("node-selected");
+/*    selected_nodes.toggleClass("node-selected");*/
 });
 
 <% end %>

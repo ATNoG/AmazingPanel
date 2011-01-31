@@ -12,12 +12,18 @@
     :style => "background-image: url('/images/testbeds/testbed-#{@testbed.id.to_s}.png');", :timestamp => Time.now.strftime("%s").to_s do %>
     <% length = 0 %>
     <% @nodes.each do |n| %>      
-    <% if  ((length % 5) == 0) and (length != 0) %>
-     <%= content_tag :div, "", :class => "clear" %>      	
-    <% end %>      
-    <%= content_tag(:div, n["id"], :id => "node-#{n["id"].to_i}",
-                    :class => "node", :style => "position:relative; left: #{n['x'].to_i}px; top: #{n["y"].to_i}px") unless n["id"] == -1 %>
-    <% length += 1 %>
+      <% if  ((length % 5) == 0) and (length != 0) %>
+       <%= content_tag :div, "", :class => "clear" %>      	
+      <% end %>      
+      <% node_class = ["node"] %>
+      <% if defined?(@allowed) %>
+       <% unless @allowed.index(n["id"].to_i).nil? %>    
+          <% node_class.push("available") %>
+        <% end %>
+      <% end %>
+      <%= content_tag(:div, n["id"], :id => "node-#{n["id"].to_i}",
+                      :class => node_class, :style => "position:relative; left: #{n['x'].to_i}px; top: #{n["y"].to_i}px") unless n["id"] == -1 %>
+      <% length += 1 %>
     <% end %>
   <% end %>
 <% end %> 

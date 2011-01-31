@@ -11,7 +11,10 @@
     <hr />
     <%= label_tag :sys_images, "Image to Load: "  %>
     <%= select_tag "experiment[sys_images]", options_for_select(SysImage.all.collect {|t| [ t.name, t.id ] }), :last => SysImage.last.id %>
+    <%= content_tag(:div, "", :class => "clear") %>
     <%= content_tag(:div, "Associate", :id => "associate-action", :class => "button") %>
+    <%= content_tag(:div, "Remove", :id => "remove-action", :class => "button") %>
+    <%= content_tag(:div, "", :class => "clear") %>
     <%= content_tag(:div, :id => "mapped") do %>
       <b>Already Mapped:</b><br/>
       <hr />

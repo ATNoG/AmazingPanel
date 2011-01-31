@@ -1,3 +1,10 @@
 <div id="experiment-briefing">
-  <%= link_to "Create Experiment", experiments_path, :id => "create-experiment-button", :class => "button giant-button", :method => "post" %>
+<%= form_for(@experiment, experiments_path, :method => 'post') do |f| %>
+  <div class="field">
+    <%= f.submit "Next", { :id=>"create-experiment-hidden"} %>
+    <%= link_to "Create Experiment", "#",
+              :id => "create-experiment-button", :class => "button giant-button",  
+              :onclick => "$(\"#new_experiment\").submit()" %>
+  </div>
+<% end %>
 </div>

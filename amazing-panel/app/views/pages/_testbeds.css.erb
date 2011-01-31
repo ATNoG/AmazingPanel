@@ -40,7 +40,9 @@
   height: 20px;
   background-color: gray;
   float:left;
-<% if selectable %>
+<% if selectable and (params[:c] == "experiments" and params[:a] == "new")%>
+  visibility: hidden;
+<% elsif selectable %>
   opacity: 0.9;
 <% end %>
 }
@@ -55,7 +57,27 @@
 .on {
   background-color:  #ffd700;
 }
-<% if selectable %>
+<% if selectable and (params[:c] == "experiments" and params[:a] == "new")%>
+.available {
+  opacity: 1;
+  visibility: visible;
+  cursor:pointer;
+}
+
+.available:hover {
+  opacity: 1;
+  cursor: pointer;
+  border: 2px solid #2e2e2e;
+  margin: -2px;
+}
+
+.node-active {
+  opacity: 1;
+  margin: -2px;
+  border: 2px solid black;
+}
+
+<% elsif selectable %>
 .node:hover {
   opacity: 1;
   cursor: pointer;

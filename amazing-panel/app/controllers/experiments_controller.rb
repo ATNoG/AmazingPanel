@@ -1,7 +1,8 @@
-load 'omf.rb'
-load 'omf/experiments.rb'
+require 'omf.rb'
+require 'omf/experiments.rb'
 
 class ExperimentsController < ApplicationController
+  include OMF::GridServices
   include OMF::Experiments::Controller
   include Library::SysImagesHelper
   include ProjectsHelper
@@ -89,9 +90,11 @@ class ExperimentsController < ApplicationController
     else
       if (@current_phase == Phase.MAP)
         @testbed = Testbed.first
-        @nodes = OMF::GridServices.testbed_status(@testbed.id)
+        #@nodes = OMF::GridServices.testbed_status(@testbed.id)
+        @nodes = OMF::GridServices::TestbedService.new(@testbed.id).mapping();
       end
       @experiment = session[:experiment][:cache]
+      @allowed = session[:experiment][:allowed]
     end
   end
 
@@ -103,9 +106,12 @@ class ExperimentsController < ApplicationController
     redirect_to(experiment_url(@experiment)) 
   end
 
+  # Handles all the phases in Experiment Creation
   def create
     @current_phase = session[:phase]
     @is_last_phase = (@current_phase == Phase.last)
+    
+    # Create Experiment in the last phase
     if @is_last_phase
       @experiment = session[:experiment][:cache]
       @experiment.runs = 0
@@ -124,6 +130,8 @@ class ExperimentsController < ApplicationController
       session[:experiment][:id] = @experiment.id          
       return redirect_to(experiment_url(@experiment)) 
     end
+
+    # Caches experiment for future phase
     if session[:experiment].nil?
       @experiment = Experiment.new() 
       @experiment.ed = Ed.find(params[:experiment][:ed_id])
@@ -133,8 +141,17 @@ class ExperimentsController < ApplicationController
       session[:experiment] = Hash.new()
       session[:experiment][:cache] = @experiment
     end
-    session[:experiment].merge!(params[:experiment])
-    phase_step
+
+    # Merge more data to the experiment cache   
+    @experiment = Experiment.new()
+    @experiment.errors.clear()
+    validation
+    if @experiment.errors.any?
+      redirect_to new_experiment_path
+    else
+     session[:experiment].merge!(params[:experiment])
+     phase_step
+    end
   end
 
   def destroy
@@ -254,6 +271,69 @@ class ExperimentsController < ApplicationController
     end
     session[:phase_status] = 1
     redirect_to new_experiment_path
+  end
+
+  def validation
+    @experiment = session[:experiment][:cache]
+    @experiment.errors.clear()
+    case
+    when (@current_phase == Phase.DEFINE)
+      begin 
+        ed = Ed.find(@experiment.ed)
+        ed_content = OMF::Workspace.open_ed(ed.user, "#{ed.id.to_s}.rb")
+        p = OMF::Experiments::ScriptHandler.exec(-1, ed)
+        nodes = Array.new()
+
+        p.properties[:groups].each do |k,v|
+          hrn = v[:selector]
+          n = Node.find_by_hrn!(hrn)
+          nodes.push(n.id.to_i)    
+        end
+        session[:experiment][:allowed] = nodes
+      rescue
+        @experiment.errors[:nodes] = "invalid"
+        return false
+      end
+    when (@current_phase == Phase.MAP)
+      begin
+        testbed = Testbed.find(params[:experiment]["nodes"]["testbed"].to_i)
+        nodes = Array.new()
+        allowed = session[:experiment][:allowed]
+        if testbed.nil?
+          @experiment.errors[:testbed] = "doesn't exist"
+          return false
+        end
+        if params[:experiment]["nodes"].length <= 1
+          @experiment.errors[:resources_map] = "empty"
+          return false
+        end
+        params[:experiment]["nodes"].each do |k,v|
+          unless k == "testbed"
+            if k.to_i 
+              node = Node.find(k)
+              if allowed.index(node.id).nil?
+                @experiment.errors[:nodes] = ": only #{allowed.sort.join(",")} allowed."
+                return false
+              end
+              sysimage = SysImage.find(v["sys_image"])              
+              nodes.push(node.id.to_i)
+            end 
+          end
+        end  
+        if nodes.length != allowed.length
+          missing = Array.new(allowed).delete_if { |x| !nodes.index(x).nil?  } 
+          @experiment.errors[:nodes] = "#{missing.sort.join(",")} missing system image."
+        end
+      rescue
+        @testbed = Testbed.first
+        @allowed = session[:experiment][:allowed]
+        @nodes = OMF::GridServices::TestbedService.new(@testbed.id).mapping();
+        @experiment.errors[:resources_map] = "invalid"
+        return false
+      end
+    end
+
+    return true
   end
 
   def last_run(e)
