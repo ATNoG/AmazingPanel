@@ -1,0 +1,25 @@
+<% content_for :main_content do %>
+  <% if params[:action] == "index" %>
+  <div id="toolbar" class="invisible">  
+  </div>
+  <% else %>
+  <div id="toolbar">  
+    <ul id="toolbar-action-list">
+      <%= add_action 'Users', users_project_path, { :controller => 'projects', :action => 'users', :has_action => true } %>
+    </ul>
+  </div>
+  <% end %>
+
+  <div id="sub-toolbar">
+    <%= yield :sub_actions %>
+  </div>
+  
+  <br />
+  <div id="file-show">
+    <%= yield :content %>
+  </div>
+
+  <div class="clear"></div>
+<% end %>
+
+<%= render :template => 'layouts/application' %>
