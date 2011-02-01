@@ -225,9 +225,9 @@ module OMF
 
         protected
         def clean_log
-          @logger.debug("File.exists?(#{APP_CONFIG['omlserver_tmp']}/#{@id}-prepare.xml")
+          @@logger.debug("File.exists?(#{APP_CONFIG['omlserver_tmp']}/#{@id}-prepare.xml")
           if File.exists?("#{APP_CONFIG['omlserver_tmp']}/#{@id}-prepare.xml")
-            @logger.debug("#{@id}-prepare.xml Removed")
+            @@logger.debug("#{@id}-prepare.xml Removed")
             FileUtils.rm "#{APP_CONFIG['omlserver_tmp']}/#{@id}-prepare.xml"
           end
         end
