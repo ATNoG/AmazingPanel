@@ -8,8 +8,8 @@ class ProjectsController < ApplicationController
   append_before_filter :is_project_leader, :only => [:assign, :assign_user, :make_leader, :update, :destroy]
   append_before_filter :is_only_leader, :only => [:unassign_user]
 
-  layout 'general'
-  respond_to :html
+  layout 'workspaces'
+  respond_to :html, :json
 
   # GET /projects
   # GET /projects.xml
@@ -66,6 +66,10 @@ class ProjectsController < ApplicationController
   end
 
   def users
+    current_page = params[:page]
+    if current_page.nil?
+      current_page = 1
+    end
     @project = Project.find(params[:id])
     term = params[:term]    
     name = params[:name]
@@ -74,7 +78,7 @@ class ProjectsController < ApplicationController
     fields = "id,name,email,username"
     #if params.has_key?('name')
     if (params.has_key?(:type) and params[:type] == "unassigned")
-      select = User.select(fields).limit(50)
+      select = User.select(fields)
       query = (term.nil? or term.length==0) ? select.all : select.where(["name LIKE :name", {:name => "%#{term}%"}])
       @users = query.delete_if { |u| project_is_user_assigned?(@project, u.id) == false }
     else
@@ -83,13 +87,19 @@ class ProjectsController < ApplicationController
       @users = query
     end
       @users = @users.length == 0 ? [{}] : @users;
-      render :json => @users    
+      @users = @users.paginate(:page => current_page)
+      respond_with(@users)
   end
 
   # GET /projects/1/assign
   def assign
+    current_page = params[:page]
+    if current_page.nil?
+      current_page = 1
+    end
     @project = Project.find(params[:id])
     @users = User.all.delete_if { |u| project_is_user_assigned?(@project, u.id) == false }
+    @users = @users.paginate(:page => current_page)
   end
 
   # POST /projects

@@ -8,6 +8,7 @@ AmazingPanel::Application.routes.draw do
   
   resources :projects, :path => "workspaces" do
     member do
+#      get 'experiments'
       get 'users'
       get 'assign'
       put 'user/:user_id', :action => "assign_user"

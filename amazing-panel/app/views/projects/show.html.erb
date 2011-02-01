@@ -30,9 +30,7 @@
 	<b>Description:</b>
 	<%= @project.description %>
       </p>
-
-      <%= render :partial => 'users', :locals => { :grid => false, :search => false, :title => "Users:", :with_assignment_check => false, :disabled => true, :make_leader => true, :users => @project.users } %>
-
+    <br/> 
     <% if @experiments.size > 0 %>
     <p class="table-title">
       <b>Experiments: </b>

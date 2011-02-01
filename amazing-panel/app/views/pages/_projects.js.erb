@@ -1,11 +1,11 @@
 <% params.merge!(Rails.application.routes.recognize_path(params[:p])) %>
 var assgn_autocomplete = $(".name[rel=assigned-users]").autocomplete({
-    source : "<%= users_project_path(:id => params[:id]) %>",
+    source : "<%= users_project_path(:id => params[:id], :format => 'json' ) %>",
     minLength : "0",
     selector : "#assigned-users",
   }).data("autocomplete");
 var uassgn_autocomplete = $(".name[rel=unassigned-users]").autocomplete({
-    source : "<%= users_project_path(:id => params[:id], :type => "unassigned") %>",
+    source : "<%= users_project_path(:id => params[:id], :type => "unassigned", :format => 'json') %>",
     minLength : "0",
     selector : "#unassigned-users"
   }).data("autocomplete");

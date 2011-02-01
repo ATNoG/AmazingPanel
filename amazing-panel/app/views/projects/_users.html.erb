@@ -60,7 +60,8 @@
 </ul>
 <% else %>
 <table id="<%= id %>" class="users grid-view">
-  <%= generate_table_headers(users, users_path, :fields => ["id", "name", "email", "username", ""], 
+  
+  <%= generate_table_headers(users, users_path, :fields => ["", "id", "name", "email", "username", ""], 
                              :labels => { "id" => "#", "name" => "Name", "email" => "Email", "username" => "Username" }) %>
   <tbody>
     <% users.each do |user| %>
@@ -74,6 +75,7 @@
      <td class="email-cell"><%= user.email %></td>
      <td><%= user.username %></td>
 -->
+	 <td><%= gravatar_for user, :size => 24 %></td>
      <td><%= link_to user.id, user_path(user) %></td>
      <td class="name-cell" ><%= link_to user.name, user_path(user) %></td>
      <td class="email-cell"><%= user.email %></td>
