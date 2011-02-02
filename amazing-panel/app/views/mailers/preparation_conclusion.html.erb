@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+  </head>
+  <style>
+    pre {font-family:arial, helvetica; font-size:12px;}      
+  </style>
+  <body>
+  <pre>
+Dear <%= @user.name %>, 
+
+  The preparation experiment #<%= @experiment.id %> has <%= @experiment.prepared? ? "finished" : "failed" %>.
+
+  Login <%= link_to "here", experiment_path(@experiment)+"#results" %> to start your experiment. Note that others users can use the testbed, if none of experiments is preparing or running.
+
+Best Regards,
+AMazINg Team
+  </pre>
+  </body>
+</html>
