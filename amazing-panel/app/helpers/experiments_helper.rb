@@ -38,12 +38,12 @@ module ExperimentsHelper
   def experiment_widget(experiment, nodes)
     status = experiment.status
     l_button = "button giant-button"
-    l_run_class= (experiment.finished? or experiment.prepared? or experiment.status.nil?) ? l_button : l_button+" button-disabled"
+    #l_run_class= (experiment.finished? or experiment.prepared? or experiment.not_init?) ? l_button : l_button+" button-disabled"
     l_prepare_class = (!experiment.prepared?) ? l_button : l_button+" button-disabled"
     l_start_class = (experiment.prepared?) ? l_button : l_button+" button-disabled"
-    l_stop_class = (experiment.started?) ? l_button : l_button+" button-disabled"
+    l_stop_class = (experiment.started? or experiment.preparing?) ? l_button : l_button+" button-disabled"
     
-    l_run = content_tag(:div, "Run", :id => "run-experiment-button", :class=>l_run_class)
+    #l_run = content_tag(:div, "Run", :id => "run-experiment-button", :class=>l_run_class)
     l_prepare = content_tag(:div, "Prepare", :id => "prepare-experiment-button", :class=>l_prepare_class)
     l_start = content_tag(:div, "Start", :id => "start-experiment-button", :class=>l_start_class)
     l_stop = content_tag(:div, "Stop", :id => "stop-experiment-button", :class=>l_stop_class)
@@ -51,9 +51,9 @@ module ExperimentsHelper
     img = image_tag('loading.gif')
     _str_ = 'Loading System Images on nodes...'
     case 
-    when experiment.status == 0
+    when experiment.prepared?
       _str_ = 'Starting experiment...'
-    when experiment.status == 1
+    when experiment.started?
       _str_ = 'Stopping experiment...'
     end
     text  = content_tag(:span, _str_, :class => "text")

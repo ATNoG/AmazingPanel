@@ -3,7 +3,7 @@
 Devise.setup do |config|
   # ==> Mailer Configuration
   # Configure the e-mail address which will be shown in DeviseMailer.
-  config.mailer_sender = "admin@amazing.hng.av.it.pt"
+  config.mailer_sender = "amazing@hng.av.it.pt"
 
   # Configure the class responsible to send e-mails.
   # config.mailer = "Devise::Mailer"
@@ -20,8 +20,8 @@ Devise.setup do |config|
   # authenticating an user, both parameters are required. Remember that those
   # parameters are used only when authenticating and not when retrieving from
   # session. If you need permissions, you should implement that in a before filter.
-  # config.authentication_keys = [ :email ]
-  config.authentication_keys = [ :username ] 
+  config.authentication_keys = [ :email ]
+  #config.authentication_keys = [ :username ] 
 
   # Tell if authentication through request.params is enabled. True by default.
   # config.params_authenticatable = true

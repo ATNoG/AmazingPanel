@@ -16,18 +16,32 @@ module OMF
 
         def check(type)
           exp = Experiment.find(@id)
+          exps = Experiment.running
           case
           when type == :init
             exps = Experiment.running
             return true if exps.length == 0
           when type == :prepared
-            return exp.prepared?
+            return true if (exp.prepared? and exps.length == 0)
           when type == :started
-            return exp.started?
+            return true if (exp.started? and exps.length == 0)
           end
           return false
         end
 
+        def unprepare
+          exps = Experiment.prepared
+          if exps.length > 0 
+            exps.each do |e|
+              if e.status == 5
+                e.update_attributes(:status => 4)
+              elsif e.status == 2
+                e.update_attributes(:status => 0)
+              end
+            end
+          end
+        end
+        
         def prepare
           unless lock_testbed(testbeds)
             @@logger.debug("Error: Failed To Lock on Prepare Experiment.")
@@ -39,7 +53,8 @@ module OMF
             unlock_testbed(testbeds)
             exit
           }
-          lock_testbed(testbeds)
+          #lock_testbed(testbeds)
+          unprepare()
           clean_log()
           status(1) # preparing
           e = Experiment.find(@id)
@@ -224,6 +239,7 @@ module OMF
         end
 
         protected
+
         def clean_log
           @@logger.debug("File.exists?(#{APP_CONFIG['omlserver_tmp']}/#{@id}-prepare.xml")
           if File.exists?("#{APP_CONFIG['omlserver_tmp']}/#{@id}-prepare.xml")
@@ -289,12 +305,12 @@ module OMF
             lock = OMF::GridServices::testbed_rel_file_str(t_id, "lock")
             @@logger.debug("LOCK: #{lock}")
             if (File.exists?(lock))
-              f = ActiveSupport::JSON.decode(IO::read(lock))
-              if (f["pid"].to_i == Process.pid)
+              #f = ActiveSupport::JSON.decode(IO::read(lock))
+              #if (f["pid"].to_i == Process.pid)
                 File.unlink(lock)
                 @@logger.debug("UNLOCKED")
                 return true
-              end
+              #end
             end
           end
           return false

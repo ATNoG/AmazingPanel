@@ -342,6 +342,14 @@ ul#menu-global {
   vertical-align: middle;
 }
 
+.gravatar-cell {
+  width: 20px;
+}
+
+.id-cell {
+  width: 30px;
+}
+
 .container {
   left: 20%;
   width: 60%;
@@ -881,7 +889,7 @@ a.action > img {
 }
 
 .main {
-  width: 7%;
+  width: 70px;
 }
 
 .profile > .sidebar {
@@ -931,17 +939,15 @@ div.description {
   width: 300px;
 }
 
-.table-title {
+.table-title > div:first-child {
   float:left;
+  font-size: 13px;
+  line-height: 32px;
 }
 
 .table-top-action {
-  float: right;
+  float: left;
   margin-bottom: 2px; 
-}
-
-.left {
-  float: left !important;
 }
 
 .table-top-action > .action {
@@ -1459,4 +1465,9 @@ div.description {
 
 .ui-autocomplete {
   display: none !important;
+}
+
+#stop-experiment-button {
+  background-color: gray;
+  cursor: default;
 }

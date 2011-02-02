@@ -1,7 +1,7 @@
 <% content_for :sub_actions do %>
   <ul id="toolbar-action-list">
     <li class="action">
-      <%= link_to (edit_user_registration_path, :class => "action")  do %>
+      <%= link_to (edit_user_registration_path(@user), :class => "action")  do %>
 	Edit
 	<%= image_tag "edit.png", {:height => 16, :width => 16} %>
       <% end %> 

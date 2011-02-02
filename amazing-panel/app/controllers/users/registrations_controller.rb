@@ -5,7 +5,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # POST /resource/sign_up
   def create
     build_resource
-
+    begin
     if resource.save
       #puts Rails.root.class
       set_flash_message :notice, "Your account has been created! Your registation intention will be analyzed and your account will be activated in case of approval, and notified by email."
@@ -13,6 +13,10 @@ class Users::RegistrationsController < Devise::RegistrationsController
     else
       clean_up_passwords(resource)
       render_with_scope :new
+    end
+    rescue ActiveRecord::StatementInvalid
+      resource.errors[:username] = "Already been taken"
+      render_with_scope :new      
     end
   end
   

@@ -9,7 +9,10 @@ gem 'mysql', '2.8.1'
 gem 'sqlite3-ruby', :require => 'sqlite3'
 gem 'jquery-rails', "~>0.2"
 gem 'gravatar_image_tag', '0.1.0'
+
 gem 'devise'
+gem 'cancan'
+
 gem 'will_paginate', '~> 3.0.pre2'
 gem 'ruby_parser', '2.0.5'
 gem 'ruby2ruby'

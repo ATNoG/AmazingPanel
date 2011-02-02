@@ -10,8 +10,12 @@
     <%= f.text_field :name %>
   </div>
   <div class="field">
+    <%= f.label :private %>
+    <%= f.check_box :private %>
+  </div>
+  <div class="field">
     <%= f.label :description %><br />
-    <%= text_area_tag "project[description]", @project.description, {:cols => 60, :rows => 20} %>
+    <%= f.text_area :description, :size => "60x20" %>
   </div>
 
   <div class="actions">

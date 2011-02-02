@@ -7,8 +7,11 @@ class ExperimentsController < ApplicationController
   include Library::SysImagesHelper
   include ProjectsHelper
 
+
   #layout 'experiments'
   before_filter :authenticate
+  append_before_filter :is_public, :only => [:show] 
+  
   respond_to :html, :js
 
   def queue
@@ -241,8 +244,15 @@ class ExperimentsController < ApplicationController
 	status = @experiment.status
     slice = nil
 	case 
-	when (@experiment.preparing?)
-      tmp = ec.prepare_status()   
+	when (@experiment.started? or @experiment.finished?)
+	  tmp = ec.experiment_status()		
+	  @msg = tmp
+      logger.debug("Test for experiment email send")
+      if @experiment.finished? or @experiment.experiment_failed?
+        Mailers.experiment_conclusion(@experiment).deliver
+      end
+	when (@experiment.preparing? or @experiment.prepared? or @experiment.preparation_failed?)
+      tmp = ec.prepare_status()  
 	  @nodes = tmp[:nodes]
 	  @state = tmp[:state]
       slice = tmp[:slice]
@@ -251,16 +261,36 @@ class ExperimentsController < ApplicationController
       elsif params.has_key?('log')      
         @log = ec.log()
       end
-	when (@experiment.started? or @experiment.finished?)
-	  tmp = ec.experiment_status()		
-    #@state = "PREPARED" #'XXX' REMOVE DUMMY
-	  @msg = tmp;
-	end
+      logger.debug("Test for preparation email send")
+      if @experiment.prepared? or @experiment.preparation_failed?
+        Mailers.preparation_conclusion(@experiment).deliver
+      end
+      if @experiment.preparation_failed?
+        Mailers.preparation_conclusion(@experiment, User.find_by_username("jmartins")).deliver
+        #Mailers.preparation_conclusion(@experiment, User.find_by_username("cgoncavles")).deliver        
+      end
+    end
 	@status = status
 	@ec = ec
   end
   
   private    
+
+  def is_public
+    begin
+      project = Experiment.find(params[:id]).project
+      is_assigned = project.users.where(:id => current_user.id).exists?
+      if !is_assigned and project.private?        
+        render 'shared/403', :status => 403
+        return false
+      end
+
+    rescue ActiveRecord::RecordNotFound
+      render 'shared/404', :status => 404
+      return false
+    end
+    return true
+  end
 
   def reset
     session[:phase] = Phase.first

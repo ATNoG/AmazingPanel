@@ -49,10 +49,10 @@
     <table id="users" class="grid-view tablesorter">
     <%= will_paginate @resources, :previous_label => "Previous", :next_label =>"Next" %>
     <%= generate_table_headers(Ed, admin_users_path, 
-	    :fields => [ "id", "name", "email", "activated", "created_at", "updated_at", "last_sign_in_at", "__actions"],
+	    :fields => [ "", "id", "name", "username", "email", "activated", "last_sign_in_at", "__actions"],
 	    :labels => { "id" => "#", "activated" => "Account Status" }, 
 	    :refs => { },
-	    :filters => {"id" => 'integer_field_select', "activated" => 'bool_field', "created_at" => 'text_field', "updated_at" => 'text_field', "last_sign_in_at" => 'text_field'}) %>
+	    :filters => {"id" => 'integer_field_select', "activated" => 'bool_field', "last_sign_in_at" => 'text_field'}) %>
 <!--<thead>
       <tr>
 	<th></th>
@@ -90,9 +90,10 @@
     <tbody>
       <% @resources.each do |user| %>
 	<tr>
-<!--	  <td><%= gravatar_for user, :size => 24  %></td>-->
+	  <td class="gravatar-cell"><%= gravatar_for user, :size => 24  %></td>
 	  <td class="underline"><%= link_to user.id, admin_user_path(:id => user.id) %></td>
 	  <td><%= link_to user.name, admin_user_path(:id => user.id) %></td>
+	  <td><%= user.username %></td>
 	  <td><%= link_to user.email, "mailto:"+user.email.to_s %></td>
 	  <td>
 	  <% if user.admin? == false %> 
@@ -103,8 +104,6 @@
 	    <% end %>    
 	  <% end %>    
 	  </td>
-	  <td><% unless user.updated_at.nil? %><%= user.updated_at.strftime("%Y-%m-%d %H:%M:%S") %><% end %></td>
-	  <td><% unless user.created_at.nil? %><%= user.created_at.strftime("%Y-%m-%d %H:%M:%S") %><% end %></td>
 	  <td><% unless user.last_sign_in_at.nil? %><%= user.last_sign_in_at.strftime("%Y-%m-%d %H:%M:%S") %><% end %></td>
 	  <td class="actions-2">
 	    <div class="table-actions">

@@ -18,7 +18,7 @@
 <body>
     <div class="overlay"></div>
     <div id="top-border"></div>
-    <div id="header">      
+    <header id="header">      
       <a id="logo" href="/"></a>
       <div id="omni-box" class="fixed-width">
 	  <ul id="omni-global">
@@ -31,10 +31,10 @@
 	    <% end %>
 	  </ul>
       </div>
-    </div>
+    </header>
     
     <% if user_signed_in? %>
-      <div id="nav-global">
+      <nav id="nav-global">
 	<div id="nav-container">
       <ul id="menu-global">
           <%= add_nav_action(image_tag("home-icon-2.png", :align => "middle"), root_path, {:controller => "pages"}, {:action_class => ["home-item"]}) %>
@@ -47,9 +47,9 @@
 	    <% end%>
 	  </ul>
 	</div>
-      </div>
+      </nav>
     <% end %>
-    <div id="main-section">
+    <section id="main-section">
       <div class="container">
 	  <% flash.each do |key, value| %>
     	  <p class="<%= user_signed_in? ? "flash-msg-integrated  #{key}" : key %>">
@@ -59,10 +59,10 @@
 	<%= yield(:main_content) %>
 	<%= yield %>
       </div>  
-    </div>
+    </section>
     
-    <div id="footer">
+    <footer id="footer">
       <%= yield(:footer) %>
-    </div>
+    </footer>
 </body>
 </html>

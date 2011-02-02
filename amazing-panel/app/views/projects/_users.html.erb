@@ -60,9 +60,14 @@
 </ul>
 <% else %>
 <table id="<%= id %>" class="users grid-view">
-  
-  <%= generate_table_headers(users, users_path, :fields => ["", "id", "name", "email", "username", ""], 
-                             :labels => { "id" => "#", "name" => "Name", "email" => "Email", "username" => "Username" }) %>
+  <% has_gravatar = defined?(gravatar) and gravatar == true %>
+  <% fields =  ["", "id", "name", "email",  ""] %>
+  <% unless has_gravatar %>
+    <% fields.delete_at(0) %>
+  <% end %>
+  <% labels =  { "id" => "#", "name" => "Name", "email" => "Email" }  %>
+
+  <%= generate_table_headers(users, users_path, :fields => fields, :labels => labels ) %>
   <tbody>
     <% users.each do |user| %>
     <% if with_assignment_check == true %>      
@@ -73,13 +78,13 @@
      <td><%= link_to user.id, user_path(user)  %></td>
      <td class="name-cell" ><%= link_to user.name, user_path(user)  %></td>
      <td class="email-cell"><%= user.email %></td>
-     <td><%= user.username %></td>
 -->
-	 <td><%= gravatar_for user, :size => 24 %></td>
-     <td><%= link_to user.id, user_path(user) %></td>
+     <% if has_gravatar %>
+     	 <td class="gravatar-cell"><%= gravatar_for user, :size => 24 %></td>
+     <% end %>
+     <td class="id-cell"><%= link_to user.id, user_path(user) %></td>
      <td class="name-cell" ><%= link_to user.name, user_path(user) %></td>
      <td class="email-cell"><%= user.email %></td>
-     <td><%= user.username %></td>
      <td>
 	    <div class="table-actions">
     	<% if disabled == false %>

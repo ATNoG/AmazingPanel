@@ -79,16 +79,25 @@
     <%= @experiment.runs %>
   </p>        
   <hr/>
+
 <% # EXPERIMENT STATUS %>
 <ul id="experiment-widget-tabs" class="tabs">
 	<li><a href="#status">Status</a></li>
-<% if @experiment.finished? %>
-	<li><a href="#results">Results</a></li>
-<% end %>
+    <% if @experiment.finished? and @raw_results.length > 0%>
+	  <li><a href="#results">Results</a></li>
+    <% end %>
 	<li><a href="#log">Log</a></li>
 </ul>
 <div id="status" class="tab">
-<%= experiment_widget(@experiment, @nodes) %>
+    <p class="notice">If your have some problems on preparation/execution of the experiments, please report it <a href="mailto:jmartins@av.it.pt">here</a>
+    </p> 
+  <% if @experiment.started? or @experiment.prepared? %>
+    <p class="info">The execution of the experiment can be take several minutes, depending on your parameters. A notification will be sent once your experiment is finished.</p>
+  <% end %>
+  <% if !@experiment.init? or @experiment.preparing? %>
+    <p class="info">To prepare an experiment is to load the system images, selected in the Map step of the experiment creation. This operation can take several minutes. A notification will be sent once your experiment is prepared.</p>
+  <% end %>
+  <%= experiment_widget(@experiment, @nodes) %>
 </div>
 <% if @experiment.finished? and @raw_results.length > 0 %>
 <div id="results" class="tab">
@@ -212,7 +221,7 @@ $("#clear-data-set-button").live('click', function(){
 <% end %>  
 
 <div id="log" class="tab">
-<% unless @experiment.status == 0 %>
+<% unless @experiment.init? %>
   <textarea id="log_area">
   </textarea>
 <% end  %>

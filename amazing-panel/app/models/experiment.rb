@@ -7,7 +7,7 @@ class ResourcesMap < ActiveRecord::Base
 end
 
 class Experiment < ActiveRecord::Base 
-  attr_accessible :description, :status, :created_at, :updated_at, :resources_map, :user, :runs
+  attr_accessible :description, :status, :created_at, :updated_at, :resources_map, :user, :runs, :failures
   belongs_to :ed
   belongs_to :phase
   belongs_to :user
@@ -23,23 +23,51 @@ class Experiment < ActiveRecord::Base
   scope :active, where("status >= 0 and status != 4")
 
   def finished?
-    return true if (status == 4 or status == 5)
-    return false;
+    if (status == 4 or status == 5)
+      return true
+    end 
+    return false
   end
 
   def started?
-    return true if (status == 3)
-    return false;
+    if (status == 3)
+      return true
+    end
+    return false
+  end
+
+  def prepared_only?
+    if (status == 2)
+      return true
+    end
+    return false
   end
 
   def prepared?
-    return true if (status == 2 or status == 5)
-    return false;
+    if (status == 2 or status == 5)
+      return true
+    end
+    return false
   end
 
   def preparing?
-    return true if (status == 1)
-    return false;
+    if (status == 1)
+      return true
+    end
+    return false
+  end
+
+  def not_init?
+    if (status == 0)
+      return true
+    end
+    return false
+  end 
+  def init?
+    if (status == 0 or status == 4)
+      return false
+    end
+    return true
   end
 
   def failed?

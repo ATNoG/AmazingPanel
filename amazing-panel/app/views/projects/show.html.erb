@@ -32,13 +32,16 @@
       </p>
     <br/> 
     <% if @experiments.size > 0 %>
-    <p class="table-title">
-      <b>Experiments: </b>
-    </p>
+    <div class="table-title">
+      <div class="bold">Experiments: </div>
+      <% if !project_is_user_assigned?(@project, current_user.id) %>
+        <div class="table-top-action"><%= new_action(new_experiment_path(:reset => 1), {"original-title" => "New Experiment"} ) %></div>
+      <% end %>
+    </div>
+    <%= clear %>
     <% end %>
-    <% if !project_is_user_assigned?(@project, current_user.id) %>
-      <div class="table-top-action<%= @experiments.size == 0 ? " left" : "" %>"><%= new_action(new_experiment_path(:reset => 1), {"original-title" => "New Experiment"} ) %></div>
-    <% end %>
+  
+    
     <% if @experiments.size > 0 %>
       <%= render :partial => 'experiments'  %>
     <% end %>

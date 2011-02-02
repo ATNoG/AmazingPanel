@@ -47,7 +47,6 @@ module ProjectsHelper
     "<td><a href=\"/users/${user.id}\">${user.id}</a></td>"+
     "<td class=\"name-cell\"><a href=\"/users/${user.id}\">${user.name}</a></td>"+
     "<td class=\"email-cell\">${user.email}</td>"+
-    "<td>${user.username}</td>"+
     "<td><div class=\"table-actions\">"+
       "<a href=\"/workspaces/#{project_id}/user/${user.id}\" class=\"action\" data-method=\"put\" rel=\"nofollow\" original-title=\"Assign ${user.name} to project\"><img alt=\"Disable\" height=\"16\" src=\"/images/enable.png\" width=\"16\"></a>"+
     "</div></td>"+
@@ -59,7 +58,6 @@ module ProjectsHelper
           "<td><a href=\"/users/${user.id}\">${user.id}</a></td>"+
           "<td class=\"name-cell\"><a href=\"/users/${user.id}\">${user.name}</a></td>"+
           "<td class=\"email-cell\" >${user.email}</td>"+
-          "<td>${user.username}</td>"+
           "<td><div class=\"table-actions\">"+        
             "{{if user.leader==0}}"+
               "<a href=\"/workspaces/#{project_id}/user/${user.id}\" class=\"action\" data-method=\"put\" rel=\"nofollow\" original-title=\"Make ${user.name} manager project\"><img alt=\"Make Manager\" height=\"16\" src=\"/images/star.png\" width=\"16\"></a>"+

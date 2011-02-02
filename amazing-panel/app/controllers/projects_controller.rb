@@ -5,7 +5,8 @@ class ProjectsController < ApplicationController
   include OMF::Experiments::Controller
   include ProjectsHelper
   before_filter :authenticate
-  append_before_filter :is_project_leader, :only => [:assign, :assign_user, :make_leader, :update, :destroy]
+  append_before_filter :is_public, :only => [:show, :users] 
+  append_before_filter :is_project_leader, :only => [:edit, :assign, :assign_user, :make_leader, :update, :destroy]
   append_before_filter :is_only_leader, :only => [:unassign_user]
 
   layout 'workspaces'
@@ -24,7 +25,7 @@ class ProjectsController < ApplicationController
     Project.all.select do |p| 
       if !project_is_user_assigned?(p, current_user.id)
         _ps.push(p)
-      else
+      elsif !p.private?
         _pub_ps.push(p)
       end
     end
@@ -73,9 +74,8 @@ class ProjectsController < ApplicationController
     @project = Project.find(params[:id])
     term = params[:term]    
     name = params[:name]
-    username = params[:username]
     email = params[:email]
-    fields = "id,name,email,username"
+    fields = "id,name,email"
     #if params.has_key?('name')
     if (params.has_key?(:type) and params[:type] == "unassigned")
       select = User.select(fields)
@@ -205,6 +205,22 @@ class ProjectsController < ApplicationController
   end
 
   private
+  def is_public
+    begin
+      project = Project.find(params[:id])
+      is_assigned = project.users.where(:id => current_user.id).exists?
+      if !is_assigned and project.private?        
+        render 'shared/403', :status => 403
+        return false
+      end
+
+    rescue ActiveRecord::RecordNotFound
+      render 'shared/404', :status => 404
+      return false
+    end
+    return true
+  end
+
   def is_project_leader
     project = Project.find(params[:id])
     begin

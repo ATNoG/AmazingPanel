@@ -15,21 +15,48 @@ function experiment_stat() {
   $("#error-experiment").addClass("hidden");
   $("#caption-experiment").show()
   $(".image-progress").show()
-  <%= render :partial => 'stat_prepare.js' %>
+  <% @nodes.each do |k, v| %> 
+    <% v[:state].gsub!(".", "_") %>
+    $("#image-node-<%= k %> > .image-label").removeClass("node-RESETTING node-LOADING node-DONE_ERR node-DONE_TIMEOUT node-TIMEDOUT node-DONE_OK").addClass("node-<%= v[:state] %>")
+    $("#image-node-<%= k %> > .image-status").html("<%= v[:msg] %>");
+    $("#image-node-<%= k %> > .progress-container > .progress_text").html("<%= v[:progress] %>%")
+    $("#image-node-<%= k %> > .progress-container > .progress_bar").css("width","<%= v[:progress] %>%")
+  <% end %>
+  <% if @state=="PREPARED" %>
+    $("#caption-experiment").hide(); 
+    $("#stop-experiment-button").addClass("button-disabled");
+    $("#start-experiment-button").removeClass("button-disabled");
+    $("#prepare-experiment-button").addClass("button-disabled");
+  <% else %>
+    setTimeout(experiment_stat,2000);
+  <% end %>
 <% elsif @experiment.started? %>
-  <%= render :partial => 'stat_experiment.js' %>
+  <% if @error.nil? %>
+  function experiment_stat(){
+    $.getScript("<%= stat_experiment_path(:id => params[:id], :format => :js) %>");
+  }
+  $("#error-experiment").addClass("hidden");
+  $("#caption-experiment").show();
+  $(".image-progress").show();
+  setTimeout(experiment_stat,2000);
+  <% else %>
+  $("#error-experiment").removeClass("hidden");
+  $("#error-experiment > .text").html("<%= @error %>");
+  <% end %>
 <% elsif @experiment.finished? %>
-  $("#caption-experiment > .text").html("<p>Experiment Finished! <%= escape_javascript(link_to 'See Results', experiment_path(@experiment)) %></p>");
+  $("#caption-experiment > .text").html("<p class=\"success\">Experiment Finished! <%= escape_javascript(link_to 'See Results', "#", :onclick => "window.location='/experiments/38#results';window.location.reload()") %></p>");
   $("#caption-experiment > img").hide(); 
   $("#stop-experiment-button").addclass("button-disabled");
   $("#start-experiment-button").removeclass("button-disabled");
 <% elsif @experiment.preparation_failed? %>
-  $("#caption-experiment > .text").html("<p>Preparation failed: <%= @msg  %></p>");
+  $("#caption-experiment > .text").html("<p class=\"error\">Preparation failed: <%= @msg  %></p>");
+  $("#caption-experiment > img").hide(); 
   $("#stop-experiment-button").addClass("button-disabled");
   $("#start-experiment-button").addClass("button-disabled");
   $("#prepare-experiment-button").removeClass("button-disabled");
 <% elsif @experiment.experiment_failed? %>
-  $("#caption-experiment > .text").html("<p>Experiment fcailed: <%= @msg  %></p>");
+  $("#caption-experiment > .text").html("<p class=\"error\">Experiment failed: <%= @msg  %></p>");
+  $("#caption-experiment > img").hide(); 
   $("#caption-experiment > img").hide(); 
   $("#stop-experiment-button").addclass("button-disabled");
   $("#start-experiment-button").removeclass("button-disabled");

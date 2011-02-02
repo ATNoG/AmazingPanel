@@ -153,9 +153,12 @@ $("#start-experiment-button").live('click', function(evt){
     $("#stop-experiment-button").removeClass("button-disabled");
   });
 });
-
 $("#stop-experiment-button").live('click', function(evt){
-    $.getScript("<%= stop_experiment_path(experiment) %>");
+    var text = $("#experiment-widget-tabs").html();
+    var warn = $("#stop-warn");
+    if (warn.length == 0) {
+      $("#status").prepend("<p id=\"stop-warn\" class=\"notice\">Stopping not available in the moment.</p>");
+    }
 });
 
 <% if experiment.finished? %>

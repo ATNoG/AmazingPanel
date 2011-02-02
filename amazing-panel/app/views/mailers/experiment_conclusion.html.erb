@@ -8,9 +8,11 @@
   </style>
   <body>
   <pre>
-Dear <% @user.name %>, the experiment #<%= experiment.id %>has finished.
+Dear <%= @user.name %>, 
 
-  Login in <%= link_to "here", experiment_path(@experiment)+"#results" %> to see your results.
+  The experiment #<%= @experiment.id %> has <%= @experiment.experiment_failed? ? "failed" : "finished" %>.
+
+  Login <%= link_to "here", experiment_path(@experiment)+"#results" %> to see your results.
 
 Best Regards,
 AMazINg Team

@@ -9,7 +9,17 @@ class ApplicationController < ActionController::Base
     end
   
     def authenticate
+      session['return_url'] = request.url
       redirect_to new_user_session_path, :notice => "Please sign in to access this page." unless user_signed_in?
+    end
+    def after_sign_in_path_for(resource_or_scope)
+      url = session['return_url']
+      if url.nil?
+        root_path
+      else
+        session['return_url']        
+      end
+      
     end
     
     def correct_user
