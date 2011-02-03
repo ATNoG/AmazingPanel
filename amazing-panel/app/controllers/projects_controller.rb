@@ -115,13 +115,13 @@ class ProjectsController < ApplicationController
             file.write(uploaded_io.read)
           end
         end
-       flash["success"] = 'Project was successfully created.'
+       flash["success"] = t("amazing.project.created")
        return redirect_to(@project)
       end
     rescue ActiveRecord::StatementInvalid
-      @project.errors[:name] = "Already been taken"
-      render :action => "new"
+      @project.errors[:name] = :unique
     end
+    render :action => "new"
   end
 
   # PUT /projects/1
@@ -136,7 +136,8 @@ class ProjectsController < ApplicationController
     	  file.write(uploaded_io.read)
     	end	  
       end
-      flash["success"] = 'Project was successfully updated.'
+      #flash["success"] = 'Project was successfully updated.'
+      flash["success"] = t("amazing.project.updated")
       return redirect_to(@project)
     end
     render :action => "edit" 
@@ -155,7 +156,8 @@ class ProjectsController < ApplicationController
     end
       
     if @project.update_attributes({:user_ids => tmp})
-      flash["success"] = @user.name.to_s + ' assigned to ' + @project.name.to_s
+      #flash["success"] = @user.name.to_s + ' assigned to ' + @project.name.to_s
+      flash["success"] = t("amazing.project.assigned", :name => @user.name.to_s, :project => @project.name.to_s)
       return redirect_to(assign_project_path(@project))
     end
     render :action => "assign"
@@ -170,7 +172,8 @@ class ProjectsController < ApplicationController
      Project.find(params[:id]).users.delete(@user)
      ProjectsUsers.create({:project_id => params[:id], :user_id => params[:user_id], :leader => 't'})
      
-     flash["success"] = @user.name.to_s + ' is manager on ' + @project.name.to_s
+     #flash["success"] = @user.name.to_s + ' is manager on ' + @project.name.to_s
+     flash["success"] = t("amazing.project.manager", :name => @user.name.to_s, :project => @project.name.to_s)
      redirect_to(assign_project_path(@project)) 
   end
 
@@ -197,7 +200,8 @@ class ProjectsController < ApplicationController
       tmp.delete(id)
     end
     if @project.update_attributes({:user_ids => tmp})
-      flash["success"] = @user.name.to_s + ' unassigned from ' + @project.name.to_s
+      flash["success"] = t("amazing.project.unassigned", :name => @user.name.to_s, :project => @project.name.to_s)
+      #flash["success"] = @user.name.to_s + ' unassigned from ' + @project.name.to_s
       redirect_to(assign_project_path(@project))
     else
       render :action => "assign" 
@@ -242,7 +246,7 @@ class ProjectsController < ApplicationController
     end
     leaders = ProjectsUsers.where({:project_id => params[:id], :leader => '1'})
     if leaders.length == 1
-      flash["info"] = "There's only one manager. Cannot unassign user."
+      flash["info"] = t("errors.project.only_one_manager")
       redirect_to(assign_project_path(@project))
       return false
     end

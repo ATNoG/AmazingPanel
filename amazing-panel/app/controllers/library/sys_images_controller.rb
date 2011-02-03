@@ -53,7 +53,7 @@ class Library::SysImagesController < Library::ResourceController
   def new
     @sys_image = resource_new()
     @baselines = Array.new()
-    @baselines.push(["No Baseline", -1])
+    @baselines.push([t("amazing.sys_image.no_baseline"), -1])
     SysImage.where("baseline" => true).each do |img| 
       @baselines.push([img.name, img.id])
     end
@@ -88,7 +88,7 @@ class Library::SysImagesController < Library::ResourceController
       if @sys_image.save
         write_resource(@sys_image, uploaded_io.read, "ndz")
         OMF::Workspace.create_sysimage(@sys_image, get_path(@sys_image, "ndz")) 
-        flash["success"] = 'Sys image was successfully created.'
+        flash["success"] = t("amazing.sys_image.created")
         redirect_to(@sys_image) 
       else
         render :action => "new" 
@@ -116,7 +116,8 @@ class Library::SysImagesController < Library::ResourceController
         write_resource(@sys_image, uploaded_io.read, "ndz")
       end  
 
-      flash["success"] = 'Sys image was successfully updated.'
+      #flash["success"] = 'Sys image was successfully updated.'
+      flash["success"] = t("amazing.sys_image.updated")
       redirect_to(@sys_image) 
     else
       render :action => "edit"
@@ -131,9 +132,12 @@ class Library::SysImagesController < Library::ResourceController
     if @sys_image.destroy
       delete_resource(@sys_image, "ndz")
       OMF::Workspace.remove_sysimage(@sys_image) 
+      flash[:success] = t("amazing.sys_image.deleted")
     else
-      flash[:error] = "Error deleting System image"      
+      #flash[:error] = "Error deleting System image"      
+      flash[:error] = t("errors.sys_image.updated")
     end
+
      redirect_to(sys_images_path) 
   end
 

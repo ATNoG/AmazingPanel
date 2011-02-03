@@ -82,7 +82,7 @@ class Library::EdsController < Library::ResourceController
         #end
         write_resource(@ed, uploaded_io.read, "rb")
         format.html { 
-          flash["success"] = 'Ed was successfully created.'
+          flash[:success] = t("amazing.ed.created")
           redirect_to(eds_path)  
         }
       else
@@ -112,7 +112,7 @@ class Library::EdsController < Library::ResourceController
     #end
     write_resource(@ed, content, "rb")
     if @ed.update_attributes(params[:ed])
-      flash[:success] = 'Ed was successfully updated.'
+      flash[:success] = t("amazing.ed.updated")
       redirect_to(ed_path)
     else
       render :action => "edit"
@@ -134,9 +134,9 @@ class Library::EdsController < Library::ResourceController
 
     if @ed.destroy
       delete_resource(@ed, extension="")      
-      return redirect_to(eds_path, :notice => 'Ed was successfully deleted');      
+      return redirect_to(eds_path, :notice => t("amazing.ed.destroy"));      
     end
-    redirect_to(eds_path, :error => 'Error removing Experiment Definition');
+    redirect_to(eds_path, :error => t("errors.ed.destroy"));
   end 
   
   # POST /eds/code.js

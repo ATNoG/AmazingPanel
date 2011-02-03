@@ -2,7 +2,7 @@
   <% if @num_exps == 0 %>
     No Experiments.
   <% else %>
-  <p class="info">Experiments highlighted in green are prepared to run. Prepared means with the images loaded into the nodes, therefore booted and able to run your experiment.</p>
+    <p class="info"><%= t("amazing.experiments.messages.queue_tip") %></p>
   <table id="experiments" class="grid-view">
     <%= generate_table_headers(@experiments, experiments_path, :fields => ["id","project_id", "creator", "ed", "duration", ""], :labels => { "id" => "#", "project_id" => "Workspace", "ed"=>"Description" }) %>
     <tbody>

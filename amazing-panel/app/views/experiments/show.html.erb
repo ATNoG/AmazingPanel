@@ -89,13 +89,18 @@
 	<li><a href="#log">Log</a></li>
 </ul>
 <div id="status" class="tab">
-    <p class="notice">If your have some problems on preparation/execution of the experiments, please report it <a href="mailto:jmartins@av.it.pt">here</a>
+    <p class="notice">
+      <%= t("amazing.experiments.messages.bug_report").html_safe %>    
     </p> 
   <% if @experiment.started? or @experiment.prepared? %>
-    <p class="info">The execution of the experiment can be take several minutes, depending on your parameters. A notification will be sent once your experiment is finished.</p>
+    <p class="info">
+      <%= t("amazing.experiments.messages.execution_warn") %>    
+    </p>
   <% end %>
   <% if !@experiment.init? or @experiment.preparing? %>
-    <p class="info">To prepare an experiment is to load the system images, selected in the Map step of the experiment creation. This operation can take several minutes. A notification will be sent once your experiment is prepared.</p>
+    <p class="info">
+      <%= t("amazing.experiments.messages.preparation_warn") %>    
+    </p>
   <% end %>
   <%= experiment_widget(@experiment, @nodes) %>
 </div>

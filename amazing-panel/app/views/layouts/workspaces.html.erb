@@ -1,5 +1,5 @@
 <% content_for :main_content do %>
-  <% if params[:action] == "index" %>
+  <% if params[:action] == "index" or params[:action] == "new" or params[:action] == "create" %>
   <div id="toolbar" class="invisible">  
   </div>
   <% else %>

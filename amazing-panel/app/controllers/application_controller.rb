@@ -1,16 +1,22 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
-
+  
+  before_filter :set_locale
   rescue_from ActionController::RoutingError, :with => :route_not_found
   
   private
+
+    def set_locale
+      I18n.locale = params[:locale]
+    end
+  
     def route_not_found
       render "shared/404", :status => :not_found
     end
   
     def authenticate
       session['return_url'] = request.url
-      redirect_to new_user_session_path, :notice => "Please sign in to access this page." unless user_signed_in?
+      redirect_to new_user_session_path, :notice => t("devise.failure.unauthenticated") unless user_signed_in?
     end
     def after_sign_in_path_for(resource_or_scope)
       url = session['return_url']
@@ -35,7 +41,7 @@ class ApplicationController < ActionController::Base
     end
 
     def permission_denied(path)
-      redirect_to(path, :notice => "You don't have permission to modify this resource")
+      redirect_to(path, :notice => t(:permission_denied))
     end
 
     def save_previous_path

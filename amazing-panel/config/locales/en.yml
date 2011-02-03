@@ -2,4 +2,60 @@
 # See http://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
 en:
-  hello: "Hello world"
+  permission_denied: "You don't have permission to modify this resource."
+
+  amazing:
+    project:
+      created: "Workspace was successfully created."
+      updated: "Workspace was successfully updated."
+      destroy: "Workspace was successfully deleted."
+      unassigned: "%{name} unassigned from %{project}."
+      assigned: "%{name} unassigned from %{project}."
+      manager: "%{name} is manager on %{project}."
+    ed:
+      created: "Ed was successfully created."
+      updated: "Ed was successfully updated."
+      destroy: "Ed was successfully deleted."
+    sys_image:
+      created: "System Image was successfully created."
+      updated: "System Image was successfully updated."
+      destroy: "System Image was successfully deleted."
+      no_baseline: "No baseline"
+    testbed:
+      status: "Status in about %{interval} seconds."
+    experiments:
+      messages:
+        queue_tip: "Experiments highlighted in green are prepared to run. Prepared means with the images loaded into the nodes, therefore booted and able to run your experiment."
+        bug_report: "If your have some problems on preparation/execution of the experiments, please report it <a href=\"mailto:jmartins@av.it.pt\">here</a>"
+        execution_warn: "The execution of the experiment can be take several minutes, depending on your parameters. A notification will be sent once your experiment is finished."
+        preparation_warn: "To prepare an experiment is to load the system images, selected in the Map step of the experiment creation. This operation can take several minutes. A notification will be sent once your experiment is prepared."
+
+  errors:
+    project:
+      only_one_manager: "There's only one manager. Cannot unassign user."
+    resource:
+      invalid_filter: "Invalid filter."
+    ed:
+      destroy: "Error removing experiment definition."
+    sys_image:
+      destroy: "Error deleting system image."
+    experiment:
+      failure:
+        running: "Another experiment is running."
+      nodes: 
+        missing: "%{nodes} missing system image."
+        allowed: "only %{nodes} allowed."
+        invalid: "invalid."
+      testbed: "doesn't exist."
+      resources_map: 
+        empty: "empty."
+        invalid: "invalid."
+
+  activerecord:
+    errors:
+      models:
+        project:
+          attributes:
+            name:
+              unique: " already been taken."
+              blank: " cannot be blank."

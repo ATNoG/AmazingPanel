@@ -94,7 +94,7 @@ class Library::ResourceController < ApplicationController
 	  end
 	end
       rescue
-	@error = "Invalid Filter"
+    	@error = t("errors.resource.invalid_filter")
       end
     end
     @filters = session[controller][:filters]
@@ -112,7 +112,7 @@ class Library::ResourceController < ApplicationController
     end
 
     unless @error.nil?
-      @error = "Invalid Filter"
+      @error = t("errors.resource.invalid_filter")
     end
   end
 

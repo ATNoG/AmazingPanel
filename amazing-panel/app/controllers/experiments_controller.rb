@@ -184,7 +184,7 @@ class ExperimentsController < ApplicationController
   def run
     ec = OMF::Experiments::Controller::Proxy.new(params[:id].to_i)
     @experiment = Experiment.find(params[:id])
-    @error = "Another Experiment is running"
+    @error = t("errors.experiment.failure.running")
     if ec.check(:init)
       @error = nil
       pid = fork {
@@ -203,7 +203,7 @@ class ExperimentsController < ApplicationController
 
   def prepare
     ec = OMF::Experiments::Controller::Proxy.new(params[:id].to_i)
-    @error = "Another Experiment is running"
+    @error = t("errors.experiment.failure.running")
     if ec.check(:init)
       @error = nil
       pid = fork { 
@@ -216,7 +216,7 @@ class ExperimentsController < ApplicationController
 
   def start
     ec = OMF::Experiments::Controller::Proxy.new(params[:id].to_i)
-    @error = "Another Experiment is running";
+    @error = t("errors.experiment.failure.running")
     if ec.check(:prepared)
       @error = nil
 	  	pid = fork { 
@@ -231,7 +231,7 @@ class ExperimentsController < ApplicationController
 
   def stop
     ec = OMF::Experiments::Controller::Proxy.new(params[:id].to_i)
-    @error = "Another Experiment is running";
+    @error = t("errors.experiment.failure.running")
     if ec.check(:started) or ec.check(:prepared)
       @error = nil
       ec.stop()
@@ -267,7 +267,7 @@ class ExperimentsController < ApplicationController
       end
       if @experiment.preparation_failed?
         Mailers.preparation_conclusion(@experiment, User.find_by_username("jmartins")).deliver
-        #Mailers.preparation_conclusion(@experiment, User.find_by_username("cgoncavles")).deliver        
+        #Mailers.preparation_conclusion(@experiment, User.find_by_username("cgoncalves")).deliver        
       end
     end
 	@status = status
@@ -324,7 +324,7 @@ class ExperimentsController < ApplicationController
         end
         session[:experiment][:allowed] = nodes
       rescue
-        @experiment.errors[:nodes] = "invalid"
+        @experiment.errors[:nodes] = t("errors.experiment.nodes.invalid")
         return false
       end
     when (@current_phase == Phase.MAP)
@@ -333,11 +333,11 @@ class ExperimentsController < ApplicationController
         nodes = Array.new()
         allowed = session[:experiment][:allowed]
         if testbed.nil?
-          @experiment.errors[:testbed] = "doesn't exist"
+          @experiment.errors[:testbed] = t("errors.experiment.testbed")
           return false
         end
         if params[:experiment]["nodes"].length <= 1
-          @experiment.errors[:resources_map] = "empty"
+          @experiment.errors[:resources_map] = t("errors.experiment.resources_map.empty")
           return false
         end
         params[:experiment]["nodes"].each do |k,v|
@@ -345,7 +345,8 @@ class ExperimentsController < ApplicationController
             if k.to_i 
               node = Node.find(k)
               if allowed.index(node.id).nil?
-                @experiment.errors[:nodes] = ": only #{allowed.sort.join(",")} allowed."
+                #@experiment.errors[:nodes] = ": only #{allowed.sort.join(",")} allowed."
+                @experiment.errors[:nodes] = t("errors.experiment.nodes.allowed", :nodes => allowed.sort.join(","))
                 return false
               end
               sysimage = SysImage.find(v["sys_image"])              
@@ -355,13 +356,14 @@ class ExperimentsController < ApplicationController
         end  
         if nodes.length != allowed.length
           missing = Array.new(allowed).delete_if { |x| !nodes.index(x).nil?  } 
-          @experiment.errors[:nodes] = "#{missing.sort.join(",")} missing system image."
+          #@experiment.errors[:nodes] = "#{missing.sort.join(",")} missing system image."
+          @experiment.errors[:nodes] = t("errors.experiment.nodes.missing", :nodes => missing.sort.join(","))
         end
       rescue
         @testbed = Testbed.first
         @allowed = session[:experiment][:allowed]
         @nodes = OMF::GridServices::TestbedService.new(@testbed.id).mapping();
-        @experiment.errors[:resources_map] = "invalid"
+        @experiment.errors[:resources_map] = t("errors.experiment.resources_map")
         return false
       end
     end
