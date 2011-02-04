@@ -4,9 +4,12 @@ load 'omf/experiments.rb'
 class ProjectsController < ApplicationController
   include OMF::Experiments::Controller
   include ProjectsHelper
-  before_filter :authenticate
-  append_before_filter :is_public, :only => [:show, :users] 
-  append_before_filter :is_project_leader, :only => [:edit, :assign, :assign_user, :make_leader, :update, :destroy]
+
+  load_and_authorize_resource :project
+  prepend_before_filter :authenticate
+
+  #append_before_filter :is_public, :only => [:show, :users]   
+  #append_before_filter :is_project_leader, :only => [:edit, :assign, :assign_user, :make_leader, :update, :destroy]
   append_before_filter :is_only_leader, :only => [:unassign_user]
 
   layout 'workspaces'

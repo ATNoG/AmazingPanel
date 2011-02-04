@@ -5,6 +5,7 @@ class TestbedsController < ApplicationController
   include OMF::GridServices
   layout 'general'  
   respond_to :html, :js, :json
+  load_and_authorize_resource :except => [:index, :show]
 
   def index
     @testbeds = Testbed.all
@@ -24,7 +25,29 @@ class TestbedsController < ApplicationController
       past_timestamp = Integer(params['timestamp'])
       @interval = current_timestamp - past_timestamp
     end
-    flash['info'] = t("amazing.testbed.status", :interval => 5)
+    flash['info flash'] = t("amazing.testbed.status", :interval => 5)
     respond_with(@nodes)
+  end
+  
+  def node_toggle
+    @node = Node.find(params[:node_id])
+    @id = @node.id
+    @status = OMF::GridServices.testbed_node_toggle(params[:id], @id)
+    logger.info("#{@status}");
+  end
+  
+  def node_info
+    @node = Node.find(params[:node_id])
+    @motherboard = Motherboard.find(@node.motherboard_id)
+    @data = Hash.new()
+    @data["Control IP: "] = @node.control_ip
+    @data["Control MAC Address: "] = @node.control_mac 
+    @data["Hostname: "] = @node.hrn
+    @data["Motherboard Manufacturer Serial: "] = @motherboard.mfr_sn
+    @data["CPU: "] = "#{@motherboard.cpu_type}@#{@motherboard.cpu_hz * 0.001} KHz"
+    
+    respond_to do |format|
+      format.js
+    end
   end
 end

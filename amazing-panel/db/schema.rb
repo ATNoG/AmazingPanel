@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110202125117) do
+ActiveRecord::Schema.define(:version => 20110203113957) do
 
   create_table "device_kinds", :force => true do |t|
     t.integer "inventory_id",               :null => false
@@ -182,6 +182,7 @@ ActiveRecord::Schema.define(:version => 20110202125117) do
     t.string   "name"
     t.string   "institution"
     t.string   "username"
+    t.integer  "roles_mask"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true

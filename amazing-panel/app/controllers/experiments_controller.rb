@@ -8,9 +8,12 @@ class ExperimentsController < ApplicationController
   include ProjectsHelper
 
 
-  #layout 'experiments'
-  before_filter :authenticate
-  append_before_filter :is_public, :only => [:show] 
+  #layout 'experiments'  
+  load_and_authorize_resource :experiment
+
+  prepend_before_filter :authenticate
+  
+  #append_before_filter :is_public, :only => [:show] 
   
   respond_to :html, :js
 
@@ -101,14 +104,6 @@ class ExperimentsController < ApplicationController
       @experiment = session[:experiment][:cache]
       @allowed = session[:experiment][:allowed]
     end
-  end
-
-  def update    
-    if params.key?('reset')      
-      @experiment = Experiment.find(params[:id])
-      @experiment.update_attributes(:status => nil)
-    end
-    redirect_to(experiment_url(@experiment)) 
   end
 
   # Handles all the phases in Experiment Creation

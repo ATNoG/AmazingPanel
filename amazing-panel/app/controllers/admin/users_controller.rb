@@ -33,6 +33,11 @@ class Admin::UsersController < Users::UsersController
   end
   
   def update
+    @user = User.find(params[:id])    
+    if @user.update_attributes(params[:user])
+      flash[:success] = 'Profile updated.'
+      redirect_to(admin_user_path(@user))
+    end  
   end  
 
   private

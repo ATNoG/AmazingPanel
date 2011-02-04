@@ -5,6 +5,7 @@
 <% end %>
 
 <% content_for :content do %>
+  <%= modal_dialog("", "popup") %>
   <% if @testbeds.length > 0 %>
   <table id="testbeds" class="grid-view">
     <%= generate_table_headers(Testbed, testbeds_path, :fields => ["id", "name"], :labels => { "id" => "#"}) %>

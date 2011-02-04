@@ -1137,12 +1137,13 @@ div.description {
 .clear {
   clear: both;
 }
-
-<% if params[:c] == "admin/testbeds" and params[:a] == "show" %>  
-  <%= render :partial => "testbeds", :locals => { :selectable => true, :toggleable => false} %>
-<% elsif params[:c] == "experiments" or params[:c] == "projects" or (params[:c] == "library/eds" and params[:a] == "new") %>
-  <%= render :partial => "testbeds", :locals => { :selectable => true, :toggleable => true } %>
-<% elsif params[:c] == "testbeds" %> 
+<% if user_signed_in? %>
+  <% if current_user.admin? or (can? :node_info, Testbed) or (can? :node_toggle, Testbed) %>
+    <%= render :partial => "testbeds", :locals => { :selectable => true, :toggleable => false} %>
+  <% elsif params[:c] == "experiments" or params[:c] == "projects" or (params[:c] == "library/eds" and params[:a] == "new") %>
+    <%= render :partial => "testbeds", :locals => { :selectable => true, :toggleable => true } %>
+  <% end %>
+<% else %>
   <%= render :partial => "testbeds", :locals => { :selectable => false, :toggleable => false } %>
 <% end %>
 
