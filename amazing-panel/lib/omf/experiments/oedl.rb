@@ -12,13 +12,12 @@ module OMF
         end
         
         # Generates --
-        # defGroup(name, nodes) do |node|
-        # end
+        # defGroup(name)        
         def createGroup(name)
           return s(:block, s(:call, nil, "defGroup".to_sym, s(:arglist, s(:str, name.to_s))))
         end
         
-        #-Generates --
+        # Generates --
         #  onEvent(:ALL_UP_AND_INSTALLED) do |node|
         #   info "This is my first OMF experiment"
         #   wait 10
@@ -121,7 +120,43 @@ module OMF
           block.call(Application.new(@ref, id, @group))
         end
       end
-      
+
+      class ApplicationDefinition < Prototype
+        attr_accessor :uri, :name, :path, :version, :shortDescription, :description, :omlPrefix, :measurements
+
+        def initialize(ref, uri, name)
+          @ref = ref
+          @uri = uri 
+          ref.properties[:repository][:apps][@uri] = { :name => name, :properties => Hash.new }
+          ref.properties[:repository][:apps][@uri] = { :name => name, :properties => Hash.new, :measures => Hash.new }
+          @ref = ref
+        end
+
+        def defProperty(name, description, mnemonic = nil, options = nil)
+          @ref.properties[:repository][:apps][@uri][:properties][name] = { 
+              :description => description, 
+              :mnemonic => mnemonic,
+              :options => options
+          }
+        end        
+
+        def defMeasurement(name, &block)
+          @current_measure = name
+          block.call(self) 
+        end
+
+        def defMetric(name, type)
+          @ref.properties[:repository][:apps][@uri][:measures][@current_measure] = {
+            :name => name,
+            :type => type
+          }
+        end
+
+        def version(a,b,c)
+          @version = "#{a}.#{b}.#{c}"
+        end
+      end
+
       def defGroup(name, selector=nil, &block)
         if @properties[:groups].class != Hash
           @properties[:groups] = Hash.new()
@@ -136,6 +171,13 @@ module OMF
       def onEvent(name, consumeEvent = false, &block)
       end
 
+      def defApplication(uri, appName, &block)
+        if @properties[:repository].class != Hash
+          @properties[:repository] = Hash.new()
+          @properties[:repository][:apps] = Hash.new()
+        end
+        block.call(ApplicationDefinition.new(self, uri, appName))        
+      end
     end
   end
 end

@@ -143,5 +143,8 @@ class Library::EdsController < Library::ResourceController
   def code
     scriptgen = OEDLScript.new(params[:meta])
     @code = scriptgen.toRuby();
-  end  
+  end
+
+  def doc
+  end
 end
