@@ -39,7 +39,7 @@ module ExperimentsHelper
     status = experiment.status
     l_button = "button giant-button"
     #l_run_class= (experiment.finished? or experiment.prepared? or experiment.not_init?) ? l_button : l_button+" button-disabled"
-    l_prepare_class = (!experiment.prepared?) ? l_button : l_button+" button-disabled"
+    l_prepare_class = (!experiment.prepared? or experiment.preparing?) ? l_button : l_button+" button-disabled"
     l_start_class = (experiment.prepared?) ? l_button : l_button+" button-disabled"
     l_stop_class = (experiment.started? or experiment.preparing?) ? l_button : l_button+" button-disabled"
     

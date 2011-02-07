@@ -3,6 +3,8 @@ function experiment_stat(){
   $.getScript("<%= stat_experiment_path(:id => params[:id], :format => :js) %>");
 }
 
+$("#log-tab-sel").hide();
+$("#log").hide();
 $("#images-loading").hide()
 $("#graph-choose-box").hide()
 $("#graph").hide()

@@ -45,7 +45,9 @@ en:
       nodes: 
         missing: "%{nodes} missing system image."
         allowed: "only %{nodes} allowed."
-        invalid: "invalid."
+        invalid: "invalid."        
+      ed:
+        empty: " empty."
       testbed: "doesn't exist."
       resources_map: 
         empty: "empty."

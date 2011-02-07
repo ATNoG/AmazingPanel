@@ -90,8 +90,12 @@ class ExperimentsController < ApplicationController
         session[:phase].nil? or 
        (session[:phase] == Phase.first and session[:phase_status] == 0))
        @projects = Project.all.select { |p| !project_is_user_assigned?(p, current_user.id) ? true : false }.collect { |p| [p.name, p.id] }
-       @eds = Ed.all.collect {|e| [ e.name, e.id ] }
+      @eds = Ed.all.collect {|e| [ e.name, e.id ] }
+      unless session[:experiment].nil?
+        @experiment = session[:experiment][:cache]
+      end
       reset()
+
     else
       if (@current_phase == Phase.MAP)
         @testbed = Testbed.first
@@ -153,7 +157,8 @@ class ExperimentsController < ApplicationController
     @experiment.errors.clear()
     validation
     if @experiment.errors.any?
-      redirect_to new_experiment_path
+      #render :action => :new
+      redirect_to(new_experiment_path)
     else
      session[:experiment].merge!(params[:experiment])
      phase_step
@@ -310,6 +315,10 @@ class ExperimentsController < ApplicationController
     @experiment = session[:experiment][:cache]
     @experiment.errors.clear()
     case
+    # validation on DEFINE script phase
+    #   * checks for emptiness of the ed
+    #   * checks for nodes valid on groups definition
+    #   * defines the allowed nodes to map in the next phase
     when (@current_phase == Phase.DEFINE)
       begin 
         ed = Ed.find(@experiment.ed)
@@ -324,7 +333,12 @@ class ExperimentsController < ApplicationController
         end
         session[:experiment][:allowed] = nodes
       rescue
-        @experiment.errors[:nodes] = t("errors.experiment.nodes.invalid")
+        if ed_content.size == 0
+          @experiment.errors[:ed] = t("errors.experiment.ed.empty")
+        else
+          @experiment.errors[:nodes] = t("errors.experiment.nodes.invalid")
+        end
+        session[:experiment][:cache] = @experiment
         return false
       end
     when (@current_phase == Phase.MAP)
@@ -363,7 +377,7 @@ class ExperimentsController < ApplicationController
         @testbed = Testbed.first
         @allowed = session[:experiment][:allowed]
         @nodes = OMF::GridServices::TestbedService.new(@testbed.id).mapping();
-        @experiment.errors[:resources_map] = t("errors.experiment.resources_map")
+        @experiment.errors[:resources_map] = t("errors.experiment.resources_map.invalid")
         return false
       end
     end

@@ -2,16 +2,20 @@
   padding: .4em;
   margin: 0;
   font-family: consolas, monospace;
-  font-size: 10pt;
+  font-size: 9pt;
   line-height: 1.1em;
   color: black;
-  background-color:#1e1e1e;
-  color:#F8F8F8;
+  /*background-color:#000;
+  color:#F8F8F8;*/
+  background-color:#eee;
+  color:#1E1E1E;
 }
 
 .editbox .rb-linenum {
-  background-color:#EEEEEE;
-  color:#888888;
+/*  background-color:#EEEEEE;
+  color:#888888;*/
+  background-color:#eee;
+  color:#1E1E1E;
   padding:0.1em 1em 0.2em 0;
   width:75px;
 }
@@ -30,7 +34,7 @@
 }
 
 .editbox .rb-variable, .editbox .rb-method-call {
-  color:#f0f0f0;
+  color:#1e1e1e;
 }
 
 .editbox .rb-long-comment-whitespace {}

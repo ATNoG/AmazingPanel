@@ -12,7 +12,7 @@ Dear <%= @user.name %>,
 
   The experiment #<%= @experiment.id %> has <%= @experiment.experiment_failed? ? "failed" : "finished" %>.
 
-  Login <%= link_to "here", experiment_path(@experiment)+"#results" %> to see your results.
+  Login <%= link_to "here", "http://jimbo.av.it.pt"+experiment_path(@experiment)+"#results" %> to see your results.
 
 Best Regards,
 AMazINg Team

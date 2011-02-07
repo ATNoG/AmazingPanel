@@ -1,12 +1,17 @@
 <% params.merge!(Rails.application.routes.recognize_path(params[:p])) %>
 
+#testbeds {
+  left: -130px;
+}
+
 .testbed-legend {
   position: absolute;
   width: 100px;
   border: 1px solid #a4a4a4;
+  left: -100px;
 }
 
-.testbed-legend > p{
+.testbed-legend > p {
   padding-bottom: 1px;
   font-weight: bold;
   font-size: 11px;

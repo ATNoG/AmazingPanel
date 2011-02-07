@@ -42,10 +42,6 @@
     <% end %>
     <%= add_image_action(experiment_path(@experiment, :format => "js")+"?resources",
                          'network2.png', 'Resource Mapping', { :remote => "true" }) %>
-<!--    
-  <%= add_image_action(experiment_path(@experiment, :format => "pdf"),
-                         'pdf.png', 'Report Download') %>
--->
   <% end %>
 <% end %>
 
@@ -86,7 +82,9 @@
     <% if @experiment.finished? and @raw_results.length > 0%>
 	  <li><a href="#results">Results</a></li>
     <% end %>
-	<li><a href="#log">Log</a></li>
+    <% if !@experiment.prepared? %>
+	  <li id="log-tab-sel"><a href="#log">Log</a></li>
+    <% end %>
 </ul>
 <div id="status" class="tab">
     <p class="notice">
@@ -224,13 +222,14 @@ $("#clear-data-set-button").live('click', function(){
 </script>
 </div>
 <% end %>  
-
-<div id="log" class="tab">
-<% unless @experiment.init? %>
-  <textarea id="log_area">
-  </textarea>
-<% end  %>
-</div>
+<% if !@experiment.prepared? %>
+  <div id="log" class="tab">
+  <% unless @experiment.init? %>
+    <textarea id="log_area">
+    </textarea>
+  <% end  %>
+  </div>
+  <% end %>
 <% end %>
 <% content_for :footer do %>
 <%= modal_dialog("", "modal-dialog") %>

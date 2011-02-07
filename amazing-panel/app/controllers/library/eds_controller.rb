@@ -74,20 +74,22 @@ class Library::EdsController < Library::ResourceController
     @ed = resource_new(params[:ed])
     @ed.user_id = current_user.id
     uploaded_io = params[:file]
-    respond_to do |format|
-      if @ed.save
-        #path = get_path(@ed, "rb");
-        #File.open(path, 'w') do |file|
-          #file.write(uploaded_io.read)
-        #end
-        write_resource(@ed, uploaded_io.read, "rb")
-        format.html { 
-          flash[:success] = t("amazing.ed.created")
-          redirect_to(eds_path)  
-        }
-      else
-        format.html { render :action => "new" }
+    if !uploaded_io.nil? and @ed.save
+      #path = get_path(@ed, "rb");
+      #File.open(path, 'w') do |file|
+        #file.write(uploaded_io.read)
+      #end
+      write_resource(@ed, uploaded_io.read, "rb")
+      flash[:success] = t("amazing.ed.created")
+      redirect_to(eds_path)  
+    else
+      if uploaded_io.nil? 
+        @ed.errors[:file] = " needed."
       end
+
+      #redirect_to(new_ed_path)
+      render :action => "new"
+      #format.html { render :action => "new" }
     end
   end
 
@@ -133,8 +135,9 @@ class Library::EdsController < Library::ResourceController
     #end
 
     if @ed.destroy
-      delete_resource(@ed, extension="")      
-      return redirect_to(eds_path, :notice => t("amazing.ed.destroy"));      
+      delete_resource(@ed, extension="rb"); 
+      flash[:success] = t("amazing.ed.destroy");
+      return redirect_to(eds_path);
     end
     redirect_to(eds_path, :error => t("errors.ed.destroy"));
   end 

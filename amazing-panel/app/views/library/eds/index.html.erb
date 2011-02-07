@@ -71,7 +71,7 @@
 	    <div class="table-actions">
           <% if (current_user.admin? or current_user.id == creator.id) %>
             <%= edit_action(edit_ed_path(ed), {:link => true, :text => false, "original-title" => "Edit Exp. Definition settings"} ) %>
-            <%= delete_action(eds_path, { :confirm => "Are you sure?", :link => true, :text => false, "original-title" => "Delete Exp. Definition"}) %>
+            <%= delete_action(ed_path(ed), { :confirm => "Are you sure?", :link => true, :text => false, "original-title" => "Delete Exp. Definition"}) %>
           <% end %>
 	    </div>
 	  </td>

@@ -44,7 +44,7 @@ function experiment_stat() {
   $("#error-experiment > .text").html("<%= @error %>");
   <% end %>
 <% elsif @experiment.finished? %>
-  $("#caption-experiment > .text").html("<p class=\"success\">Experiment Finished! <%= escape_javascript(link_to 'See Results', "#", :onclick => "window.location='/experiments/38#results';window.location.reload()") %></p>");
+  $("#caption-experiment > .text").html("<p class=\"success\">Experiment Finished! <%= escape_javascript(link_to 'See Results', experiment_path(@experiment)+"#results", :onclick => "window.location.reload()") %></p>");
   $("#caption-experiment > img").hide(); 
   $("#stop-experiment-button").addclass("button-disabled");
   $("#start-experiment-button").removeclass("button-disabled");
