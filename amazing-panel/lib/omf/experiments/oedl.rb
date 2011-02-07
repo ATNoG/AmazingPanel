@@ -122,7 +122,7 @@ module OMF
       end
 
       class ApplicationDefinition < Prototype
-        attr_accessor :uri, :name, :path, :version, :shortDescription, :description, :omlPrefix, :measurements
+        #attr_accessor :uri, :name, :path, :version, :shortDescription, :description, :omlPrefix, :measurements
 
         def initialize(ref, uri, name)
           @ref = ref
@@ -130,6 +130,11 @@ module OMF
           ref.properties[:repository][:apps][@uri] = { :name => name, :properties => Hash.new }
           ref.properties[:repository][:apps][@uri] = { :name => name, :properties => Hash.new, :measures => Hash.new }
           @ref = ref
+        end
+
+        def method_missing(method_name, *args, &block)
+          method_name = method_name.to_s.gsub(/[=]/,'')
+          @ref.properties[:repository][:apps][@uri][method_name] = args[0]
         end
 
         def defProperty(name, description, mnemonic = nil, options = nil)

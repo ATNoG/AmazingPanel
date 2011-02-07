@@ -2,7 +2,10 @@ require 'omf.rb'
 
 class Library::EdsController < Library::ResourceController
   include OMF::GridServices
+  include OMF::Experiments
   include OMF::Experiments::OEDL
+  
+  respond_to :json, :html, :only => [:doc, :code]
 
   def resource_group()
     return "eds"
@@ -146,5 +149,16 @@ class Library::EdsController < Library::ResourceController
   end
 
   def doc
+    type = params[:type]
+    app = params[:name]
+    if type == "all"
+      @apps = ScriptHandler.scanRepositories()
+    elsif !app.nil?
+      @apps = ScriptHandler.getDefinition(app)
+      unless @apps.nil?
+        @apps = @apps.properties[:repository][:apps]
+      end
+    end
+    respond_with(@apps.to_json)
   end
 end

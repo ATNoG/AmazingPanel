@@ -97,8 +97,16 @@ Group.prototype.addResources = function(resources) {
 }
 
 Group.prototype.removeResource = function(resource) {
-  delete this.nodes[resource.id];
-  this.ids.remove(resource.id);
+  if (resource.id in this.nodes){
+    delete this.nodes[resource.id];
+    this.ids.remove(this.ids.indexOf(resource.id));
+  }
+}
+
+Group.prototype.removeResources = function(resources) {
+  for (i = 0; i<resources.length; ++i) {
+    this.removeResource(resources[i]);
+  }
 }
 
 Group.prototype.getId = function(){
@@ -106,16 +114,27 @@ Group.prototype.getId = function(){
 }
 
 function Engine() {
-  this.groups = { 
-    "default" : new Group("default") 
+  this.groups = { "default" : new Group("default") }
+  this.group_keys = ["default"];
+  this.resources = {};
+  this.reference = {
+    keys: [],
+    defs: {},
+    properties: {},
+    measures: {},
   }
-  this.group_keys = ["default"] 
-  this.resources = {}
+
+  $.getJSON("/eds/doc.json?type=all", function(data){
+    this.loadOEDLReference(data);
+  }.bind(this));
 }
 
-Engine.prototype.addResources = function(groupname, resources){  
-  var group = this.groups[groupname]
-  group.addResources(resources)
+Engine.prototype.addResources = function(groupname, resources){ 
+  for (i=0; i<this.group_keys.length; --i){
+    this.groups[this.group_keys[i]].removeResources(resources);
+  }
+  var group = this.groups[groupname]; 
+  group.addResources(resources);
 }
 
 Engine.prototype.addResource = function(groupname, resource){  
@@ -123,7 +142,7 @@ Engine.prototype.addResource = function(groupname, resource){
 }
 
 Engine.prototype.removeGroup = function(name){  
-  delete this.groups[name]
+  delete this.groups[name];
   this.group_keys.remove(name);
   return 0;
 }
@@ -134,6 +153,25 @@ Engine.prototype.addGroup = function(name){
   this.group_keys.push(name);
   return 0;
 }
+
+Engine.prototype.loadOEDLReference = function(data){
+  var tmp = this.reference;
+  for(uri in data) {
+
+    tmp.keys.push(uri);
+    tmp.properties[uri] = data[uri].properties;
+    tmp.measures[uri] = data[uri].measures;
+    delete data[uri].properties;
+    delete data[uri].measures;
+    // only app description remaining
+    tmp.defs[uri] = data[uri];
+  }
+  this.reference = tmp;
+}
+
+Engine.prototype.getApplicationDefinition = function(uri, cb){
+}
+
 
 Engine.prototype.getGeneratedCode = function(){
   var engine = this;
