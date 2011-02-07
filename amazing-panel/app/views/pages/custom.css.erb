@@ -197,7 +197,13 @@ a:link {
   background: -moz-linear-gradient(top,  #d1d1d1,  #eeeeee) !important; /* for firefox 3.6+ */
 
 }
+.list { 
+}
 
+.list > li {
+  list-style: disc;
+  margin-left: 30px;
+}
 .tabs {
 	margin: 0;
     padding: 0;
@@ -249,6 +255,7 @@ a:link {
     border-bottom: 1px solid #fff;
     font-weight: bold;
 }
+
 .tab {
   background: white;
   border-bottom-left-radius: 5px 5px;
@@ -259,6 +266,34 @@ a:link {
   border: 1px solid #999;
   border-top:none;
   height: 90%;
+}
+
+.modal-tab {
+  height: 393px;
+  overflow-y: auto;
+}
+
+#modal-tabs {
+  width: 99%;
+}
+
+.grid-view-new {
+  display: table;  
+}
+
+.grid-view-header {
+  background-color: #f0f0f0;
+  color: #3E5C6B;
+  font-weight: bold;
+}
+
+.grid-view-row {
+  display: table-row;
+  padding-left: 4px;
+}
+
+.grid-view-row > div {
+  display: table-cell;
 }
 
 .flash-msg-integrated {
@@ -688,8 +723,9 @@ ul#action-list > li {
 
 #design > .sidebar > .oedl-action-button {
   float: left;
-  margin-left: 5px;
   width:78px;
+  margin-bottom: 5px;
+  margin-left: 5px;
 }
 
 #add-group {
@@ -698,7 +734,19 @@ ul#action-list > li {
   height: 30px;
   padding: 5px;
 }
+/*
+.attr-choose {
+  border-top: 1.5px solid #A4A4A4;
+  border-bottom: 1.5px solid #A4A4A4;
+  height: 30px;
+  padding: 5px;
+}
 
+.dialog-add-field {
+  margin-top: -25px;
+  margin-left: 5px;
+}
+*/
 #add-group > .group-add-action {
   margin-top: -25px;
   margin-left: 5px;
@@ -1067,6 +1115,17 @@ div.description {
   font-size: 10px;
   position: absolute;
   right: 15px;
+  top: 15px;
+  width: 18px;
+  line-height: 18px;
+}
+
+.check-button {
+  background: #7D1;
+  border: 1px solid #1D5;
+  font-size: 10px;
+  position: absolute;
+  right: 45px;
   top: 15px;
   width: 18px;
   line-height: 18px;

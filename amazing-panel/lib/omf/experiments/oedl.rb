@@ -6,8 +6,13 @@ module OMF
         
         def initialize(args)
           @meta = args
-          unless @meta.has_key?(:duration)
-            @meta[:duration] = 30
+          duration = @meta[:properties][:duration]
+          if duration.nil?
+            duration = 30
+            @meta[:properties] = {:duration => duration}
+          else
+            duration = duration.to_i
+            @meta[:properties][:duration] = duration
           end
         end
         
@@ -31,7 +36,7 @@ module OMF
         def all_up()
           startApplications = s(:call,  s(:call, nil, :allGroups, s(:arglist)), :startApplications, s(:arglist))
           stopApplications = s(:call, s(:call, nil, :allGroups, s(:arglist)),:stopApplications, s(:arglist))
-          expDuration = s(:call, nil, :wait, s(:arglist, s(:lit, @meta[:duration])))
+          expDuration = s(:call, nil, :wait, s(:arglist, s(:lit, @meta[:properties][:duration])))
           expDone = s(:call, s(:const, :Experiment), :done, s(:arglist))
           onEvent = s(:call, nil, :onEvent, s(:arglist, s(:lit, :APP_UP_AND_INSTALLED)))
           iterNode = s(:lasgn, :node)
@@ -147,12 +152,12 @@ module OMF
 
         def defMeasurement(name, &block)
           @current_measure = name
+          @ref.properties[:repository][:apps][@uri][:measures][@current_measure] = {}
           block.call(self) 
         end
 
         def defMetric(name, type)
-          @ref.properties[:repository][:apps][@uri][:measures][@current_measure] = {
-            :name => name,
+          @ref.properties[:repository][:apps][@uri][:measures][@current_measure][name] = {            
             :type => type
           }
         end

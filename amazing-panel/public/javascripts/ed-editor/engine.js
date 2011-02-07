@@ -28,10 +28,6 @@ Resource.merge = function merge(obj1, obj2) {
     return obj2;
 }
 
-Resource.getOMFApplications = function(){
-  
-}
-
 Resource.prototype.getProperties = function(){
   return this.properties;
 }
@@ -123,10 +119,18 @@ function Engine() {
     properties: {},
     measures: {},
   }
-
+  this.properties = {}
   $.getJSON("/eds/doc.json?type=all", function(data){
     this.loadOEDLReference(data);
   }.bind(this));
+}
+
+Engine.prototype.setExperimentProperties = function(properties){
+  this.properties = properties;
+}
+
+Engine.prototype.getExperimentProperties = function(){
+  return this.properties;
 }
 
 Engine.prototype.addResources = function(groupname, resources){ 
@@ -170,10 +174,13 @@ Engine.prototype.loadOEDLReference = function(data){
 }
 
 Engine.prototype.getApplicationDefinition = function(uri, cb){
+  $.getJSON("/eds/doc.json?type=app&name="+uri, function(data){
+    cb(data);
+  }.bind(this));
 }
 
 
 Engine.prototype.getGeneratedCode = function(){
   var engine = this;
-  $.post("/eds/code.js", { meta : { groups : engine.group_keys }});
+  $.post("/eds/code.js", { meta : { groups : engine.group_keys, properties : engine.properties }});
 }

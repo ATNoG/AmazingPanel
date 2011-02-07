@@ -66,7 +66,12 @@ module Library::ResourceHelper
     return
   end
   
-  def modal_dialog(title, id, &block)            
+  def modal_dialog(title, id, options={}, &block)    
+    check_class = "check-button button invisble"
+    if !options[:confirm].nil? and options[:confirm] == true
+      check_class = "check-button button"
+    end
+    check_button = content_tag(:div, "v", :class=> check_class);
     close_button = content_tag(:div, "x", :class=>"close-button button", :onclick => "closeDialog('#"+id+"')");
     title_box = content_tag(:div, title.html_safe, :class=>"title-box")    
     #actions = content_tag(:div, close_button, :class=>"modal-actions")
@@ -77,7 +82,7 @@ module Library::ResourceHelper
     end
     container = content_tag(:div, content, :class=>"modal-container")    
     #modal = content_tag(:div, title_box+container+actions, :class=>"modal", :id => id)
-    modal = content_tag(:div, title_box+close_button+container, :class=>"modal", :id => id)
+    modal = content_tag(:div, title_box+check_button+close_button+container, :class=>"modal", :id => id)
     return modal
   end
 

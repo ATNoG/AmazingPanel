@@ -10,19 +10,19 @@ $(document).ready(function(){
       $(descs[i]).html(text+"(...)");
     }
   }
-  if ($(".tabs").length > 0) {
+  if ($(".tabs").length > 0) {      
       $(".tab").hide();
       $(".tab:eq(0)").show();
       $(".tabs li:first-child").addClass("tab-active");
-      $(".tabs li").live('click', function(evt){
+      $(".tabs:not(#modal-tabs) li").live('click', function(evt){        
         var active_tab = $($(this).find("a").attr("href"));
-    	$(".tab").hide();
-     	$(".tabs li").removeClass("tab-active");
-    	$(this).addClass("tab-active");
+        $(".tab").hide();
+        $(".tabs li").removeClass("tab-active");
+        $(this).addClass("tab-active");
         active_tab.fadeIn();
-  	    active_tab.focus();
+    	active_tab.focus();
       });
-}
+  }
   <% if (@c == "projects" and @a == "assign")%>
     <%= render :partial => 'projects' %>
   <% end %>
