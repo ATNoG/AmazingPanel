@@ -1,5 +1,5 @@
 class Mailers < ActionMailer::Base
-  default :from => "amazing@hng.av.it.pt"
+  default :from => "amazing@atnog.av.it.pt"
 
   def activation(user)
     @user = user
