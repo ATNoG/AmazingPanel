@@ -1405,7 +1405,7 @@ div.description {
   width: 700px;
   height: 640px;
   top: 5%;
-  left: 20%;
+  left: 0%;
 }
 
 .resources-map-dialog-container {
