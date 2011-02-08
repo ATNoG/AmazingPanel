@@ -20,7 +20,8 @@ $(document).ready(function(){
      	$(".tabs li").removeClass("tab-active");
     	$(this).addClass("tab-active");
         active_tab.fadeIn();
-  	    active_tab.focus();
+        active_tab.focus();
+        return false;
       });
 }
   <% if (@c == "projects" and @a == "assign")%>

@@ -8,22 +8,47 @@
 <% end %>
 
 <%= content_tag :center do %>
-  <%= content_tag :div, :id => "testbed-"+@testbed.id.to_s, :class => "testbed", 
-    :style => "background-image: url('/images/testbeds/testbed-#{@testbed.id.to_s}.png');", :timestamp => Time.now.strftime("%s").to_s do %>
-    <% length = 0 %>
-    <% @nodes.each do |n| %>      
-      <% if  ((length % 5) == 0) and (length != 0) %>
-       <%= content_tag :div, "", :class => "clear" %>      	
-      <% end %>      
-      <% node_class = ["node"] %>
-      <% if defined?(@allowed) %>
-       <% unless @allowed.index(n["id"].to_i).nil? %>    
-          <% node_class.push("available") %>
+  <% if !@has_map %>
+    <%= content_tag :div, :id => "testbed-"+@testbed.id.to_s, :class => "testbed", :timestamp => Time.now.strftime("%s").to_s do %>
+      <table id="testbed-nodes" class="grid-view tablesorter">
+      <%= generate_table_headers(Node, eds_path, 
+    	    :fields => [ "id", "hrn"],
+            :labels => { "id" => "#", "hrn" => "Human Readable Name" }) %>
+      <tbody>              
+        <% @nodes.each do |n| %>
+          <tr>
+            <td class="id"> 
+            <% node_class = ["node"] %>
+            <% if defined?(@allowed) %>
+              <% unless @allowed.index(n["id"].to_i).nil? %>    
+                <% node_class.push("available") %>
+              <% end %>
+            <% end %>
+            <%= content_tag(:div, n["id"], :id => "node-#{n["id"].to_i}", :class => node_class) unless n["id"] == -1 %>
+            </td>
+            <td class=""><%= n["hrn"]%></td>
+          </tr>
         <% end %>
+      </tbody>
+  	<% end %>
+  <% else %>
+    <%= content_tag :div, :id => "testbed-"+@testbed.id.to_s, :class => "testbed", 
+      :style => "background-image: url('/images/testbeds/testbed-#{@testbed.id.to_s}.png');", :timestamp => Time.now.strftime("%s").to_s do %>
+      <% length = 0 %>
+      <% @nodes.each do |n| %>      
+        <% if  ((length % 5) == 0) and (length != 0) %>
+         <%= content_tag :div, "", :class => "clear" %>      	
+        <% end %>      
+        <% node_class = ["node"] %>
+        <% if defined?(@allowed) %>
+         <% unless @allowed.index(n["id"].to_i).nil? %>    
+            <% node_class.push("available") %>
+          <% end %>
+        <% end %>
+        <%= content_tag(:div, n["id"], :id => "node-#{n["id"].to_i}",
+                        :class => node_class, :style => "position:relative; left: #{n['x'].to_i}px; top: #{n["y"].to_i}px") unless n["id"] == -1 %>
+        <% length += 1 %>
       <% end %>
-      <%= content_tag(:div, n["id"], :id => "node-#{n["id"].to_i}",
-                      :class => node_class, :style => "position:relative; left: #{n['x'].to_i}px; top: #{n["y"].to_i}px") unless n["id"] == -1 %>
-      <% length += 1 %>
     <% end %>
   <% end %>
 <% end %> 

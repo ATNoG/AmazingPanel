@@ -1,16 +1,25 @@
 module OMF
   module GridServices 
-
     class TestbedService
+      attr_accessor :has_map      
       def initialize(id)
-        @@id = id
-        @@properties = OMF::GridServices.testbed_properties_load(id)["testbed"] 
-        @@http = Net::HTTP.new(@@properties["server_url"])
-        @@path = @@properties["server_path"]
+        @id = id
+        begin
+          @@properties = OMF::GridServices.testbed_properties_load(id)["testbed"]
+          @@http = Net::HTTP.new(@@properties["server_url"])
+          @@path = @@properties["server_path"]
+          @has_map = ( @@properties["positions"].nil? ) ? false : true;
+        rescue
+          @@properties = nil
+        end
       end
         
       def mapping
-        return @@properties["positions"]
+        return @@properties["positions"] unless @@properties.nil? or @@properties["positions"].nil?
+        nodes = Node.joins(:location => :testbed).where("testbeds.id" => @id).order("id").collect do |n| 
+          { "id" => n.id, "hrn" => n.hrn}
+        end
+        return nodes 
       end
   
       def statusAll

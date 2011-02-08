@@ -4,7 +4,7 @@
 $("#testbed-<%= @testbed.id %>").attr('timestamp', <%= Time.now.strftime("%s").to_s %>);
     <% @nodes.each do | n | %> 
       <% next if n["id"].to_i == -1 %>
-  $("#testbed-<%= @testbed.id %> > #node-<%= (n["id"].to_i).to_s %>").removeClass('on off toggle run').addClass('<%= n["status"] %>')
+  $("#testbed-<%= @testbed.id %>  #node-<%= (n["id"].to_i).to_s %>").removeClass('on off toggle run').addClass('<%= n["status"] %>')
     <% end %>
   <% end %>
 <% when (params[:mode] == "embed") %>

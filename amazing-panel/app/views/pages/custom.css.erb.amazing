@@ -163,7 +163,7 @@ a:link {
 
 #logo {
   float: left;
-  background-image: url(/images/omf.png);
+  background-image: url(/images/amazing.png);
   background-repeat: no-repeat;
   height: 100px;
   width: 10%;
@@ -407,25 +407,25 @@ ul#menu-global {
 }
 
 .top-item:hover {
-  background: #6565cb;    
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#6565cb', endColorstr='#63c'); /* for IE */
-  background: -webkit-gradient(linear, left top, left bottom, from(#6565cb), to(#63c)); /* for webkit browsers */
-  background: -moz-linear-gradient(top,  #6565cb, #63c); /* for firefox 3.6+ */
+  background: #148FC9;    
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#148FC9', endColorstr='#107BAE'); /* for IE */
+  background: -webkit-gradient(linear, left top, left bottom, from(#148FC9), to(#107BAE)); /* for webkit browsers */
+  background: -moz-linear-gradient(top,  #148FC9, #107BAE); /* for firefox 3.6+ */
 }
 
 .top-item-root:hover {
-  background: #6565cb;    
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#6565cb', endColorstr='#63c'); /* for IE */
-  background: -webkit-gradient(linear, left top, left bottom, from(#6565cb), to(#63c)); /* for webkit browsers */
-  background: -moz-linear-gradient(top,  #6565cb, #63c); /* for firefox 3.6+ */
+  background: #148FC9;    
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#148FC9', endColorstr='#107BAE'); /* for IE */
+  background: -webkit-gradient(linear, left top, left bottom, from(#148FC9), to(#107BAE)); /* for webkit browsers */
+  background: -moz-linear-gradient(top,  #148FC9, #107BAE); /* for firefox 3.6+ */
 }
 
 .top-active {
-  background: #6565cb;    
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#6565cb', endColorstr='#63c'); /* for IE */
-  background: -webkit-gradient(linear, left top, left bottom, from(#6565cb), to(#63c)); /* for webkit browsers */
-  background: -moz-linear-gradient(top,  #6565cb, #63c); /* for firefox 3.6+ */
-  border-bottom: 1px solid #6565cb;
+  background: #148FC9;    
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#148FC9', endColorstr='#107BAE'); /* for IE */
+  background: -webkit-gradient(linear, left top, left bottom, from(#148FC9), to(#107BAE)); /* for webkit browsers */
+  background: -moz-linear-gradient(top,  #148FC9, #107BAE); /* for firefox 3.6+ */
+  border-bottom: 1px solid #107BAE;
 }
 
 .top-active a {

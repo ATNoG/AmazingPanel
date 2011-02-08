@@ -52,7 +52,9 @@ class ExperimentsController < ApplicationController
     when params.has_key?("resources")
       @resources = @experiment.resources_map
       @testbed = @resources.first.testbed
-      @nodes = OMF::GridServices::TestbedService.new(@testbed.id).mapping();
+      service = OMF::GridServices::TestbedService.new(@testbed.id);
+      @nodes = service.mapping()
+      @has_map = service.has_map()
       #@nodes = OMF::GridServices.testbed_status(@testbed.id)
     when @experiment.finished?
       run = params[:run]      
@@ -99,8 +101,10 @@ class ExperimentsController < ApplicationController
     else
       if (@current_phase == Phase.MAP)
         @testbed = Testbed.first
+        service = OMF::GridServices::TestbedService.new(@testbed.id)
         #@nodes = OMF::GridServices.testbed_status(@testbed.id)
-        @nodes = OMF::GridServices::TestbedService.new(@testbed.id).mapping();
+        @nodes = service.mapping();
+        @has_map = service.has_map
       end
       @experiment = session[:experiment][:cache]
       @allowed = session[:experiment][:allowed]

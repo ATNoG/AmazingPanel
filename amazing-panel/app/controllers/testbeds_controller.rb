@@ -13,11 +13,13 @@ class TestbedsController < ApplicationController
   def show
     @testbeds = Testbed.all
     @testbed = Testbed.find(params[:id])
+    service = OMF::GridServices::TestbedService.new(@testbed.id)
+    @has_map = service.has_map
     unless ["js", "html"].include?(params[:format])
-      @nodes = OMF::GridServices::TestbedService.new(@testbed.id).mapping();
+      @nodes = service.mapping();
     end
 
-    if params[:timestamp].nil? == false
+    unless params[:timestamp].nil?
       @nodes = OMF::GridServices.testbed_status(params[:id])
       expires_in 5.seconds, :private => false, :public => true
       current_timestamp = Integer(Time.now.strftime("%s"))
