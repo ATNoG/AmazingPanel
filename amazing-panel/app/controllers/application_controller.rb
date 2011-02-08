@@ -18,16 +18,20 @@ class ApplicationController < ActionController::Base
       session['return_url'] = request.url
       redirect_to new_user_session_path, :notice => t("devise.failure.unauthenticated") unless user_signed_in?
     end
+
     def after_sign_in_path_for(resource_or_scope)
       url = session['return_url']
       if url.nil?
         root_path
       else
         session['return_url']        
-      end
-      
+      end      
     end
     
+    def after_sign_out_path_for(resource_or_scope)
+      session['return_url'] = ""
+    end
+
     def correct_user
       @user = User.find(params[:id])
       redirect_to(root_path) unless current_user?(@user)
