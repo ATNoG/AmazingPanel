@@ -87,17 +87,20 @@ class ExperimentsController < ApplicationController
     session[:phase_status] = 0
     @current_phase = (!session[:phase].nil? ? session[:phase] : Phase.first)
     @current_phase_status = (!session[:phase].nil? ? session[:phase_status] : 0)
-
-    if (params.key?('reset') or
-        session[:phase].nil? or 
-       (session[:phase] == Phase.first and session[:phase_status] == 0))
-       @projects = Project.all.select { |p| !project_is_user_assigned?(p, current_user.id) ? true : false }.collect { |p| [p.name, p.id] }
+    if (params.key?('reset'))
+      @projects = Project.all.select { |p| !project_is_user_assigned?(p, current_user.id) ? true : false }.collect { |p| [p.name, p.id] }
       @eds = Ed.all.collect {|e| [ e.name, e.id ] }
-      unless session[:experiment].nil?
+      session[:experiment] = nil
+      session[:phase] = Phase.first
+      session[:phase_status] = 0
+    elsif (session[:phase].nil? or 
+       (session[:phase] == Phase.first and session[:phase_status] == 0))
+      @projects = Project.all.select { |p| !project_is_user_assigned?(p, current_user.id) ? true : false }.collect { |p| [p.name, p.id] }
+      @eds = Ed.all.collect {|e| [ e.name, e.id ] }
+      unless session[:experiment].nil? and session[:experiment][:cache].nil?
         @experiment = session[:experiment][:cache]
       end
       reset()
-
     else
       if (@current_phase == Phase.MAP)
         @testbed = Testbed.first
@@ -128,6 +131,7 @@ class ExperimentsController < ApplicationController
     if @is_last_phase
       @experiment = session[:experiment][:cache]
       @experiment.runs = 0
+      @experiment.failures = 0
       @experiment.save
       testbed = session[:experiment]["nodes"]["testbed"]
       session[:experiment]["nodes"].each do |k,v|

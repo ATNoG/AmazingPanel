@@ -39,8 +39,8 @@ module ExperimentsHelper
     status = experiment.status
     l_button = "button giant-button"
     #l_run_class= (experiment.finished? or experiment.prepared? or experiment.not_init?) ? l_button : l_button+" button-disabled"
-    l_prepare_class = (!experiment.prepared? or experiment.preparing?) ? l_button : l_button+" button-disabled"
-    l_start_class = (experiment.prepared?) ? l_button : l_button+" button-disabled"
+    l_prepare_class = (!experiment.prepared?) ? l_button : l_button+" button-disabled"
+    l_start_class = (experiment.prepared? and !experiment.started?) ? l_button : l_button+" button-disabled"
     l_stop_class = (experiment.started? or experiment.preparing?) ? l_button : l_button+" button-disabled"
     
     #l_run = content_tag(:div, "Run", :id => "run-experiment-button", :class=>l_run_class)
@@ -49,12 +49,14 @@ module ExperimentsHelper
     l_stop = content_tag(:div, "Stop", :id => "stop-experiment-button", :class=>l_stop_class)
     error = image_tag('error.png')
     img = image_tag('loading.gif')
-    _str_ = 'Loading System Images on nodes...'
+    _str_ = 'Loading System Images on nodes...'    
+    __started_class = " "
     case 
-    when experiment.prepared?
-      _str_ = 'Starting experiment...'
     when experiment.started?
-      _str_ = 'Stopping experiment...'
+      _str_ = ''
+      __started_class = " hidden"    
+    when experiment.prepared?
+      _str_ = 'Preparing experiment...'
     end
     text  = content_tag(:span, _str_, :class => "text")
     err_text  = content_tag(:span, "", :class => "text")
@@ -71,7 +73,7 @@ module ExperimentsHelper
        image_node = content_tag(:div, lbl+pb+lbls+cls, :id => "image-node-#{k}", :class => "image-progress").html_safe
        nodes_str += image_node
     end
-    images_loader = content_tag(:div, nodes_str, :id => "images-loading")
+    images_loader = content_tag(:div, nodes_str, :id => "images-loading", :class=>__started_class);
     return (container+images_loader).html_safe
   end  
 end
