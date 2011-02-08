@@ -44,8 +44,10 @@ EdEditor.prototype.html = {
       "<div id=\"content-application\" class=\"modal-tab tab\">"+
       "</div>"+
       "<div id=\"content-properties\" class=\"modal-tab tab\">"+
+        "<form id=\"select-properties\"></form>"+
       "</div>"+
       "<div id=\"content-measures\" class=\"modal-tab tab\">"+
+        "<form id=\"select-measures\"></form>"+
       "</div>"
   }
 }
@@ -78,15 +80,7 @@ EdEditor.prototype.forms = {
            "caption" : "Application:",
            "options" : {}
         }]
-      }]/*, { "type" : "p",
-          "elements" : [{
-            "id" : "app-name",
-            "type" : "select",
-            "name" : "resource[property]",
-            "caption" : "Property:",
-            "options" : {}
-        }]
-      }]*/
+      }]
   },
   select_group: { 
     "elements" : [{
@@ -142,8 +136,7 @@ EdEditor.prototype.selectApplication = function(t) {
   this.forms.select_application.elements[0].elements[0].options = app_selections;
   //this.forms.select_application.elements[1].elements[0].options = prop_selections;
   var modal = createDialog("Select an application for Node").css("height", "500px").css("width", "600px").css("left", "30%").css("top", "20%");
-  $(".modal-container", modal).prepend("<form id=\"select-application\"></form>"+
-    "<form id=\"select-property\"></form>"+"<form id=\"select-measure\"></form>");  
+  $(".modal-container", modal).prepend("<form id=\"select-application\"></form>");  
 
   $(".modal-container", modal).css("height", "463px").append(this.html.tabs.application);
   $("#select-application").buildForm(this.forms.select_application);
@@ -153,8 +146,9 @@ EdEditor.prototype.selectApplication = function(t) {
         pp = this.engine.reference.properties[v],
         ms = this.engine.reference.measures[v],
         defs_ct = $("#content-application").empty(), 
-        pp_ct = $("#content-properties").empty(),
-        ms_ct = $("#content-measures").empty();
+        pp_ct = $("#select-properties").empty(),
+        ms_ct = $("#select-measures").empty();
+    
     var tables = "<div class=\"grid-view-row grid-view-header\">"+
           "<div>Name</div>"+
           "<div>Description</div>"+
