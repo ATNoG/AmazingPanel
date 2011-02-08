@@ -269,21 +269,29 @@ a:link {
 }
 
 .modal-tab {
-  height: 393px;
+  height: 365px;
   overflow-y: auto;
 }
 
 #modal-tabs {
+  margin-top: 5px;
   width: 99%;
 }
 
+.ui-dform-p {
+  margin-left: 3px;
+}
+
+.ui-dform-p > label {
+  font-weight: bold;
+}
 .grid-view-new {
   display: table;  
 }
 
 .grid-view-header {
   background-color: #f0f0f0;
-  color: #3E5C6B;
+  color: #1e1e1e;
   font-weight: bold;
 }
 
@@ -294,6 +302,13 @@ a:link {
 
 .grid-view-row > div {
   display: table-cell;
+}
+
+.grid-view-row > div:first-child {
+  width: 110px;
+}
+.grid-view-row > div:nth-last-child {
+  width: 80px;
 }
 
 .flash-msg-integrated {
@@ -726,6 +741,7 @@ ul#action-list > li {
   width:78px;
   margin-bottom: 5px;
   margin-left: 5px;
+  font-size: 9pt;
 }
 
 #add-group {
@@ -1062,7 +1078,7 @@ div.description {
 
 .modal {
   display: none;
-  position: fixed;
+  position: absolute;
   height: 100%;
   top: 30%;
   left: 40%; 

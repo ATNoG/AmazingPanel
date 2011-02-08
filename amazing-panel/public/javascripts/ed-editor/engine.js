@@ -134,7 +134,7 @@ Engine.prototype.getExperimentProperties = function(){
 }
 
 Engine.prototype.addResources = function(groupname, resources){ 
-  for (i=0; i<this.group_keys.length; --i){
+  for (i=0; i<this.group_keys.length; ++i){
     this.groups[this.group_keys[i]].removeResources(resources);
   }
   var group = this.groups[groupname]; 

@@ -37,7 +37,7 @@ EdEditor.prototype.html = {
   tabs : {
     application : 
       "<ul id=\"modal-tabs\" class=\"tabs\">"+
-       "<li class=\"tab-active\"><a href=\"#content-application\">Application</a></li>"+
+       "<li class=\"tab-active\"><a href=\"#content-application\">Information</a></li>"+
         "<li><a href=\"#content-properties\">Properties</a></li>"+
         "<li><a href=\"#content-measures\">Measures</a></li>"+
       "</ul>"+
@@ -69,13 +69,24 @@ EdEditor.prototype.forms = {
       }]
   },
   select_application: {
-    "elements" : [{
-        "id" : "app-name",
-        "type" : "select",
-        "name" : "resource[application]",
-        "caption" : "Application",
-        "options" : {}
-      }]
+    "elements" : 
+      [{ "type" : "p",
+         "elements" : [{
+           "id" : "app-name",
+           "type" : "select",
+           "name" : "resource[application]",
+           "caption" : "Application:",
+           "options" : {}
+        }]
+      }]/*, { "type" : "p",
+          "elements" : [{
+            "id" : "app-name",
+            "type" : "select",
+            "name" : "resource[property]",
+            "caption" : "Property:",
+            "options" : {}
+        }]
+      }]*/
   },
   select_group: { 
     "elements" : [{
@@ -116,14 +127,21 @@ EdEditor.prototype.addNodesToGroup = function(group, nodes) {
 }
 
 EdEditor.prototype.selectApplication = function(t) {
-  var app_selections = {}, keys = this.engine.reference.keys;
+  var app_selections = {}, prop_selections= {}, keys = this.engine.reference.keys;
   for (i=0;i<keys.length; ++i){
-     var uri = keys[i];
-     var name = this.engine.reference.defs[uri].name;
-     app_selections[uri] = name;
+    var uri = keys[i];
+    var name = this.engine.reference.defs[uri].name;
+    app_selections[uri] = name;
+  }  
+
+/*
+  for (var key in this.engine.reference.properties[keys[0]]) {
+    prop_selections[key] = key;
   }
-  this.forms.select_application.elements[0].options = app_selections;
-  var modal = createDialog("Select an application for Node").css("height", "500px").css("width", "500px").css("left", "30%").css("top", "20%");
+*/
+  this.forms.select_application.elements[0].elements[0].options = app_selections;
+  //this.forms.select_application.elements[1].elements[0].options = prop_selections;
+  var modal = createDialog("Select an application for Node").css("height", "500px").css("width", "600px").css("left", "30%").css("top", "20%");
   $(".modal-container", modal).prepend("<form id=\"select-application\"></form>"+
     "<form id=\"select-property\"></form>"+"<form id=\"select-measure\"></form>");  
 
@@ -144,25 +162,25 @@ EdEditor.prototype.selectApplication = function(t) {
         "</div>";
     pp_ct.append(tables);
     for(d in defs){
-      defs_ct.append("<div class=\"grid-view-row\"><div><b>"+d+" </b></div><div>"+defs[d]+"</div></div>");
+      defs_ct.append("<div class=\"grid-view-row\"><div><b>"+d.underscore().humanize()+" </b></div><div>"+defs[d]+"</div></div>");
     }
     for(d in pp){
-      pp_ct.append("<div class=\"grid-view-row\"><div><b>"+d+"</b></div><div>"+pp[d].description+"</div><div></div></div>");
-      //pp_ct.append("<p><b>"+d+": </b>"+pp[d].description+"</p>");
+      pp_ct.append("<div class=\"grid-view-row\"><div><b>"+d+"</b></div><div>"+pp[d].description+"</div><div><input class=\"hidden\" name=\"properties["+d+"]\" type=\"text\"/><input name=\"properties["+d+"][checked] \"class=\"prop-check\" type=\"checkbox\"/></div></div>");
     }
-    var html = pp_ct.html()
+    var html = pp_ct.html()    
     pp_ct.html("<div class=\"grid-view\">"+html+"</div>");
+    $(".prop-check").change(function(evt){
+      var p = $(evt.target).parent();
+      $(p).children("input[type='text']").toggleClass("hidden");
+    });
     for(d in ms){
-      var metrics = "",
-          measurement = ms[d];
-      for(m in measurement){
-        metrics += "<li>"+m+" : "+measurement[m]["type"]+"</li>";
-      }
-      ms_ct.append("<p><b>"+d+"</b><ul class=\"list\">"+metrics+"</ul></p>");
+      var metrics = "", measurement = ms[d];
+      for(m in measurement){ metrics += "<li>"+m+" : "+measurement[m]["type"]+"</li>"; }
+      ms_ct.append("<p><b>"+d+"<input type=\"checkbox\"/></b><ul class=\"list\">"+metrics+"</ul></p>");
     }
   }.bind(this));
   modal.addClass("dialog-active");
-  $("#modal-tabs > li:eq(0) > a").click()
+  $("#modal-tabs > li:eq(0)").click();
   modal.show();
 }
 
@@ -273,6 +291,7 @@ EdEditor.prototype.bindEvents = function() {
     $(this).addClass("tab-active");
     active_tab.fadeIn();
     active_tab.focus();
+    return false;
   });
 }
 

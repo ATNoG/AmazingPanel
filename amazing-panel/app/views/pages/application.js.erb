@@ -21,6 +21,7 @@ $(document).ready(function(){
         $(this).addClass("tab-active");
         active_tab.fadeIn();
     	active_tab.focus();
+        return false;
       });
   }
   <% if (@c == "projects" and @a == "assign")%>
