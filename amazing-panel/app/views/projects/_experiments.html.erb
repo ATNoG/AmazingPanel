@@ -1,3 +1,6 @@
+<% if @experiments.size == 0 %>
+  No Experiments.
+<% else %>
 <table id="experiments" class="grid-view">
   <%= generate_table_headers(@experiments, experiments_path, :fields => ["id", "creator", "ed", "duration", "status", ""], :labels => { "id" => "#", "ed"=>"Description", "status"=>"Status" }) %>
   <tbody>
@@ -21,3 +24,4 @@
   <% end %>
   </tbody>
 </table>
+<% end %>
