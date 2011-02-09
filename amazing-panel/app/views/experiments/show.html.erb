@@ -90,6 +90,11 @@
     <p class="notice">
       <%= t("amazing.experiments.messages.bug_report").html_safe %>    
     </p> 
+  <% if @experiment.experiment_failed? %>
+    <p class="alert">
+      <%= t("amazing.experiments.messages.exp_failed") %>    
+    </p>
+  <% end %>
   <% if @experiment.started? or @experiment.prepared? %>
     <p class="info">
       <%= t("amazing.experiments.messages.execution_warn") %>    
