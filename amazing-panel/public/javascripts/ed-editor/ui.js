@@ -11,6 +11,7 @@ function confirmDialog(id){
 
 function hideDialog(){
   var modal = $(".modal");
+  $(".modal-container").empty();
   modal.removeClass("dialog-active");
   modal.hide();  
 }
@@ -44,10 +45,10 @@ EdEditor.prototype.html = {
       "<div id=\"content-application\" class=\"modal-tab tab\">"+
       "</div>"+
       "<div id=\"content-properties\" class=\"modal-tab tab\">"+
-        "<form id=\"select-properties\"></form>"+
+        "<form id=\"select-properties\" name=\"properties\"></form>"+
       "</div>"+
       "<div id=\"content-measures\" class=\"modal-tab tab\">"+
-        "<form id=\"select-measures\"></form>"+
+        "<form id=\"select-measures\" name=\"measures\"></form>"+
       "</div>"
   }
 }
@@ -103,13 +104,6 @@ EdEditor.prototype.addNode = function(x,y) {
   var id = this.engine.groups.default.getId();
   var resource = new Resource(id);
   this.engine.addResource('default', resource);
-  /*
-  var node = this.graph.node(id);  
-  node.bindings.application = this.selectApplication.bind({id:node.id});
-  node.bindings.group = this.selectGroup.bind({id:node.id, groups : this.engine.group_keys});
-  node.bindings.properties = this.selectProperties.bind({id:node.id});
-  */
-
 }
 
 EdEditor.prototype.addGroup = function(name) {  
@@ -127,14 +121,7 @@ EdEditor.prototype.selectApplication = function(t) {
     var name = this.engine.reference.defs[uri].name;
     app_selections[uri] = name;
   }  
-
-/*
-  for (var key in this.engine.reference.properties[keys[0]]) {
-    prop_selections[key] = key;
-  }
-*/
   this.forms.select_application.elements[0].elements[0].options = app_selections;
-  //this.forms.select_application.elements[1].elements[0].options = prop_selections;
   var modal = createDialog("Select an application for Node").css("height", "500px").css("width", "600px").css("left", "30%").css("top", "20%");
   $(".modal-container", modal).prepend("<form id=\"select-application\"></form>");  
 
@@ -159,7 +146,10 @@ EdEditor.prototype.selectApplication = function(t) {
       defs_ct.append("<div class=\"grid-view-row\"><div><b>"+d.underscore().humanize()+" </b></div><div>"+defs[d]+"</div></div>");
     }
     for(d in pp){
-      pp_ct.append("<div class=\"grid-view-row\"><div><b>"+d+"</b></div><div>"+pp[d].description+"</div><div><input class=\"hidden\" name=\"properties["+d+"]\" type=\"text\"/><input name=\"properties["+d+"][checked] \"class=\"prop-check\" type=\"checkbox\"/></div></div>");
+      html_safe_d = d.replace(':', '__');
+      pp_ct.append("<div class=\"grid-view-row\"><div><b>"+d+"</b></div><div>"+pp[d].description+"</div><div>"+
+        "<input class=\"hidden\" name=\"properties["+d+"]\" type=\"text\"/>"+
+        "<input name=\"selected \"class=\"prop-check\" type=\"checkbox\" value=\""+d+"\"/></div></div>");
     }
     var html = pp_ct.html()    
     pp_ct.html("<div class=\"grid-view\">"+html+"</div>");
@@ -170,11 +160,18 @@ EdEditor.prototype.selectApplication = function(t) {
     for(d in ms){
       var metrics = "", measurement = ms[d];
       for(m in measurement){ metrics += "<li>"+m+" : "+measurement[m]["type"]+"</li>"; }
-      ms_ct.append("<p><b>"+d+"<input type=\"checkbox\"/></b><ul class=\"list\">"+metrics+"</ul></p>");
+      ms_ct.append("<p><b>"+d+"<input name=\"selected\" type=\"checkbox\" value=\""+d+"\"/></b><ul class=\"list\">"+metrics+"</ul></p>");
     }
   }.bind(this));
   modal.addClass("dialog-active");
-  $("#modal-tabs > li:eq(0)").click();
+  $("#modal-tabs > li:eq(0)").click();  
+  $(".modal > .check-button").unbind('click').click(function(evt){
+    var properties = $("#select-properties").formParams();
+    var measures = $("#select-measures").formParams();
+    var nodes = $(".node-selected");
+    closeDialog("#modal-dialog");
+  }.bind(this));
+  
   modal.show();
 }
 
@@ -208,10 +205,10 @@ EdEditor.prototype.loadPreferences = function(t) {
   var container = $(".modal-container", modal).html("<form id=\"exp-properties\" class=\"attr-choose\"></form>");
   $("#exp-properties").buildForm(this.forms.select_exp_properties);
   modal.addClass("dialog-active");
-  $(".modal > .check-button").click(function(evt){
+  $(".modal > .check-button").unbind('click').click(function(evt){
     var params = $("#exp-properties").formParams();
     this.engine.setExperimentProperties(params.exp);
-    hideDialog();
+    closeDialog("#modal-dialog");
   }.bind(this));
   modal.show();
 }

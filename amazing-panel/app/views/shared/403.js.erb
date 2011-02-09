@@ -1,0 +1,8 @@
+var error = $(".container > .error");
+if (error.length == 0) {
+  $(".container").prepend("<p class=\"error flash-msg-integrated\">Permission denied</p>");
+  $(".flash-msg-integrated").slideDown(500).delay(5000).slideUp(200);
+} else {
+  error.html("Permission denied")
+  error.slideDown(500).delay(5000).slideUp(200);
+}
