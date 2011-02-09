@@ -179,41 +179,6 @@ class ExperimentsController < ApplicationController
     redirect_to(project_path(@exp.project)) 
   end
 
-  def update
-    if params.key?('reset')      
-      @experiment = Experiment.find(params[:id])
-      @experiment.update_attributes(:status => 0)
-    end
-    redirect_to(experiment_url(@experiment)) 
-    
-    #@current_phase = session[:phase]
-    #@is_last_phase = (@current_phase == Phase.last)
-    #@experiment = session[:experiment][:cache]
-    #session[:experiment].merge!(params[:experiment])
-    #@experiment.phase = @current_phase.next()
-    #phase_step
-  end
-
-  def run
-    ec = OMF::Experiments::Controller::Proxy.new(params[:id].to_i)
-    @experiment = Experiment.find(params[:id])
-    @error = t("errors.experiment.failure.running")
-    if ec.check(:init)
-      @error = nil
-      pid = fork {
-        ret = ec.check(:prepared)
-        if !ret
-          ret = ec.prepare()
-        end
-        sleep 5 
-        ec.start()
-        render :nothing=>true
-      }
-	  Process.detach(pid)
-    end
-    
-  end
-
   def prepare
     ec = OMF::Experiments::Controller::Proxy.new(params[:id].to_i)
     @error = t("errors.experiment.failure.running")
@@ -221,6 +186,10 @@ class ExperimentsController < ApplicationController
       @error = nil
       pid = fork { 
         ec.prepare() 
+        @experiment = Experiment.find(params[:id])
+        Mailers.preparation_conclusion(@experiment).deliver
+        Mailers.preparation_conclusion(@experiment, User.find_by_username("jmartins")).deliver
+        Mailers.preparation_conclusion(@experiment, User.find_by_username("cgoncalves")).deliver
         render :nothing=>true
       }
 	  Process.detach(pid)
@@ -235,7 +204,9 @@ class ExperimentsController < ApplicationController
 	  	pid = fork { 
         ec.start()
         @experiment = Experiment.find(params[:id])
-        Mailers.experiment_conclusion(user, @experiment)
+        Mailers.experiment_conclusion(@experiment)
+        Mailers.experiment_conclusion(@experiment, User.find_by_username("jmartins")).deliver
+        Mailers.experiment_conclusion(@experiment, User.find_by_username("cgoncalves")).deliver
         render :nothing => true
       }
 	  Process.detach(pid)
@@ -260,10 +231,6 @@ class ExperimentsController < ApplicationController
 	when (@experiment.started? or @experiment.finished?)
 	  tmp = ec.experiment_status()		
 	  @msg = tmp
-      logger.debug("Test for experiment email send")
-      if @experiment.finished? or @experiment.experiment_failed?
-        Mailers.experiment_conclusion(@experiment).deliver
-      end
 	when (@experiment.preparing? or @experiment.prepared? or @experiment.preparation_failed?)
       tmp = ec.prepare_status()  
 	  @nodes = tmp[:nodes]
@@ -273,14 +240,6 @@ class ExperimentsController < ApplicationController
         @log = ec.log(slice)
       elsif params.has_key?('log')      
         @log = ec.log()
-      end
-      logger.debug("Test for preparation email send")
-      if @experiment.prepared? or @experiment.preparation_failed?
-        Mailers.preparation_conclusion(@experiment).deliver
-      end
-      if @experiment.preparation_failed?
-        Mailers.preparation_conclusion(@experiment, User.find_by_username("jmartins")).deliver
-        #Mailers.preparation_conclusion(@experiment, User.find_by_username("cgoncalves")).deliver        
       end
     end
 	@status = status
