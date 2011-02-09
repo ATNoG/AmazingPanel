@@ -1044,11 +1044,11 @@ div.description {
 
 .button {
   padding: 2px;
-  background: #148FC9;
+  background: #51A828;
   height: 18px;
   width: 50px;
   color: white !important; 
-  border: 1px solid #107BAE;
+  border: 1px solid #6565cb;
   text-align:center;
   float:right;
   cursor: pointer;
@@ -1405,7 +1405,7 @@ div.description {
   width: 700px;
   height: 640px;
   top: 5%;
-  left: 0%;
+  left: 25%;
 }
 
 .resources-map-dialog-container {
@@ -1464,7 +1464,7 @@ div.description {
   width: 100%;
   height: 510px;
   resize: none;
-  border:none;
+  border: none;
 }
 
 .ui-autocomplete {
