@@ -12,7 +12,7 @@ Dear <%= @user.name %>,
 
   The preparation experiment #<%= @experiment.id %> has <%= @experiment.prepared? ? "finished" : "failed" %>.
 
-  Login <%= link_to "here", "http://jimbo.av.it.pt"+experiment_path(@experiment)+"#results" %> to start your experiment. Note that others users can use the testbed, if none of experiments is preparing or running.
+  Login <%= link_to "here", "http://jimbo.av.it.pt"+experiment_path(@experiment) %> to start your experiment. Note that others users can use the testbed, if none of experiments is preparing or running.
 
 Best Regards,
 AMazINg Team
