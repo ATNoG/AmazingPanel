@@ -6,10 +6,8 @@ function experiment_stat() {
   $.getScript(url)
 }
 <% if @log %>
-  var log = $("#log")
-  log.html("<textarea id=\"log_area\"><%= escape_javascript(@log) %></textarea>");
-  var area = $("#log_area")
-  area.scrollBottom = area.scrollHeight;
+  //var log = $("#log")
+  $("#log_area").val("<%= escape_javascript(@log) %>");
 <% end %>
 <% if @experiment.preparing? %>
   $("#error-experiment").addClass("hidden");

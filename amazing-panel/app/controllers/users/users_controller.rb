@@ -25,7 +25,7 @@ class Users::UsersController < Library::ResourceController
   def has_resource_permission()
     resource = resource().find(params[:id])
     unless (current_user.admin? or current_user == resource)
-      return head(:forbidden)
+      redirect_to(user_path(current_user), :alert => t(:permission_denied))
     end
     return true
   end

@@ -74,7 +74,9 @@ class Library::SysImagesController < Library::ResourceController
     @sys_image = resource_new(params[:sys_image]) 
     @sys_image.user_id = current_user.id
 	@sys_image.sys_image_id = nil
+    @sys_image.baseline = 0
     if (params[:sys_image_id].to_i != -1)
+      @sys_image.baseline = 1
       @sys_image.sys_image_id = params[:sys_image_id]
     end
     uploaded_io = params[:file]

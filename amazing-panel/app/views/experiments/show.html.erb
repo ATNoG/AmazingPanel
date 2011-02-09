@@ -225,7 +225,7 @@ $("#clear-data-set-button").live('click', function(){
 <% if !@experiment.prepared? %>
   <div id="log" class="tab">
   <% unless @experiment.init? %>
-    <textarea id="log_area">
+    <textarea id="log_area" readonly="readonly">
     </textarea>
   <% end  %>
   </div>

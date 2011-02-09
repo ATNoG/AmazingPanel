@@ -9,8 +9,10 @@
       <strong>Name:</strong> <%= @user.name %><br />
       <strong>Institution:</strong> <%= @user.institution %><br />
       <strong>Workspaces</strong> <%= generate_projects(@user) %>
-      <%= content_tag :div, :id => "edit-profile-button", :class => "button" do %>
-        <%= link_to "Edit", edit_user_path %>
+      <% if @user.id == current_user.id or current_user.admin? %>
+        <%= content_tag :div, :id => "edit-profile-button", :class => "button" do %>
+          <%= link_to "Edit", edit_user_path %>
+        <% end %>
       <% end %>
     </div>
 

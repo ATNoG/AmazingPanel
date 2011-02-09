@@ -52,20 +52,17 @@
     
     <table id="sysimages" class="grid-view tablesorter">
     <%= generate_table_headers(SysImage, sys_images_path, 
-	    :fields => [ "id", "user_id", "name", "kernel_version_os", "size", "description", "sys_image_id", "updated_at", "__actions"],
-	    :labels => { "id" => "#", "user_id" => "Creator", "sys_image_id" => "Baseline", "kernel_version_os" => "Kernel Version / Operating System" }, 
+	    :fields => [ "id", "user_id", "name", "kernel_version_os", "updated_at", "__actions"],
+	    :labels => { "id" => "#", "user_id" => "Creator", "kernel_version_os" => "Kernel Version / Operating System" }, 
 	    :refs => { 
 	      "user_id" => [User, nil, "eq"], 
-	      "sys_image_id" => [SysImage, "name", "eq"], 
 	      "kernel_version_os" => [nil, nil, "like"] 
 	    },
 	    :filters => {
 	      "id" => 'integer_field_select', 
 	      "user_id" => 'string_list_field:custom',  
-	      "sys_image_id" => 'string_list_field',
 	      "kernel_version_os" => 'string_list_field',
 	      "updated_at" => 'text_field',
-	      "size" => 'text_field'
 	    }) do |u| %>
 	<% if u.field_filter == "user_id" %>
 	  <%= gravatar_for u, :size => 36  %>
@@ -121,15 +118,8 @@
 	<tr>
 	  <td><%= link_to sys_image.id, sys_image, :class => "underline" %></td>
 	  <td><%= link_to creator.name, user_path(:id => creator.id) %></td>
-	  <td><%= link_to sys_image.name, sys_image %></td>
+	  <td><%= link_to sys_image.name, sys_image, "original-title" => sys_image.description %></td>
 	  <td><%= sys_image.kernel_version_os %></td>
-	  <td><%= sys_image.size %></td>
-	  <td><div class="resource-description description"><%= sys_image.description %></div></td>
-	  <% if sys_image.sys_image_id.nil? == false %>
-	    <td><%= link_to SysImage.find(sys_image.sys_image_id).name, sys_image_path(:id => sys_image.sys_image_id) %></td>
-	  <% else %>
-	    <td></td>
-	  <% end %>
 	  <td><%= sys_image.updated_at.strftime("%Y-%m-%d %H:%M:%S") %></td>
 	  <td>
 	    <div class="table-actions">

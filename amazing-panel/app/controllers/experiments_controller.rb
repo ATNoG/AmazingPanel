@@ -294,7 +294,10 @@ class ExperimentsController < ApplicationController
       project = Experiment.find(params[:id]).project
       is_assigned = project.users.where(:id => current_user.id).exists?
       if !is_assigned and project.private?        
-        render 'shared/403', :status => 403
+        respond_to do |format|
+          format.html { render 'shared/403' }
+          format.js { render 'shared/403' }
+        end
         return false
       end
 
