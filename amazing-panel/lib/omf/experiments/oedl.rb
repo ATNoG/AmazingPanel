@@ -1,3 +1,5 @@
+require File.dirname(__FILE__) + "/../../../app/models/node"
+
 module OMF
   module Experiments
     module OEDL
@@ -7,6 +9,7 @@ module OMF
         def initialize(args)
           @meta = args
           duration = @meta[:properties][:duration]
+          @testbed = @meta[:properties][:testbed]
           if duration.nil?
             duration = 30
             @meta[:properties] = {:duration => duration}
@@ -14,12 +17,60 @@ module OMF
             duration = duration.to_i
             @meta[:properties][:duration] = duration
           end
+          @duration = duration
         end
         
         # Generates --
         # defGroup(name)        
-        def createGroup(name)
-          return s(:block, s(:call, nil, "defGroup".to_sym, s(:arglist, s(:str, name.to_s))))
+        def createGroup(name, props)
+          application = props[:applications]["0"]
+          nodes = props[:nodes]
+          iterNode = s(:lasgn, :node)
+          iterApp = s(:lasgn, :app)
+          blockApp = s(:block)          
+          i = 1
+          application[:options][:properties].each do |k,v|
+            app_setProp = s(:call, 
+              s(:lvar, :app), 
+              :setProperty, 
+              s(:arglist, 
+                s(:str, k), 
+                s(:lit, v)))
+            blockApp[i] = app_setProp
+            i += 1
+          end
+          application[:measures][:selected].each do |m|
+            app_setProp = s(:call, 
+              s(:lvar, :app), 
+              :measure, 
+              s(:arglist, 
+                s(:str, m), 
+                s(:hash, 
+                  s(:lit, :samples), 
+                  s(:lit, 1))))
+
+            blockApp[i] = app_setProp
+            i += 1
+          end
+          addApplication = s(:iter, 
+            s(:call, 
+              s(:lvar, :node), 
+              :addApplication, 
+              s(:arglist, s(:str, application[:uri].to_s))), 
+            iterApp, 
+            blockApp
+          )
+
+          group_block = s(:block, addApplication)
+          defGroup = s(:call, 
+            nil, 
+            :defGroup.to_sym, 
+            s(:arglist, s(:str, name.to_s), s(:str, nodes.join(","))))
+          defGroup_block = s(:iter, 
+            defGroup, 
+            iterNode, 
+            group_block)
+          return defGroup_block
         end
         
         # Generates --
@@ -34,13 +85,44 @@ module OMF
         #   Experiment.done
         #  end
         def all_up()
-          startApplications = s(:call,  s(:call, nil, :allGroups, s(:arglist)), :startApplications, s(:arglist))
-          stopApplications = s(:call, s(:call, nil, :allGroups, s(:arglist)),:stopApplications, s(:arglist))
-          expDuration = s(:call, nil, :wait, s(:arglist, s(:lit, @meta[:properties][:duration])))
-          expDone = s(:call, s(:const, :Experiment), :done, s(:arglist))
-          onEvent = s(:call, nil, :onEvent, s(:arglist, s(:lit, :APP_UP_AND_INSTALLED)))
+          startApplications = s(:call,  
+            s(:call, 
+              nil, 
+              :allGroups, 
+              s(:arglist)), 
+            :startApplications, 
+            s(:arglist))
+          stopApplications = s(:call, 
+            s(:call, 
+              nil, 
+              :allGroups, 
+              s(:arglist)), 
+            :stopApplications, 
+            s(:arglist))
+          expDuration = s(:call, 
+            nil, 
+            :wait, 
+            s(:arglist, 
+              s(:lit, @duration)))
+          expDone = s(:call, 
+            s(:const, 
+              :Experiment), 
+            :done, 
+            s(:arglist))
+          onEvent = s(:call, 
+            nil, 
+            :onEvent, 
+            s(:arglist, 
+              s(:lit, :APP_UP_AND_INSTALLED)))
           iterNode = s(:lasgn, :node)
-          all_up_block = s(:iter, onEvent, iterNode, s(:block, startApplications, expDuration, stopApplications, expDone))
+          all_up_block = s(:iter, 
+            onEvent, 
+            iterNode, 
+            s(:block, 
+              startApplications, 
+              expDuration, 
+              stopApplications, 
+              expDone))
           return all_up_block
         end
         
@@ -50,10 +132,13 @@ module OMF
           require 'pp'
           code = ""
           ruby2ruby = Ruby2Ruby.new()
-          pp @meta
           # generate groups
-          @meta[:groups].each do |group|
-            code += ruby2ruby.process(createGroup(group))
+          @meta[:groups].each do |index, group|
+            puts "#{index} => #{group.inspect}"
+            if !group[:applications].nil?
+              ruby_group = createGroup(group[:name], group)
+              code += ruby2ruby.process(ruby_group)+"\n"
+            end
           end 
           # generate ALL_UP event
           ruby2ruby = Ruby2Ruby.new()
@@ -103,7 +188,7 @@ module OMF
         end
       end
       
-      class Node < Prototype
+      class OEDLNode < Prototype
         attr_accessor :net
         def initialize(ref, name)
           super(ref)
@@ -172,7 +257,7 @@ module OMF
           @properties[:groups] = Hash.new()
         end
         @properties[:groups][name] = {:selector => selector}
-        block.call(Node.new(self, name))
+        block.call(OEDLNode.new(self, name))
       end      
       
       def defEvent(name, interval = 5, &block)

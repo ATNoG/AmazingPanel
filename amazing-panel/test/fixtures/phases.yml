@@ -13,4 +13,4 @@ phases_003:
   label: Run
   number: "3"
   id: "3"
-  description: Start your Experiment, and change your parameters at run-time
+  description: Create and start your Experiment

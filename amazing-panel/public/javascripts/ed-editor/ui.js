@@ -166,9 +166,11 @@ EdEditor.prototype.selectApplication = function(t) {
   modal.addClass("dialog-active");
   $("#modal-tabs > li:eq(0)").click();  
   $(".modal > .check-button").unbind('click').click(function(evt){
+    var application = $("#select-application").formParams();
     var properties = $("#select-properties").formParams();
     var measures = $("#select-measures").formParams();
     var nodes = $(".node-selected");
+    this.engine.addApplication({ "uri" : application.resource.application, "options" : properties, "measures" : measures }, nodes);
     closeDialog("#modal-dialog");
   }.bind(this));
   
@@ -207,6 +209,9 @@ EdEditor.prototype.loadPreferences = function(t) {
   modal.addClass("dialog-active");
   $(".modal > .check-button").unbind('click').click(function(evt){
     var params = $("#exp-properties").formParams();
+    var t_id = $("#testbed_id").attr("value");
+    var t_name = $("#testbed_name").attr("value");
+    params.exp["testbed"] = { id: t_id, name: t_name }
     this.engine.setExperimentProperties(params.exp);
     closeDialog("#modal-dialog");
   }.bind(this));

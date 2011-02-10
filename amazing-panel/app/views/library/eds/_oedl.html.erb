@@ -7,6 +7,8 @@
     <div class="preferences-view-action ed-editor-button preferences-button">Preferences</div>
   </div>
   <div id="testbed-view">
+    <%= hidden_field_tag :testbed_name, @testbed.name %>
+    <%= hidden_field_tag :testbed_id, @testbed.id %>
     <%= render :partial => 'testbeds/map' %>
   </div>
 </div>

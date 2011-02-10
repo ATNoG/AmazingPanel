@@ -4,32 +4,42 @@ locations_016:
   name: rooftop
   latitude: "40.6342"
   testbed_id: "1"
-  x: "2"
-  y: "4"
+  x: "4"
+  y: "1"
   z: "1"
-  id: "9"
+  id: "15"
   longitude: "-8.66014"
 locations_005: 
   elevation: "5"
   name: rooftop
   latitude: "40.6342"
   testbed_id: "1"
-  x: "2"
-  y: "2"
+  x: "1"
+  y: "1"
   z: "1"
-  id: "7"
+  id: "1"
   longitude: "-8.66014"
 locations_017: 
   elevation: "5"
   name: rooftop
   latitude: "40.6342"
   testbed_id: "1"
-  x: "5"
-  y: "3"
+  x: "4"
+  y: "2"
   z: "1"
-  id: "22"
+  id: "16"
   longitude: "-8.66014"
 locations_006: 
+  elevation: "5"
+  name: rooftop
+  latitude: "40.6342"
+  testbed_id: "1"
+  x: "2"
+  y: "1"
+  z: "1"
+  id: "6"
+  longitude: "-8.66014"
+locations_018: 
   elevation: "5"
   name: rooftop
   latitude: "40.6342"
@@ -39,37 +49,17 @@ locations_006:
   z: "1"
   id: "17"
   longitude: "-8.66014"
-locations_018: 
-  elevation: "5"
-  name: rooftop
-  latitude: "40.6342"
-  testbed_id: "1"
-  x: "1"
-  y: "3"
-  z: "1"
-  id: "3"
-  longitude: "-8.66014"
 locations_007: 
   elevation: "5"
   name: rooftop
   latitude: "40.6342"
   testbed_id: "1"
-  x: "3"
-  y: "1"
+  x: "2"
+  y: "2"
   z: "1"
-  id: "11"
+  id: "7"
   longitude: "-8.66014"
 locations_019: 
-  elevation: "5"
-  name: rooftop
-  latitude: "40.6342"
-  testbed_id: "1"
-  x: "2"
-  y: "5"
-  z: "1"
-  id: "10"
-  longitude: "-8.66014"
-locations_008: 
   elevation: "5"
   name: rooftop
   latitude: "40.6342"
@@ -79,15 +69,25 @@ locations_008:
   z: "1"
   id: "18"
   longitude: "-8.66014"
+locations_008: 
+  elevation: "5"
+  name: rooftop
+  latitude: "40.6342"
+  testbed_id: "1"
+  x: "3"
+  y: "1"
+  z: "1"
+  id: "11"
+  longitude: "-8.66014"
 locations_020: 
   elevation: "5"
   name: rooftop
   latitude: "40.6342"
   testbed_id: "1"
-  x: "5"
-  y: "4"
+  x: "4"
+  y: "5"
   z: "1"
-  id: "23"
+  id: "19"
   longitude: "-8.66014"
 locations_009: 
   elevation: "5"
@@ -104,32 +104,12 @@ locations_021:
   name: rooftop
   latitude: "40.6342"
   testbed_id: "1"
-  x: "1"
-  y: "2"
+  x: "5"
+  y: "1"
   z: "1"
-  id: "2"
+  id: "20"
   longitude: "-8.66014"
 locations_010: 
-  elevation: "5"
-  name: rooftop
-  latitude: "40.6342"
-  testbed_id: "1"
-  x: "4"
-  y: "5"
-  z: "1"
-  id: "19"
-  longitude: "-8.66014"
-locations_022: 
-  elevation: "5"
-  name: rooftop
-  latitude: "40.6342"
-  testbed_id: "1"
-  x: "3"
-  y: "4"
-  z: "1"
-  id: "13"
-  longitude: "-8.66014"
-locations_011: 
   elevation: "5"
   name: rooftop
   latitude: "40.6342"
@@ -139,77 +119,7 @@ locations_011:
   z: "1"
   id: "5"
   longitude: "-8.66014"
-locations_023: 
-  elevation: "5"
-  name: rooftop
-  latitude: "40.6342"
-  testbed_id: "1"
-  x: "5"
-  y: "5"
-  z: "1"
-  id: "24"
-  longitude: "-8.66014"
-locations_012: 
-  elevation: "5"
-  name: rooftop
-  latitude: "40.6342"
-  testbed_id: "1"
-  x: "5"
-  y: "1"
-  z: "1"
-  id: "20"
-  longitude: "-8.66014"
-locations_001: 
-  elevation: "5"
-  name: rooftop
-  latitude: "40.6342"
-  testbed_id: "1"
-  x: "1"
-  y: "1"
-  z: "1"
-  id: "1"
-  longitude: "-8.66014"
-locations_024: 
-  elevation: "5"
-  name: rooftop
-  latitude: "40.6342"
-  testbed_id: "1"
-  x: "6"
-  y: "6"
-  z: "1"
-  id: "25"
-  longitude: "-8.66014"
-locations_013: 
-  elevation: "5"
-  name: rooftop
-  latitude: "40.6342"
-  testbed_id: "1"
-  x: "2"
-  y: "3"
-  z: "1"
-  id: "8"
-  longitude: "-8.66014"
-locations_002: 
-  elevation: "5"
-  name: rooftop
-  latitude: "40.6342"
-  testbed_id: "1"
-  x: "4"
-  y: "1"
-  z: "1"
-  id: "15"
-  longitude: "-8.66014"
-locations_025: 
-  elevation: "5"
-  name: rooftop
-  latitude: "40.6342"
-  testbed_id: "1"
-  x: "3"
-  y: "5"
-  z: "1"
-  id: "14"
-  longitude: "-8.66014"
-locations_014: 
+locations_022: 
   elevation: "5"
   name: rooftop
   latitude: "40.6342"
@@ -219,17 +129,37 @@ locations_014:
   z: "1"
   id: "21"
   longitude: "-8.66014"
-locations_003: 
+locations_011: 
   elevation: "5"
   name: rooftop
   latitude: "40.6342"
   testbed_id: "1"
   x: "2"
-  y: "1"
+  y: "3"
   z: "1"
-  id: "6"
+  id: "8"
   longitude: "-8.66014"
-locations_015: 
+locations_023: 
+  elevation: "5"
+  name: rooftop
+  latitude: "40.6342"
+  testbed_id: "1"
+  x: "5"
+  y: "3"
+  z: "1"
+  id: "22"
+  longitude: "-8.66014"
+locations_012: 
+  elevation: "5"
+  name: rooftop
+  latitude: "40.6342"
+  testbed_id: "1"
+  x: "2"
+  y: "4"
+  z: "1"
+  id: "9"
+  longitude: "-8.66014"
+locations_001: 
   elevation: "5"
   name: rooftop
   latitude: "40.6342"
@@ -239,13 +169,83 @@ locations_015:
   z: "1"
   id: "4"
   longitude: "-8.66014"
+locations_024: 
+  elevation: "5"
+  name: rooftop
+  latitude: "40.6342"
+  testbed_id: "1"
+  x: "5"
+  y: "4"
+  z: "1"
+  id: "23"
+  longitude: "-8.66014"
+locations_013: 
+  elevation: "5"
+  name: rooftop
+  latitude: "40.6342"
+  testbed_id: "1"
+  x: "2"
+  y: "5"
+  z: "1"
+  id: "10"
+  longitude: "-8.66014"
+locations_002: 
+  elevation: "5"
+  name: rooftop
+  latitude: "40.6342"
+  testbed_id: "1"
+  x: "1"
+  y: "3"
+  z: "1"
+  id: "3"
+  longitude: "-8.66014"
+locations_025: 
+  elevation: "5"
+  name: rooftop
+  latitude: "40.6342"
+  testbed_id: "1"
+  x: "5"
+  y: "5"
+  z: "1"
+  id: "24"
+  longitude: "-8.66014"
+locations_014: 
+  elevation: "5"
+  name: rooftop
+  latitude: "40.6342"
+  testbed_id: "1"
+  x: "3"
+  y: "4"
+  z: "1"
+  id: "13"
+  longitude: "-8.66014"
+locations_003: 
+  elevation: "5"
+  name: rooftop
+  latitude: "40.6342"
+  testbed_id: "1"
+  x: "1"
+  y: "2"
+  z: "1"
+  id: "2"
+  longitude: "-8.66014"
+locations_015: 
+  elevation: "5"
+  name: rooftop
+  latitude: "40.6342"
+  testbed_id: "1"
+  x: "3"
+  y: "5"
+  z: "1"
+  id: "14"
+  longitude: "-8.66014"
 locations_004: 
   elevation: "5"
   name: rooftop
   latitude: "40.6342"
   testbed_id: "1"
-  x: "4"
-  y: "2"
+  x: "6"
+  y: "6"
   z: "1"
-  id: "16"
+  id: "25"
   longitude: "-8.66014"

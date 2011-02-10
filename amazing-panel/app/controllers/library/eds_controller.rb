@@ -144,6 +144,18 @@ class Library::EdsController < Library::ResourceController
   
   # POST /eds/code.js
   def code
+    puts params
+    params[:meta][:groups].each do |index, group|
+      if group.has_key?(:nodes)
+        nodes_hrn = Array.new()
+        logger.debug group.inspect
+        group[:nodes].each do |n|
+          nodes_hrn.push(Node.find(n).hrn)
+        end
+        params[:meta][:groups][index][:nodes] = nodes_hrn
+      end
+    end
+
     scriptgen = OEDLScript.new(params[:meta])
     @code = scriptgen.toRuby();
   end

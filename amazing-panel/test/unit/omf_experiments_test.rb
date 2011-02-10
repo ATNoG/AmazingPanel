@@ -1,6 +1,5 @@
 require 'test_helper'
 require 'omf'
-#require '_omf'
 
 class OMFExperimentsTest < ActiveSupport::TestCase
   # Replace this with your real tests.
@@ -18,7 +17,35 @@ class OMFExperimentsTest < ActiveSupport::TestCase
     script = OMF::Workspace::open_ed(exp.ed.user, exp.ed.name)
     object = OMF::Experiments::ScriptHandler.exec(14, exp.ed) 
   end
-  
+
+  test "oedl_gen" do
+      params = HashWithIndifferentAccess.new({ 
+        "meta" => {
+          "groups" => { 
+            "0" => {
+              "name" => "default"}, 
+            "1" => {
+              "name" => "__group_n24_", 
+              "nodes" => ["omf.amazing.node1","omf.amazing.node2"],
+              "applications" => {
+                "0" =>{
+                  "uri" => "test:app:otr2",
+                  "measures" => { "selected" => "udp_in"}, 
+                  "options" =>{
+                    "selected" => ["udp:local_host", "udp:local_port"], 
+                    "properties" => {"udp:local_host"=>"192.168.0.2", "udp:local_port"=>"3000"}
+                  }
+                }
+              }
+            }
+        }, "properties" => { "duration" => 30, "testbed" => { "id" =>Testbed.first.id, "name" => Testbed.first.name }
+        }
+      })
+      script  =OMF::Experiments::OEDL::OEDLScript.new(params[:meta])
+      code = script.toRuby();
+      puts code
+  end
+
   # CANNOT BE TESTED, only in Development environment 'XXX'
   ## mysql doesn't support
   ## rolling back statements that change the schema (adding tables, columns

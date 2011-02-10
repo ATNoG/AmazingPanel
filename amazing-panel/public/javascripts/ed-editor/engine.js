@@ -78,6 +78,7 @@ function Group(name){
   this.nodes = {}
   this.ids = []
   this.nid = 0
+  this.applications = []
 }
 
 Group.prototype.addResource = function(resource) {
@@ -93,7 +94,11 @@ Group.prototype.addResources = function(resources) {
 }
 
 Group.prototype.removeResource = function(resource) {
-  if (resource.id in this.nodes){
+  var id = resource;
+  if (resource.id != undefined) {
+    id = resource.id;
+  }
+  if (id in this.nodes){
     delete this.nodes[resource.id];
     this.ids.remove(this.ids.indexOf(resource.id));
   }
@@ -109,6 +114,14 @@ Group.prototype.getId = function(){
   return this.nid;
 }
 
+Group.prototype.getResource = function(id){
+  return this.nodes[id];
+}
+
+Group.prototype.addApplication = function(application) {
+  this.applications.push(application);
+}
+
 function Engine() {
   this.groups = { "default" : new Group("default") }
   this.group_keys = ["default"];
@@ -119,7 +132,7 @@ function Engine() {
     properties: {},
     measures: {},
   }
-  this.properties = {}
+  this.properties = { duration : 30 }
   $.getJSON("/eds/doc.json?type=all", function(data){
     this.loadOEDLReference(data);
   }.bind(this));
@@ -158,6 +171,48 @@ Engine.prototype.addGroup = function(name){
   return 0;
 }
 
+Engine.prototype.generateGroupName = function(nodes){
+  var gname = "__group_"
+  var id;
+  for(i=0; i<nodes.length; ++i){
+    id = nodes[i].id.replace("node-", "");
+    gname = gname + "n"+id+"_";
+  }
+  return gname;
+}
+
+Engine.prototype.findGroups = function(nodes){
+  var __groups = new Array();
+  var __group;
+  for(i=0; i<nodes.length; ++i){
+    var node = nodes[i];
+    for(var gname in this.groups){
+      var g = this.groups[gname];
+      if (__groups.indexOf(gname) != -1){
+        __groups.push(g)
+      }
+    }
+  }
+  return __groups;
+}
+Engine.prototype.addApplication = function(application, nodes){
+  var __groups = this.findGroups(nodes);
+  var gname = this.generateGroupName(nodes);
+  if (__groups.length == 1) {
+    gname = __groups[0];
+  } else {
+    for(i=0; i<__groups.length; ++i) {
+      this.groups[__groups[i]].removeResources(nodes);
+      if (__groups[i] != "default"){
+        this.removeGroup(__groups[i]);
+      }
+    }
+  }
+  this.addGroup(gname);
+  this.groups[gname].addResources(nodes)
+  this.groups[gname].addApplication(application);
+}
+
 Engine.prototype.loadOEDLReference = function(data){
   var tmp = this.reference;
   for(uri in data) {
@@ -182,5 +237,15 @@ Engine.prototype.getApplicationDefinition = function(uri, cb){
 
 Engine.prototype.getGeneratedCode = function(){
   var engine = this;
-  $.post("/eds/code.js", { meta : { groups : engine.group_keys, properties : engine.properties }});
+  var groups_data = new Array();
+  for(var g in engine.groups){
+    var group = engine.groups[g];
+    var _nodes = new Array();    
+    for(var node in group.nodes) {
+      _nodes.push(node.replace("node-", ""))
+    }
+    groups_data.push({ name : g, nodes : _nodes, applications: group.applications  });
+  }
+  var data =  { meta : { groups : groups_data, properties : engine.properties }};
+  $.post("/eds/code.js", data);
 }
