@@ -10,7 +10,7 @@ en:
       updated: "Workspace was successfully updated."
       destroy: "Workspace was successfully deleted."
       unassigned: "%{name} unassigned from %{project}."
-      assigned: "%{name} unassigned from %{project}."
+      assigned: "%{name} assigned from %{project}."
       manager: "%{name} is manager on %{project}."
     ed:
       created: "Ed was successfully created."
