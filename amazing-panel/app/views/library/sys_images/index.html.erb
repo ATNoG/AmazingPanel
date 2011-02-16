@@ -10,30 +10,17 @@
 <% end %>
 
 <% content_for :sub_actions do %>
-  <ul id="toolbar-action-list">
-    <%= new_action(new_sys_image_path, {"original-title" => "New System Image"} ) %>
+  <%= sub_toolbar do %>
+    <%= new_action(SysImage, {"original-title" => "New System Image"} ) %>
 
     <% if @filters.length > 0 %>
-      <li class="action">
-	<%= link_to(sys_images_path+"?filter=clear", :class => "action")  do %>
-	  Clear
-	  <%= image_tag "clear.png", {:height => 16, :width => 16} %>
-	<% end %> 
-      </li>
-      <li class="action">
-	<%= link_to("#", :class => "action", :onclick=> "$('#active-filters-dialog').addClass('dialog-active')")  do %>
-	  Show Active Filters
-	  <%= image_tag "filter-2.png", {:height => 16, :width => 16} %>
-	<% end %>
-
-	<% modal_dialog("Active Filters:", "active-filters-dialog") do %>
-	  <% active_filters(sys_images_path) %>
-	<% end %>
-
-      </li>
-    <% end %>	
-
-  </ul>
+      <%= add_image_action(sys_images_path+"?filter=clear", 'clear.png', 'Clear') %>
+      <%= add_image_action("#", 'filter-2.png', 'Show Active Filters', :onclick => "$('#active-filters-dialog').addClass('dialog-active')") %>
+    	<% modal_dialog("Active Filters:", "active-filters-dialog") do %>
+    	  <% active_filters(sys_images_path) %>
+        <% end %>
+      <% end %>
+  <% end %>
 <% end %>
 
 
@@ -72,49 +59,6 @@
 	  <%= link_to u.name, filter_path(sys_images_path, "user_id", "eq", u.id.to_s) %>
 	<% end %>
     <% end %>
-<!--
-    <thead>
-      <tr>
-	<%= table_header("#") do %>
-	  <%= modal_filter_dialog("id") do %>
-	    <%= integer_field_select_filter(sys_images_path, "id", SysImage.all) %>
-	  <% end %>	  
-	<% end %>
-	
-	<%= table_header("Creator") do %>
-	  <%= modal_filter_dialog("creator") do %>
-	    <%= string_list_field_filter(sys_images_path, "user_id", SysImage.all, User) do |u| %>
-	      <%= gravatar_for u, :size => 36  %>
-	      <%= link_to u.name, filter_path(sys_images_path, "user_id", "eq", u.id.to_s) %>
-	    <% end %>	   
-	  <% end %>
-	<% end %>
-	<%= table_header("Name") %>
-	<%= table_header("Kernel Version / Operating System") do %>
-	  <%= modal_filter_dialog("kernel_version_os") do %>
-	    <%= string_list_field_filter(sys_images_path, "kernel_version_os", SysImage.all, nil, nil, "like") %>
-	  <% end %>	  
-	<% end %>
-	<%= table_header("Size (bytes)") do %>
-	  <%= modal_filter_dialog("size") do %>
-	    <%= text_field_filter(sys_images_path, "size") %>
-	  <% end %>
-	<% end %>
-	<%= table_header("Description") %>
-	<%= table_header("Baseline") do %>
-	  <%= modal_filter_dialog("baseline") do %>
-	    <%= string_list_field_filter(sys_images_path, "sys_image_id", SysImage.all, SysImage, "name") %>
-	  <% end %>
-	<% end %>
-	<%= table_header("Updated at") do %>
-	  <%= modal_filter_dialog("updated_at") do %>
-	    <%= text_field_filter(sys_images_path, "updated_at") %>
-	  <% end %>
-	<% end %>
-	<%= table_header("") %>
-      </tr>
-    </thead>
--->
     <tbody>
       <% @resources.each do |sys_image| %>
 	<% creator = User.find(sys_image.user_id) %>
@@ -124,7 +68,7 @@
 	  <td><%= link_to sys_image.name, sys_image %></td>
 	  <td><%= sys_image.kernel_version_os %></td>
 	  <td><%= sys_image.size %></td>
-	  <td><div class="resource-description description"><%= sys_image.description %></div></td>
+	  <td><div class="description resource-description"><%= sys_image.description %></div></td>
 	  <% if sys_image.sys_image_id.nil? == false %>
 	    <td><%= link_to SysImage.find(sys_image.sys_image_id).name, sys_image_path(:id => sys_image.sys_image_id) %></td>
 	  <% else %>
@@ -133,10 +77,8 @@
 	  <td><%= sys_image.updated_at.strftime("%Y-%m-%d %H:%M:%S") %></td>
 	  <td>
 	    <div class="table-actions">
-          <% if (current_user.admin? or current_user.id == creator.id) %>
-  	        <%= link_to(edit_sys_image_path(sys_image), :class => "action")  do %><%= image_tag "edit.png", {:height => 16, :width => 16} %><% end %>
-	        <%= link_to(sys_image_path(sys_image), :class => "action", :method => "delete", :confirm => "Are you sure?") do %><%= image_tag "remove.png", {:height => 16, :width => 16} %><% end %> 
-          <% end %>
+          <%= edit_action(sys_image, {:link => true, :text => false, "original-title" => "Edit System Image"} ) %>
+          <%= delete_action(sys_image, { :confirm => "Are you sure?", :link => true, :text => false, "original-title" => "Delete System Image"}) %>
 	    </div>
 	  </td>
 	</tr>

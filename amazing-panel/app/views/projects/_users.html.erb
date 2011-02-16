@@ -88,28 +88,18 @@
      <td>
 	    <div class="table-actions">
     	<% if disabled == false %>
-    	  <% if is_user_leader(@project, current_user) %> 	    
     	    <% if make_leader == true %>
     		  <% if not is_user_leader(@project, user) %>       
-    	    	  <%= add_image_action(project_leader_path(@project, user), 'star.png', "", 
-                        { 
-                          :link => true, 
-                          :method => :put,
-                          "title" => "Make manager of project #{@project.name}" 
-                        }) %>
+                <%= make_manager_action([@project, user], { :text => false, :link => true, :method => :put, "title" => "Make manager of project #{@project.name}"  }) %>
         	  <% end %>
     	    <% end %>
     	    
             <% if unassign == true %>
-    	      <%= add_image_action( project_user_path(@project, user), 'disable.png', "", { :link => true, :method => :delete,
-    		    	    "title" => "Unassign #{user.name} to project" }) %>
+              <%= unassign_user_action( [@project, user],  { :text => false, :link => true, :method => :delete, "title" => "Unassign #{user.name} to project" }) %>
     	    <% end %>
     	    <% if assign == true %>
-    		  <%= add_image_action(project_user_path(@project, user), 'enable.png', "", { :link => true, :method => :put,
-    		    	    "title" => "Assign #{user.name} to project" }) %>
+              <%= assign_user_action( [@project, user], { :text => false, :link => true, :method => :put, "title" => "Assign #{user.name} to project" }) %>
     	    <% end %>
-
-    	  <% end %>
     	<% end %>
         </div>
     </td>  

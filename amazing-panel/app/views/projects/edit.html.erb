@@ -1,9 +1,7 @@
 <% content_for :sub_actions do %>
   <%= sub_toolbar do %>
-    <% if is_user_leader(@project, current_user) %>
-      <%= assign_action(assign_project_path(@project)) %>
-      <%= back_action(@project) %>
-    <% end %>
+    <%= assign_action(@project) %>
+    <%= back_action(@project) %>
   <% end %>
 <% end %>
 

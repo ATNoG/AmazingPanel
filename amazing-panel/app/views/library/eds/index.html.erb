@@ -1,6 +1,6 @@
 <% content_for :sub_actions do %>
   <%= sub_toolbar do %>
-    <%= new_action(new_ed_path) %>
+    <%= new_action(Ed) %>
     <% if @filters.length > 0 %>
     <%= add_image_action(eds_path+"?filter=clear", 'clear.png', 'Clear') %>
     <%= add_image_action("#", 'filter-2.png', 'Show Active Filters', :onclick => "$('#active-filters-dialog').addClass('dialog-active')") %>
@@ -29,35 +29,6 @@
 	  <%= link_to u.name, filter_path(eds_path, "user_id", "eq", u.id.to_s) %>
 	<% end %>
     <% end %>
-<!--
-   <thead>
-      <tr>
-	<%= table_header("#") do %>
-	  <%= modal_filter_dialog("id") do %>
-	    <%= integer_field_select_filter(eds_path, "id", Ed.all) %>
-	  <% end %>	  
-	<% end %>
-
-	<%= table_header("Creator") do %>
-	  <%= modal_filter_dialog("creator") do %>
-	    <%= string_list_field_filter(eds_path, "user_id", Ed.all, User) do |u| %>
-	      <%= gravatar_for u, :size => 36  %>
-	      <%= link_to u.name, filter_path(eds_path, "user_id", "eq", u.id.to_s) %>
-	    <% end %>
-	  <% end %>
-	<% end %>
-
-	<%= table_header("Name") %>
-	<%= table_header("Description") %>
-	<%= table_header("Updated at") do %>
-	  <%= modal_filter_dialog("updated_at") do %>
-	    <%= text_field_filter(eds_path, "updated_at") %>
-	  <% end %>
-	<% end %>
-	<%= table_header("") %>
-      </tr>
-    </thead>
--->
     <tbody>
       <% @resources.each do |ed| %>
 	<% creator = User.find(ed.user_id) %>
@@ -69,10 +40,8 @@
 	  <td><%= ed.updated_at %></td>
 	  <td>        
 	    <div class="table-actions">
-          <% if (current_user.admin? or current_user.id == creator.id) %>
-            <%= edit_action(edit_ed_path(ed), {:link => true, :text => false, "original-title" => "Edit Exp. Definition settings"} ) %>
-            <%= delete_action(eds_path, { :confirm => "Are you sure?", :link => true, :text => false, "original-title" => "Delete Exp. Definition"}) %>
-          <% end %>
+          <%= edit_action(ed, {:link => true, :text => false, "original-title" => "Edit Exp. Definition settings"} ) %>
+          <%= delete_action(ed, { :confirm => "Are you sure?", :link => true, :text => false, "original-title" => "Delete Exp. Definition"}) %>
 	    </div>
 	  </td>
 	</tr>

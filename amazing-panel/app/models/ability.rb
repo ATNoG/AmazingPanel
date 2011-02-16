@@ -29,7 +29,7 @@ class Ability
       if user.is? :experimenter        
         # user
         can :create, Project
-        can [:read, :index], Project do |p|
+        can [:users, :read, :index], Project do |p|
           !p.private? || ProjectsUsers.where({:project_id => p.id, :user_id => user.id}).length > 0
         end      
       

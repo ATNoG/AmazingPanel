@@ -45,28 +45,48 @@ module ApplicationHelper
   def clear
     return content_tag(:div, nil, :class => "clear")
   end
- 
-  def assign_action(link, options={})
-    return add_image_action(link, 'assign.png', "Assign", options)
+
+  def url_params_to(*args)
+    object = args.class == Array ? args[0] : args
+    p = args[1] if args.class == Array
+    if args.length == 1      
+      return url_for(args[0])    
+    else
+      return "#{url_for([:new,object])}?#{p.to_query}" if args.length == 2
+    end
   end
-  
-  def new_action(link, options={})
+
+  def for_action(object, action)
+    return (object.class == Array ? [action, object[0]] : [action, object])
+  end
+
+  def new_action(args, options={})
+    if args.class == String      
+      url = args
+    else
+      object = args.class == Array ? args[0] : args
+      p = args[1] if args.class == Array
+      url = "#{url_for([:new,object.name.underscore.to_sym])}"
+      url = args.class == Array ? "#{url}?#{p.to_query}" : url
+    end
     if options[:highlight].nil?
       options[:highlight] = true
     end
-    return add_image_action(link, 'add.png', "New", options)
+    return add_image_action(url, 'add.png', "New", options) if can?(:create, object)
   end
   
   def back_action(link, options={})
     return add_image_action(link, 'back.png', "Back", options)
   end
   
-  def delete_action(link, options={})
-    return add_image_action(link, 'remove.png', "Delete", options.merge!({ :method => 'delete'}))
+  def delete_action(object, options={})
+    url = object.class == String ? object : url_params_to(object)
+    return add_image_action(url, 'remove.png', "Delete", options.merge!({ :method => 'delete'})) if can?(:destroy, object)
   end
 
-  def edit_action(link, options={})
-    return add_image_action(link, 'edit.png', "Edit", options)
+  def edit_action(object, options={})
+    url = object.class == String ? object : url_params_to(object)
+    return add_image_action(url, 'edit.png', "Edit", options) if can?(:update, object)
   end
 
   def add_image_action(link, src, text=nil, options={})

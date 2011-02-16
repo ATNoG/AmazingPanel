@@ -10,29 +10,17 @@
 <% end %>
 
 <% content_for :sub_actions do %>
-  <ul id="toolbar-action-list">
+  <%= sub_toolbar do %>
     <%= new_action(new_admin_user_registration_path, {"original-title" => "Register new User"} ) %>
 
     <% if @filters.length > 0 %>
-      <li class="action">
-	<%= link_to(admin_users_path+"?filter=clear", :class => "action")  do %>
-	  Clear
-	  <%= image_tag "clear.png", {:height => 16, :width => 16} %>
-	<% end %> 
-      </li>
-      <li class="action">
-	<%= link_to("#", :class => "action", :onclick=> "$('#active-filters-dialog').addClass('dialog-active')")  do %>
-	  Show Active Filters
-	  <%= image_tag "filter-2.png", {:height => 16, :width => 16} %>
+      <%= add_image_action(admin_users_path+"?filter=clear", 'clear.png', 'Clear') %>
+      <%= add_image_action("#", 'filter-2.png', 'Show Active Filters', :onclick => "$('#active-filters-dialog').addClass('dialog-active')") %>
+      <% modal_dialog("Active Filters:", "active-filters-dialog") do %>
+    	<% active_filters(admin_users_path) %>
+	  <% end %>
 	<% end %>
-
-	<% modal_dialog("Active Filters:", "active-filters-dialog") do %>
-	  <% active_filters(admin_users_path) %>
-	<% end %>
-      </li>
-    <% end %>	
-
-  </ul>
+  <% end %>
 <% end %>
 
 
@@ -53,40 +41,6 @@
 	    :labels => { "id" => "#", "activated" => "Account Status" }, 
 	    :refs => { },
 	    :filters => {"id" => 'integer_field_select', "activated" => 'bool_field', "last_sign_in_at" => 'text_field'}) %>
-<!--<thead>
-      <tr>
-	<th></th>
-	<%= table_header("#") do %>
-	  <%= modal_filter_dialog("id") do %>
-	    <%= integer_field_select_filter(admin_users_path, "id", User.all) %>
-	  <% end %>
-	<% end %>
-	<%= table_header("Name") %>
-	<%= table_header("Email")%>
-	<%= table_header("Account Status") do %>
-	  <%= modal_filter_dialog("status") do %>
-	    <%= bool_field_filter(admin_users_path, "activated") %>
-	  <% end %>
-	<% end %>
-	<%= table_header("Created at") do %>
-	  <%= modal_filter_dialog("created_at") do %>
-	    <%= text_field_filter(admin_users_path, "created_at") %>
-	  <% end %>
-	<% end %>
-	<%= table_header("Updated at") do %>
-	  <%= modal_filter_dialog("updated_at") do %>
-	    <%= text_field_filter(admin_users_path, "updated_at") %>
-	  <% end %>
-	<% end %>
-	<%= table_header("Last Login in at") do %>
-	  <%= modal_filter_dialog("last_sign_in") do %>
-	    <%= text_field_filter(admin_users_path, "last_sign_in") %>
-	  <% end %>
-	<% end %>
-	<th class="actions-2"></th>
-      </tr>
-    </thead>
- -->
     <tbody>
       <% @resources.each do |user| %>
 	<tr>
@@ -108,13 +62,11 @@
 	  <td class="actions-2">
 	    <div class="table-actions">
 	      <!--<%= link_to(admin_user_path(user), :class => "action")  do %><%= image_tag "edit.png", {:height => 16, :width => 16} %><% end %>-->	      
-	      <% if user.admin? == false%>
 		<% if user.activated? %>  
 		  <%= link_to(user_activate_path(:user_id => user.id), :class => "action", :method => :put) do %><%= image_tag "disable.png", {:height => 16, :width => 16} %><% end %>
 		<% else %>
 		  <%= link_to(user_activate_path(:user_id => user.id), :class => "action", :method => :put) do %><%= image_tag "enable.png", {:height => 16, :width => 16} %><% end %>	  
 		<% end %> 	      
-	      <% end %> 
 	      <%= link_to(admin_user_path(:id => user.id), :class => "action", :method => "delete") do %><%= image_tag "remove.png", {:height => 16, :width => 16} %><% end %>  
 	    </div>
 	  </td>

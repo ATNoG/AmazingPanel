@@ -11,6 +11,32 @@ module ProjectsHelper
   def project_is_user_assigned?(project, id)
      return (project.user_ids.index(id).nil?)
   end  
+ 
+  def users_action(options={})
+    return add_action('Users', users_project_path , options) if can?(:users, Project)
+  end  
+  
+  def assign_action(object, options={})
+    return add_image_action(url_params_to(for_action(object, :assign)), 'assign.png', "Assign", options) if can?(:assign, object)
+  end  
+  
+  def make_manager_action(object, options={})
+    project = object[0]
+    user = object[1]
+    return add_image_action(url_params_to(project_leader_path(project, user)), 'star.png', "Make Manager", options) if can?(:users, project)
+  end
+
+  def assign_user_action(object, options={})
+    project = object[0]
+    user = object[1]
+    return add_image_action(url_params_to(project_user_path(project, user)), 'enable.png', "Assign User", options) if can?(:assign_user, project)
+  end  
+  
+  def unassign_user_action(object, options={})
+    project = object[0]
+    user = object[1]
+    return add_image_action(url_params_to(project_user_path(project, user)), 'disable.png', "Unassign User", options) if can?(:unassign_user, project)
+  end  
   
   def project_users_empty?(project)
      return project.user_ids.empty?

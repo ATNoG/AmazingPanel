@@ -1,8 +1,12 @@
 <% content_for :main_content do %>
   <div id="toolbar">
     <ul id="toolbar-action-list">
-      <%= add_action 'Experiment Definitions', eds_path, { :controller => 'library/eds' } %>
-      <%= add_action 'System Images', sys_images_path, { :controller => 'library/sys_images'} %>
+      <% if can? :index, Ed %>
+        <%= add_action 'Experiment Definitions', eds_path, { :controller => 'library/eds' } %>
+      <% end %>
+      <% if can? :index, SysImage %>
+        <%= add_action 'System Images', sys_images_path, { :controller => 'library/sys_images'} %>
+      <% end %>
     </ul>
   </div>
   

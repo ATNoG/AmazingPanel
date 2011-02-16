@@ -1,6 +1,6 @@
 <% content_for :sub_actions do %>
   <%= sub_toolbar do %>
-    <%= new_action(new_project_path, { "original-title" => "New Workspace"}) %>
+    <%= new_action(Project, { "original-title" => "New Workspace"}) %>
   <% end %>
 <% end %>
 
@@ -19,17 +19,13 @@
 	<td><%= link_to project.name, project %></td>
 	<td><div class="description"><%= project.description %></div></td>
 	<td><%= project.updated_at.strftime("%Y-%m-%d %H:%M:%S") %></td>
-	<% if is_user_leader(project, current_user) %>
 	<td>
 	  <div class="table-actions">
-        <%= edit_action(edit_project_path(project), {:link => true, :text => false, "original-title" => "Edit Workspace Settings"} ) %>
+        <%= edit_action(project, {:link => true, :text => false, "original-title" => "Edit Workspace Settings"} ) %>
         <%= delete_action(project, { :confirm => "Are you sure?", :link => true, :text => false, "original-title" => "Delete Workspace"}) %>
-        <%= assign_action(assign_project_path(project), { :link => true, :text => false, "original-title" => "Assign users to Workspace"}) %>
+        <%= assign_action(project, { :link => true, :text => false, "original-title" => "Assign users to Workspace"}) %>
 	  </div>
 	</td>
-	<% else %>
-	<td></td>
-	<% end %>
       </tr>
     <% end %>
     </tbody>
