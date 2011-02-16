@@ -22,9 +22,11 @@ module OMF
         
         # Generates --
         # defGroup(name)        
-        def createGroup(name, props)
+        def createGroup(name, props, auto=false)
           application = props[:applications]["0"]
           nodes = props[:nodes]
+          properties = props[:properties]
+
           iterNode = s(:lasgn, :node)
           iterApp = s(:lasgn, :app)
           blockApp = s(:block)          
@@ -62,6 +64,9 @@ module OMF
           )
 
           group_block = s(:block, addApplication)
+          unless auto
+            group_block = groupProperties(group_block, properties)            
+          end
           defGroup = s(:call, 
             nil, 
             :defGroup.to_sym, 
@@ -105,8 +110,7 @@ module OMF
             s(:arglist, 
               s(:lit, @duration)))
           expDone = s(:call, 
-            s(:const, 
-              :Experiment), 
+            s(:const, :Experiment), 
             :done, 
             s(:arglist))
           onEvent = s(:call, 
@@ -133,17 +137,78 @@ module OMF
           code = ""
           ruby2ruby = Ruby2Ruby.new()
           # generate groups
+          auto = false
+          if @meta[:properties][:network] == "on"
+            auto = true
+          end
           @meta[:groups].each do |index, group|
             puts "#{index} => #{group.inspect}"
             if !group[:applications].nil?
-              ruby_group = createGroup(group[:name], group)
+              ruby_group = createGroup(group[:name], group, auto)
               code += ruby2ruby.process(ruby_group)+"\n"
             end
           end 
           # generate ALL_UP event
           ruby2ruby = Ruby2Ruby.new()
-          code += ruby2ruby.process(all_up())
+          if auto
+            code += ruby2ruby.process(s(:block, autoNetworkProperties, all_up()))
+          else
+            code += ruby2ruby.process(s(:block, all_up()))
+          end
+
           return code
+        end
+
+        protected
+        def autoNetworkProperties()
+          return s(:iter, 
+            s(:call, 
+              s(:call, 
+                s(:call, 
+                  nil, 
+                  :allGroups, 
+                  s(:arglist)), 
+                :net, 
+                s(:arglist)), 
+              :w0, 
+              s(:arglist)), 
+            s(:lasgn, :interface), 
+            s(:block, 
+              s(:attrasgn, s(:lvar, :interface), :mode=, s(:arglist, s(:str, "ad-hoc"))), 
+              s(:attrasgn, s(:lvar, :interface), :type=, s(:arglist, s(:str, "g"))),
+              s(:attrasgn, s(:lvar, :interface), :channel=, s(:arglist, s(:str, "6"))),
+              s(:attrasgn, s(:lvar, :interface), :essid=, s(:arglist, s(:str, "test"))),
+              s(:attrasgn, s(:lvar, :interface), :ip=, s(:arglist, s(:str, "192.168.0.%index")))))
+        end
+        
+        def groupProperties(sblock, properties)
+          if properties[:net].nil?
+            return sblock;
+          end
+          start = 2
+          properties[:net].each do |k,v|
+            v.each do |pkey, pvalue|
+              next if (pvalue.size == 0)
+              sblock[start] = s(:attrasgn, 
+                s(:call, 
+                  s(:call, 
+                    s(:lvar, :node), 
+                    :net, 
+                    s(:arglist)), 
+                  k.to_s,
+                  s(:arglist)), 
+                pkey.to_s, 
+                s(:arglist, s(:str, pvalue)));
+              start += 1;
+            end
+          end
+          return sblock;
+        end
+
+        def setApplication(block, application)
+        end
+
+        def setMeasures(block, application)
         end
       end      
 

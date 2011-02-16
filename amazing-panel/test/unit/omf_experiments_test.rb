@@ -27,7 +27,16 @@ class OMFExperimentsTest < ActiveSupport::TestCase
             "1" => {
               "name" => "__group_n24_", 
               "nodes" => ["omf.amazing.node1","omf.amazing.node2"],
-              "applications" => {
+              "properties" => {
+                "net" => { 
+                  "w0" => { 
+                    "mode" => "6", 
+                    "type" => "g", 
+                    "essid" => "helloworld" ,
+                    "ip" => ""
+                  }
+                }
+              }, "applications" => {
                 "0" =>{
                   "uri" => "test:app:otr2",
                   "measures" => { "selected" => "udp_in"}, 
@@ -38,9 +47,15 @@ class OMFExperimentsTest < ActiveSupport::TestCase
                 }
               }
             }
-        }, "properties" => { "duration" => 30, "testbed" => { "id" =>Testbed.first.id, "name" => Testbed.first.name }
+        }, "properties" => { 
+          "duration" => 30, 
+          "network" => "on",
+          "testbed" => { 
+            "id" =>Testbed.first.id, 
+            "name" => Testbed.first.name 
+          }
         }
-      })
+      }})
       script  =OMF::Experiments::OEDL::OEDLScript.new(params[:meta])
       code = script.toRuby();
       puts code

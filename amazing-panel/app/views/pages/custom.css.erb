@@ -286,29 +286,79 @@ a:link {
   font-weight: bold;
 }
 .grid-view-new {
-  display: table;  
+  display: table;
+  border: 1px solid #a4a4a4;
+  width: 180px;
 }
 
 .grid-view-header {
   background-color: #f0f0f0;
   color: #1e1e1e;
-  font-weight: bold;
+  font-size: 11px;
+}
+
+.grid-view-header > div {
+  padding-left: 4px;
 }
 
 .grid-view-row {
   display: table-row;
-  padding-left: 4px;
+  padding-left: 1px;
 }
+
+.grid-view-row > .group-color {
+  cursor: pointer;
+}
+
+.grid-view-row > .group-color > input {
+  cursor: pointer;
+  margin-top: -1px;
+}
+
+
+.grid-view-header > .group-color {
+  width: 22px;
+  height: 22px;
+}
+
+
 
 .grid-view-row > div {
   display: table-cell;
+  padding: 4px;
+  border: 1px solid #a4a4a4;
 }
 
 .grid-view-row > div:first-child {
   width: 110px;
+  margin-left: 1px;
 }
 .grid-view-row > div:nth-last-child {
   width: 80px;
+}
+
+.grid-view-row-selected > div {
+  background-color: #ffdead;
+}
+
+.grid-view-actions {
+  display: none;
+}
+
+.grid-view-actions > a {
+  font-size: 9px;
+  text-decoration: underline;
+}
+
+#table-applications {
+  margin-top: 20px;
+}
+
+#table-groups {
+}
+
+#table-groups {
+  margin-top: 20px;
 }
 
 .flash-msg-integrated {
@@ -712,10 +762,15 @@ ul#action-list > li {
 }
 
 #design > #testbed-view {
-  margin-left: 50px;
+  margin-left: 0px;
   float:left;
 }
 
+#design > .right-sidebar {
+  float:right;
+  margin-right: 40px;
+  width: 150px;
+}
 
 #design > .sidebar > .ed-editor-button {
   -moz-border-radius: 10px;
@@ -772,6 +827,12 @@ ul#action-list > li {
   overflow: auto;
 }
 
+.group-color {
+  height: 20px !important;
+  width: 20px !important;
+  padding: 2px;
+}
+
 #groups > .group {
   height: 30px; 
   font-size: 11px;
@@ -786,10 +847,7 @@ ul#action-list > li {
   cursor: pointer;
 }
 #groups > .group > .group-color {
-  height: 20px;
-  width: 20px;
   float:left;
-  padding: 2px;
 }
 
 #design > .sidebar > .preferences-button {

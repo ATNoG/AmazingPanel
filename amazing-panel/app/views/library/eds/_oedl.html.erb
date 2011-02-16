@@ -11,6 +11,31 @@
     <%= hidden_field_tag :testbed_id, @testbed.id %>
     <%= render :partial => 'testbeds/map' %>
   </div>
+  <div class="right-sidebar"> 
+    <div id="table-groups" class="grid-view-new">
+      <div class="grid-view-row grid-view-header">
+        <div class="group-color"></div>
+        <div>Nodes</div>
+      </div>
+      <div class="grid-view-row">
+      </div>      
+    </div>
+    <div id="table-groups-actions" class="grid-view-actions">
+      <a href="#" class="remove-group-item">Remove Group</a>
+    </div>
+
+    <div id="table-applications" class="grid-view-new">
+      <div class="grid-view-row grid-view-header">
+        <div class="group-color"></div>
+        <div>Application</div>
+      </div>
+      <div class="grid-view-row">
+      </div>
+    </div>
+    <div id="table-applications-actions" class="grid-view-actions">
+      <a href="#" class="remove-application-item">Remove Application</a>
+    </div>
+  </div>
 </div>
 <div id="source" class="oedl-tab tab">
 </div>

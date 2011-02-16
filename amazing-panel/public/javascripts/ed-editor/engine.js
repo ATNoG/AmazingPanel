@@ -18,14 +18,15 @@ String.prototype.rtrim = function() {
 /**
  * Designer engine
  */
-function Resource(id){
+function Resource(id, properties){
   this.id = id;
+  this.properties = properties;
 }
 
 Resource.merge = function merge(obj1, obj2) {
-    for(attr in obj1)
-        obj2[attr]=obj1[attr];
-    return obj2;
+    for(attr in obj2)
+        obj1[attr]=obj2[attr];
+    return obj1;
 }
 
 Resource.prototype.getProperties = function(){
@@ -33,52 +34,89 @@ Resource.prototype.getProperties = function(){
 }
 
 Resource.common_inet_parameters = { 
-  ip : "",
-  netmask : "",
-  down : "",
-  up : "",
-  mtu : "",  
-  mac : "",
-  route : { op : "", net : "", gw : "", mask : "" },
-  filter: { op : "", chain : "", target : "",  src : "", sport : "", dst : "", dport : "" },
+  ip : { 
+    value:"",
+    caption:"IP Address"
+  },
+  netmask : { 
+    value: "", 
+    caption:"Network Mask",
+  }, state : { 
+    value : true, 
+    caption: "State", 
+    bool: false 
+  }, mtu : {
+    caption: "MTU",
+    value:"" 
+  }, mac : { 
+    caption: "MAC",
+    value:"" 
+  }, route : { 
+    op : { value : "", options : ["add","del"] }, 
+    net : { value : "" }, 
+    gw : { value:"" }, 
+    mask : { value : "" } 
+  }, filter: { 
+    op : { 
+      value : "", 
+      options : ["add","del","clear"] 
+    }, chain : { 
+      value : "", 
+      options: ["input"] 
+    }, target : { 
+      value : "", 
+      options: ["drop"] 
+    }, proto : { 
+      value : "", 
+      options: ["mac","tcp"], 
+      needed:[["src"], ["src","dst","sport","dport"]] 
+    }, src : "", sport : "", dst : "", dport : "" 
+  },
 }
 
 Resource.wlan_inet_parameters = Resource.merge({ 
-  mode : "",
-  type : "",
-  rts : "",
-  rate : "",
-  essid : "",
-  channel : "",
-  tx_power : "",
-  enforce_link : ""
+  mode : {
+    caption: "Mode",
+    value : "", 
+    options : ["ad-hoc","managed","master"] 
+  }, type : { 
+    caption: "Type",
+    value : "", 
+    options : ["a","b","g"] 
+  },
+  rts : { value:"", options : ["add","clear",""] },
+  rate : { value:"" },
+  essid : { 
+    caption: "ESSID",
+    value:"" 
+  },
+  channel : { 
+    caption: "Channel",
+    value:"" 
+  },
+  tx_power : { 
+    caption: "Transmission Power",
+    value:"" 
+  },
 }, Resource.common_inet_parameters)
 
 
-Resource.inet_type_parameter = {
-  e0 : Resource.common_inet_parameters,
-  e1 : Resource.common_inet_parameters,
-  w0 : Resource.wlan_inet_parameters,
-  w1 : Resource.wlan_inet_parameters
-}
-
-Resource.resource_properties = {
-  net : Resource.inet_type_parameter 
-}
+Resource.inet_type_parameter = ["e0", "e1", "w0", "w1"]
 
 Resource.prototype.properties = {
   id: 0,
   group: "",
-  application: "",
-  properties : Resource.resource_properties
+  properties : {}
 }
 
-function Group(name){
+function Group(name, color){
   this.name = name
+  this.color = color
   this.nodes = {}
   this.ids = []
   this.nid = 0
   this.applications = []
+  this.properties = {}
 }
 
 Group.prototype.addResource = function(resource) {
@@ -99,7 +137,8 @@ Group.prototype.removeResource = function(resource) {
     id = resource.id;
   }
   if (id in this.nodes){
-    delete this.nodes[resource.id];
+    // 'XXX' double check delete - don't apply to native hash tables
+    delete this.nodes[resource];
     this.ids.remove(this.ids.indexOf(resource.id));
   }
 }
@@ -122,9 +161,22 @@ Group.prototype.addApplication = function(application) {
   this.applications.push(application);
 }
 
+Group.prototype.setResourceProperties = function(properties) {
+  this.properties = Resource.merge(this.properties, properties);
+}
+
+Group.prototype.isEqual = function(nodes) {
+  var nodes_sel_str = nodes.map(function() { return this.id; }).get().join(','),
+      group_nodes_str = this.ids.join(",");      
+
+  return (nodes_sel_str == group_nodes_str)
+}
+
 function Engine() {
-  this.groups = { "default" : new Group("default") }
+  var color = "rgb(255,0,0)"
+  this.groups = { "default" : new Group("default", color) }
   this.group_keys = ["default"];
+  this.group_colors = [ color ];
   this.resources = {};
   this.reference = {
     keys: [],
@@ -147,9 +199,10 @@ Engine.prototype.getExperimentProperties = function(){
 }
 
 Engine.prototype.addResources = function(groupname, resources){ 
-  for (i=0; i<this.group_keys.length; ++i){
-    this.groups[this.group_keys[i]].removeResources(resources);
-  }
+  //for (j=0; j<this.group_keys.length; ++j){
+  //  var g = this.group_keys[j]; 
+  //  this.groups[g].removeResources(resources);
+  //}
   var group = this.groups[groupname]; 
   group.addResources(resources);
 }
@@ -159,15 +212,25 @@ Engine.prototype.addResource = function(groupname, resource){
 }
 
 Engine.prototype.removeGroup = function(name){  
+  var index = this.group_keys.indexOf(name);
   delete this.groups[name];
-  this.group_keys.remove(name);
-  return 0;
+  this.group_keys.remove(index);
+}
+
+Engine.prototype.setResourceGroupProperties = function(group, properties) {
+  var gname = group.name;
+  this.groups[gname].setResourceProperties(properties);
+}
+
+Engine.prototype.setResourceProperties = function(id, properties) {
+  this.resources[id] = new Resource(id, properties);
 }
 
 Engine.prototype.addGroup = function(name){
-  var g = this.groups[name] 
-  this.groups[name] = new Group(name)
   this.group_keys.push(name);
+  var g = this.groups[name], color = rgb_color(1/this.group_keys.length);
+  this.groups[name] = new Group(name, color)
+  this.group_colors.push(color);
   return 0;
 }
 
@@ -188,31 +251,37 @@ Engine.prototype.findGroups = function(nodes){
     var node = nodes[i];
     for(var gname in this.groups){
       var g = this.groups[gname];
-      if (__groups.indexOf(gname) != -1){
+      if ((g.ids.indexOf($(node).attr("id")) != -1) && (__groups.indexOf(g) == -1)) {
         __groups.push(g)
       }
     }
   }
   return __groups;
 }
-Engine.prototype.addApplication = function(application, nodes){
+
+Engine.prototype.addGeneratedGroup = function(nodes){  
   var __groups = this.findGroups(nodes);
+  if (__groups.length == 1 && __groups[0].isEqual(nodes)) {
+    return __groups[0].name;
+  }
   var gname = this.generateGroupName(nodes);
-  if (__groups.length == 1) {
-    gname = __groups[0];
-  } else {
-    for(i=0; i<__groups.length; ++i) {
-      this.groups[__groups[i]].removeResources(nodes);
-      if (__groups[i] != "default"){
-        this.removeGroup(__groups[i]);
-      }
-    }
+  for(i=0; i<__groups.length; ++i) {
+    var gn = __groups[i];
+    gn.removeResources(nodes);
+    //if (__groups[i] != "default"){
+      //this.removeGroup(__groups[i]);
+    //}
   }
   this.addGroup(gname);
-  this.groups[gname].addResources(nodes)
-  this.groups[gname].addApplication(application);
+  this.addResources(gname, nodes);
+  return gname;
 }
 
+Engine.prototype.addApplication = function(gname, application){
+    this.groups[gname].addApplication(application);
+}
+
+// 'XXX' double check delete - don't apply to native hash tables
 Engine.prototype.loadOEDLReference = function(data){
   var tmp = this.reference;
   for(uri in data) {
@@ -244,7 +313,7 @@ Engine.prototype.getGeneratedCode = function(){
     for(var node in group.nodes) {
       _nodes.push(node.replace("node-", ""))
     }
-    groups_data.push({ name : g, nodes : _nodes, applications: group.applications  });
+    groups_data.push({ name : g, nodes : _nodes, applications: group.applications, properties : group.properties  });
   }
   var data =  { meta : { groups : groups_data, properties : engine.properties }};
   $.post("/eds/code.js", data);
