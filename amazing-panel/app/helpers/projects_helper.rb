@@ -23,19 +23,19 @@ module ProjectsHelper
   def make_manager_action(object, options={})
     project = object[0]
     user = object[1]
-    return add_image_action(url_params_to(project_leader_path(project, user)), 'star.png', "Make Manager", options) if can?(:users, project)
+    return add_image_action(url_params_to(project_leader_path(project, user)), 'star.png', "Make Manager", options.merge({:method=>:put})) if can?(:make_leader, project)
   end
 
   def assign_user_action(object, options={})
     project = object[0]
     user = object[1]
-    return add_image_action(url_params_to(project_user_path(project, user)), 'enable.png', "Assign User", options) if can?(:assign_user, project)
+    return add_image_action(url_params_to(project_user_path(project, user)), 'enable.png', "Assign User", options.merge({:method=>:put})) if can?(:assign_user, project)
   end  
   
   def unassign_user_action(object, options={})
     project = object[0]
     user = object[1]
-    return add_image_action(url_params_to(project_user_path(project, user)), 'disable.png', "Unassign User", options) if can?(:unassign_user, project)
+    return add_image_action(url_params_to(project_user_path(project, user)), 'disable.png', "Unassign User", options.merge({:method=>:delete})) if can?(:unassign_user, project)
   end  
   
   def project_users_empty?(project)

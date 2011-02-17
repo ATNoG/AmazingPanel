@@ -58,16 +58,16 @@
 	    <% end %>    
 	  <% end %>    
 	  </td>
-	  <td><% unless user.last_sign_in_at.nil? %><%= user.last_sign_in_at.strftime("%Y-%m-%d %H:%M:%S") %><% end %></td>
+      <td>
+        <% unless user.last_sign_in_at.nil? %>
+          <%= user.last_sign_in_at.strftime("%Y-%m-%d %H:%M:%S") %>
+        <% end %>
+      </td>
 	  <td class="actions-2">
-	    <div class="table-actions">
-	      <!--<%= link_to(admin_user_path(user), :class => "action")  do %><%= image_tag "edit.png", {:height => 16, :width => 16} %><% end %>-->	      
-		<% if user.activated? %>  
-		  <%= link_to(user_activate_path(:user_id => user.id), :class => "action", :method => :put) do %><%= image_tag "disable.png", {:height => 16, :width => 16} %><% end %>
-		<% else %>
-		  <%= link_to(user_activate_path(:user_id => user.id), :class => "action", :method => :put) do %><%= image_tag "enable.png", {:height => 16, :width => 16} %><% end %>	  
-		<% end %> 	      
-	      <%= link_to(admin_user_path(:id => user.id), :class => "action", :method => "delete") do %><%= image_tag "remove.png", {:height => 16, :width => 16} %><% end %>  
+        <div class="table-actions">
+          <%= activate_user_action(user, { :text => false, :link => true}) %>
+          <%= delete_action(admin_user_path(:id=>user.id), { "original-title" => "Delete account", :text => false, 
+                            :link => true}) %>
 	    </div>
 	  </td>
 	</tr>

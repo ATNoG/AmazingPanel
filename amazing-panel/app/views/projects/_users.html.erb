@@ -90,15 +90,15 @@
     	<% if disabled == false %>
     	    <% if make_leader == true %>
     		  <% if not is_user_leader(@project, user) %>       
-                <%= make_manager_action([@project, user], { :text => false, :link => true, :method => :put, "title" => "Make manager of project #{@project.name}"  }) %>
+                <%= make_manager_action([@project, user], { :text => false, :link => true, "title" => "Make manager of project #{@project.name}"  }) %>
         	  <% end %>
     	    <% end %>
     	    
             <% if unassign == true %>
-              <%= unassign_user_action( [@project, user],  { :text => false, :link => true, :method => :delete, "title" => "Unassign #{user.name} to project" }) %>
+              <%= unassign_user_action( [@project, user],  { :text => false, :link => true, "title" => "Unassign #{user.name} to project" }) %>
     	    <% end %>
     	    <% if assign == true %>
-              <%= assign_user_action( [@project, user], { :text => false, :link => true, :method => :put, "title" => "Assign #{user.name} to project" }) %>
+              <%= assign_user_action( [@project, user], { :text => false, :link => true, "title" => "Assign #{user.name} to project" }) %>
     	    <% end %>
     	<% end %>
         </div>

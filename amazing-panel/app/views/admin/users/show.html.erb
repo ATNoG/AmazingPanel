@@ -1,33 +1,9 @@
 <% content_for :sub_actions do %>
-  <ul id="toolbar-action-list">
-    <li class="action">
-      <%= link_to (edit_admin_user_path(@user), :class => "action")  do %>
-	Edit
-	<%= image_tag "edit.png", {:height => 16, :width => 16} %>
-      <% end %> 
-    </li>
-    <% if @user.admin? == false%>  
-      <li class="action">
-	<% if @user.activated? %>  
-	  <%= link_to(user_activate_path(:user_id => @user.id), :class => "action", :method => :put) do %>
-	    Deactivate
-	    <%= image_tag "disable.png", {:height => 16, :width => 16} %>
-	  <% end %>
-	<% else %>
-	  <%= link_to(user_activate_path(:user_id => @user.id), :class => "action", :method => :put) do %>
-	    Activate
-	    <%= image_tag "enable.png", {:height => 16, :width => 16} %>
-	  <% end %>	  
-	<% end %>    
-      </li>
-    <% end %>
-    <li class="action">
-      <%= link_to(admin_users_path, :class => "action") do %>
-	Back
-	<%= image_tag "back.png", {:height => 16, :width => 16} %>
-      <% end %> 
-    </li>
-  </ul>
+  <%= sub_toolbar do %>
+    <%= edit_action(edit_admin_user_path(@user), {"original-title" => "Edit User"} ) %>
+    <%= activate_user_action(@user) %>
+    <%= back_action(admin_users_path) %>
+  <% end %>
 <% end %>
 
 <% content_for :content do %>
