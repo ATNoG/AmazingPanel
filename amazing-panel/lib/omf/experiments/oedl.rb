@@ -1,25 +1,120 @@
 require File.dirname(__FILE__) + "/../../../app/models/node"
+require 'ruby_parser'
+require 'ruby2ruby'
+require 'pp'
 
 module OMF
   module Experiments
     module OEDL
-      class OEDLScript
+      class Script
         attr_accessor :meta
         
-        def initialize(args)
-          @meta = args
-          duration = @meta[:properties][:duration]
-          @testbed = @meta[:properties][:testbed]
-          if duration.nil?
-            duration = 30
-            @meta[:properties] = {:duration => duration}
-          else
-            duration = duration.to_i
-            @meta[:properties][:duration] = duration
+        def initialize(args = {})
+          @params = args
+          @meta = args[:meta] 
+          unless @meta.nil? 
+            duration = @meta[:properties][:duration]
+            @testbed = @meta[:properties][:testbed]
+            if duration.nil?
+              duration = 30
+              @meta[:properties] = {:duration => duration}
+            else
+              duration = duration.to_i
+              @meta[:properties][:duration] = duration
+            end
+            @duration = duration
           end
-          @duration = duration
         end
-        
+
+        def createApplicationDefinition(args)
+          uri = args[0]
+          name = args[1]
+          properties = args[2]
+          blockApp = s(:block, nil)
+          block_index = 1
+
+          properties[:options].each do |k,v|
+            if k != "properties"
+              # attributes
+              if k == "version"
+                v_values = v.split(".")
+                sexp = s(:call, 
+                    s(:lvar, :app), 
+                    :version, 
+                    s(:arglist, 
+                      s(:lit, v_values[0].to_i), 
+                      s(:lit, v_values[1].to_i),
+                      s(:lit, v_values[2].to_i)))
+              else
+                sexp = s(:attrasgn, 
+                    s(:lvar, :app), 
+                    "#{k}=".to_sym, 
+                    s(:arglist, 
+                      s(:str, v)))
+              end
+              blockApp[block_index] = sexp
+              block_index += 1
+            else
+              # properties
+              v.each do |prop,prop_v|
+                options = s(:hash, nil)
+                h_i = 1
+                prop_v[:options].each do |opt,opt_v|
+                  options[h_i] = s(:lit, opt)
+                  options[h_i + 1] = s(:str, opt_v)
+                  h_i += 2
+                end
+                sexp = s(:call,               
+                  s(:lvar, :app),
+                  :defProperty,
+                  s(:arglist, 
+                    s(:str, k), 
+                    s(:str, prop_v[:description].to_s), 
+                    s(:str, prop_v[:mnemonic]), 
+                    options))
+                blockApp[block_index] = sexp
+                block_index += 1
+              end
+            end
+          end
+
+          # measurements
+          properties[:measures].each do |ms, fields|
+            blockMetrics = s(:block, nil)
+            bMetrics_index = 1
+            fields.each do |name, type|
+              blockMetrics[bMetrics_index] = s(:call, 
+                  s(:lvar, :mp), 
+                  :defMetric, 
+                  s(:arglist, 
+                    s(:str, name.to_s), 
+                    s(:lit, type.to_sym)))
+              bMetrics_index += 1
+            end
+            blockMeasurements = s(:iter, 
+                s(:call, 
+                  s(:lvar, :app), 
+                  :defMeasurement, 
+                  s(:arglist, 
+                    s(:str,  ms))), 
+                  s(:lasgn, :mp), blockMetrics)
+            blockApp[block_index] = blockMeasurements
+            block_index += 1
+          end
+          
+          iterApp = s(:lasgn, :app)
+          iterVar = s(:lvar, :app)
+          defApplication = s(:iter, 
+            s(:call,               
+              nil,
+              :defApplication, 
+              s(:arglist, 
+                s(:str, uri.to_s), 
+                s(:str, name.to_s))),
+            iterApp, blockApp)
+          return defApplication
+        end
+
         # Generates --
         # defGroup(name)        
         def createGroup(name, props, auto=false)
@@ -119,21 +214,18 @@ module OMF
             s(:arglist, 
               s(:lit, :APP_UP_AND_INSTALLED)))
           iterNode = s(:lasgn, :node)
-          all_up_block = s(:iter, 
-            onEvent, 
-            iterNode, 
-            s(:block, 
-              startApplications, 
-              expDuration, 
-              stopApplications, 
-              expDone))
+          all_up_block = s(:iter, onEvent, iterNode, timeline)
           return all_up_block
         end
-        
-        def toRuby()          
-          require 'ruby_parser'
-          require 'ruby2ruby'
-          require 'pp'
+
+        def from_sexp(method, args)
+          return Ruby2Ruby.new().process(self.send(method, args))
+        end
+
+        def to_rb()
+        end
+
+        def to_s()          
           code = ""
           ruby2ruby = Ruby2Ruby.new()
           # generate groups
@@ -160,6 +252,34 @@ module OMF
         end
 
         protected
+        def timeline()
+          if @params[:timeline].nil?
+            return s(:block, startApplications, expDuration, stopApplications, expDone)
+          end
+          timeline = @params[:timeline]
+          blockTimeline = s(:block, nil)
+          n = timeline.size
+          to_start = timeline.sort { |x,y| x[:start] <=> y[:start]  }
+          to_stop = timeline.sort { |x,y| x[:stop] <=> y[:stop]  }
+          tm = to_start[0]
+          i = 1
+          waitStatement = Proc.new {|t| s(:call, nil, :wait, s(:arglist, s(:lit, t))) }
+          groupStart = Proc.new {|g| s(:call, s(:call, nil, :group, s(:arglist, s(:str, g))), :startApplications, s(:arglist)) }
+          groupStart = Proc.new {|g| s(:call, s(:call, nil, :group, s(:arglist, s(:str, g))), :stopApplications, s(:arglist)) }
+          while (to_start.size > 0 and to_stop.size > 0) do
+            tm = (to_start[0][:start] <= to_stop[0][:stop]) ? to_start[0] : to_stop[0]
+            blockTimeline[i] = waitStatement.call(tm[:start])
+            i += 1
+            blockTimeline[i] = groupStart.call(tm[:group])
+            i += 1
+            if (to_start[0][:start] <= to_stop[0][:stop])
+              to_start.delete_at(0)
+            else
+              to_stop.delete_at(0)
+            end
+          end
+          return blockTimeline
+        end
         def autoNetworkProperties()
           return s(:iter, 
             s(:call, 
@@ -174,11 +294,29 @@ module OMF
               s(:arglist)), 
             s(:lasgn, :interface), 
             s(:block, 
-              s(:attrasgn, s(:lvar, :interface), :mode=, s(:arglist, s(:str, "ad-hoc"))), 
-              s(:attrasgn, s(:lvar, :interface), :type=, s(:arglist, s(:str, "g"))),
-              s(:attrasgn, s(:lvar, :interface), :channel=, s(:arglist, s(:str, "6"))),
-              s(:attrasgn, s(:lvar, :interface), :essid=, s(:arglist, s(:str, "test"))),
-              s(:attrasgn, s(:lvar, :interface), :ip=, s(:arglist, s(:str, "192.168.0.%index")))))
+              s(:attrasgn, 
+                s(:lvar, :interface), 
+                :mode=, 
+                s(:arglist, 
+                  s(:str, "ad-hoc"))), 
+              s(:attrasgn, 
+                s(:lvar, :interface), 
+                :type=, 
+                s(:arglist, s(:str, "g"))),
+              s(:attrasgn, 
+                s(:lvar, :interface), 
+                :channel=, 
+                s(:arglist, s(:str, "6"))),
+              s(:attrasgn, 
+                s(:lvar, :interface), 
+                :essid=, 
+                s(:arglist, 
+                  s(:str, "test"))),
+              s(:attrasgn, 
+                s(:lvar, :interface), 
+                :ip=, 
+                s(:arglist, 
+                  s(:str, "192.168.0.%index")))))
         end
         
         def groupProperties(sblock, properties)
@@ -203,12 +341,6 @@ module OMF
             end
           end
           return sblock;
-        end
-
-        def setApplication(block, application)
-        end
-
-        def setMeasures(block, application)
         end
       end      
 
