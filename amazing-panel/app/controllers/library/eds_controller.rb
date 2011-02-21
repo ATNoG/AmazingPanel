@@ -145,10 +145,17 @@ class Library::EdsController < Library::ResourceController
   # POST /eds/code.js
   def code
     puts params
+    timeline = Array.new()
+    params[:timeline].each do |k,v|
+      v[:start] = v[:start].to_i
+      v[:stop] = v[:stop].to_i
+      timeline.push(v)      
+    end
+    params[:timeline] = timeline
     params[:meta][:groups].each do |index, group|
       if group.has_key?(:nodes)
         nodes_hrn = Array.new()
-        logger.debug group.inspect
+        #logger.debug group.inspect
         group[:nodes].each do |n|
           nodes_hrn.push(Node.find(n).hrn)
         end

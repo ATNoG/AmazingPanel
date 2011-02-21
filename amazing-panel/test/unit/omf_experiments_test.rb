@@ -99,9 +99,9 @@ class OMFExperimentsTest < ActiveSupport::TestCase
   test "oedl_timeline_gen" do
     params = HashWithIndifferentAccess.new({
       :timeline => [
-        {:group => "sample", :start => 10, :stop => 30 },
-        {:group => "otg2", :start => 20, :stop => 20 },
-        {:group => "iperf", :start => 15, :stop => 31 }
+        {:group => "sample", :start => 10, :stop => 24 },
+        {:group => "otg2", :start => 20, :stop => 25 },
+        {:group => "iperf", :start => 27, :stop => 31 }
       ]})
     app = OMF::Experiments::OEDL::Script.new(params);
     puts Ruby2Ruby.new().process(app.all_up())

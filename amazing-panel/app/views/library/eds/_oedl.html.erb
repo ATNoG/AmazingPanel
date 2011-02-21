@@ -3,17 +3,36 @@
   <li><a id="oedl-source" href="#source">Source</a></li>
 </ul>
 <div id="design" class="oedl-tab tab">
-  <div class="oedl-timeline"></div>
-  <div class="oedl-actions sidebar">
-    <div class="preferences-view-action ed-editor-button preferences-button">Preferences</div>
+  <div class="oedl-timeline timeline">
+      <ul class="events">
+<!--         <li style="width: 42.48%; left: 57.2%;"></li>
+         <li style="width: 56.68%; left: 43%;"></li>
+         <li style="width: 71.3%; left: 28.4%;"></li>
+         <li style="width: 85.5%; left: 14.2%;"></li>
+         <li style="width: 42.75%; left: 0;"></li>
+         <li style="width: 99.5%; left: 0;"></li>
+-->
+      </ul>
+      <ul class="intervals">
+         <li class="first">0s</li>
+         <li>20s</li>
+         <li>40s</li>
+         <li>60s</li>
+         <li>80s</li>
+         <li>100s</li>
+         <li class="last">120s</li>
+      </ul>
   </div>
+  <div class="clear"></div>
+  <div class="preferences-view-action preferences-button"><span>Preferences</span></div>
+  <div class="oedl-actions sidebar"></div>
   <div id="testbed-view">
     <%= hidden_field_tag :testbed_name, @testbed.name %>
     <%= hidden_field_tag :testbed_id, @testbed.id %>
     <%= render :partial => 'testbeds/map' %>
   </div>
   <div class="right-sidebar"> 
-    <div id="table-groups" class="grid-view-new">
+    <div id="table-groups" class="hidden grid-view-new">
       <div class="grid-view-row grid-view-header">
         <div class="group-color"></div>
         <div>Nodes</div>
@@ -25,7 +44,7 @@
       <a href="#" class="remove-group-item">Remove Group</a>
     </div>
 
-    <div id="table-applications" class="grid-view-new">
+    <div id="table-applications" class=" hidden grid-view-new">
       <div class="grid-view-row grid-view-header">
         <div class="group-color"></div>
         <div>Application</div>
@@ -35,6 +54,7 @@
     </div>
     <div id="table-applications-actions" class="grid-view-actions">
       <a href="#" class="remove-application-item">Remove Application</a>
+      <a href="#" class="addevent-application-item">Add Event</a>
     </div>
   </div>
 </div>

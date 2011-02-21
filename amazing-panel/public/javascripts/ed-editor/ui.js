@@ -155,16 +155,24 @@ EdEditor.prototype.forms = {
            }
         }]
       }]
+  }, 
+  _event : {
+    "elements" : [{
+        "type" : "p",
+        "elements" : [{
+          "name" : "event[start]",
+          "caption" : "Start (Timestamp)",
+          "type" : "text"
+        }]
+      }, {
+        "type" : "p",
+        "elements" : [{
+          "name" : "event[duration]",
+          "caption" : "Duration (seconds)",
+          "type" : "text"
+        }]
+      }]
   }
-}
-
-/**
-  * DEPRECATED
-  */
-EdEditor.prototype.addNode = function(x,y) {
-  var id = this.engine.groups.default.getId();
-  var resource = new Resource(id);
-  this.engine.addResource('default', resource);
 }
 
 /**
@@ -275,6 +283,14 @@ EdEditor.prototype.showNotification = function(text) {
   $("#design").prepend(notification).slideDown().delay(5000).slideUp();
 }
 
+EdEditor.prototype.showAddEvent = function(evt) { 
+  var engine = this.engine, modal = createDialog("Event");
+  var container = $(".modal-container", modal).html("<form id=\"application-add-event\"></form>");
+  $("#application-add-event").buildForm(this.forms._event);  
+  $(".modal > .check-button").unbind('click').click(this.onApplicationAddEvent.bind(this));
+  modal.show();
+}
+
 /**
   * Generate the Resource Properties form
   * @used: Resource Properties Dialog
@@ -351,6 +367,7 @@ EdEditor.prototype.generateApplicationsTable = function(groups) {
       "<div>${app}</div>"+
     "</div>");
   $.tmpl("tmpl_apps", data).appendTo("#table-applications");
+  $("#table-applications").removeClass("hidden");
 }
 
 /**
@@ -380,6 +397,21 @@ EdEditor.prototype.generateGroupsTable = function(groups) {
       "<div>${nodes}</div>"+
     "</div>");
   $.tmpl("tmpl_groups", data).appendTo("#table-groups");
+  $("#table-groups").removeClass("hidden");
+}
+
+EdEditor.prototype.generateTimeline = function() {
+  var timeline = this.engine.timeline
+  $(".events").empty();
+  for (var g in timeline.events){
+    var group = this.engine.groups[g]
+    var evt = timeline.events[g]
+    var left = timeline.width * ( evt.start / timeline.interval );
+    var width = timeline.width * ( evt.duration / timeline.interval );
+
+    $(".events").append("<li id="+g+"></li>");
+    $(".events > #"+g).css("left", left+"%").css("width", width+"%").css("background-color", group.color);
+  }
 }
 
 EdEditor.prototype.selectTableItems = function(table, selected, cb) { 
@@ -400,6 +432,7 @@ EdEditor.prototype.selectTableItems = function(table, selected, cb) {
 
   return true;
 }
+
 
 EdEditor.prototype.onGroupsTableClick = function(evt){
   var n = $(evt.target).parent();
@@ -429,7 +462,7 @@ EdEditor.prototype.onGroupsTableClick = function(evt){
 EdEditor.prototype.onApplicationsTableClick = function(evt){  
   var n = $(evt.target).parent();
   var same = this.selectTableItems($(n).parent(), n);  
-  var gname = $("#table-groups > .grid-view-row-selected > .group-color > input ").attr("value");
+  var gname = $("#table-applications > .grid-view-row-selected > .group-color > input ").attr("value");
   if (same) { 
     $("#table-applications-actions").show();
     return false; 
@@ -574,6 +607,17 @@ EdEditor.prototype.onNodeClick = function(e) {
 }
 
 /**
+  * Event triggered when it clicked add event near table
+  */
+EdEditor.prototype.onApplicationAddEvent = function(evt) {
+  var gname = $("#table-applications > .grid-view-row-selected > .group-color > input ").attr("value");
+  var p = $("#application-add-event").formParams();
+  e = this.engine.timeline.addEvent(gname, p.event.start, p.event.duration);
+  hideDialog();
+  this.generateTimeline();
+}
+
+/**
   * Event triggered when it clicked remove application near table
   */
 EdEditor.prototype.onApplicationRemove = function(evt) {  
@@ -647,6 +691,7 @@ EdEditor.prototype.bindEvents = function() {
   $(".sidetable-group-select").live('click', this.onGroupsTableClick.bind(editor)); 
   $(".remove-group-item").live('click', this.onGroupRemove.bind(editor));
   $(".remove-application-item").live('click', this.onApplicationRemove.bind(editor));
+  $(".addevent-application-item").live('click', this.showAddEvent.bind(editor));
   
   // Dialog open events
   $("#btn_properties").live('click', this.selectProperties.bind(editor));

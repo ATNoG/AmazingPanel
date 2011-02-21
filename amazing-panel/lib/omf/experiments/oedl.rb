@@ -204,17 +204,18 @@ module OMF
             :wait, 
             s(:arglist, 
               s(:lit, @duration)))
-          expDone = s(:call, 
-            s(:const, :Experiment), 
-            :done, 
-            s(:arglist))
           onEvent = s(:call, 
             nil, 
             :onEvent, 
             s(:arglist, 
               s(:lit, :APP_UP_AND_INSTALLED)))
           iterNode = s(:lasgn, :node)
-          all_up_block = s(:iter, onEvent, iterNode, timeline)
+          onEvent_block = s(:block, startApplications, expDuration, 
+                            stopApplications, experimentDone)
+          all_up_block = s(:iter, 
+              onEvent, 
+              iterNode, 
+              (@params[:timeline].nil?) ? onEvent_block : timeline())
           return all_up_block
         end
 
@@ -252,34 +253,66 @@ module OMF
         end
 
         protected
+        def experimentDone()
+          expDone = s(:call, 
+            s(:const, :Experiment), 
+            :done, 
+            s(:arglist))
+          return expDone
+        end
         def timeline()
-          if @params[:timeline].nil?
-            return s(:block, startApplications, expDuration, stopApplications, expDone)
-          end
           timeline = @params[:timeline]
           blockTimeline = s(:block, nil)
           n = timeline.size
           to_start = timeline.sort { |x,y| x[:start] <=> y[:start]  }
           to_stop = timeline.sort { |x,y| x[:stop] <=> y[:stop]  }
-          tm = to_start[0]
+          tm = { :group => "", :tm => 0, :action => "start" }
+          timeline_tm = 0
           i = 1
           waitStatement = Proc.new {|t| s(:call, nil, :wait, s(:arglist, s(:lit, t))) }
-          groupStart = Proc.new {|g| s(:call, s(:call, nil, :group, s(:arglist, s(:str, g))), :startApplications, s(:arglist)) }
-          groupStart = Proc.new {|g| s(:call, s(:call, nil, :group, s(:arglist, s(:str, g))), :stopApplications, s(:arglist)) }
-          while (to_start.size > 0 and to_stop.size > 0) do
-            tm = (to_start[0][:start] <= to_stop[0][:stop]) ? to_start[0] : to_stop[0]
-            blockTimeline[i] = waitStatement.call(tm[:start])
-            i += 1
-            blockTimeline[i] = groupStart.call(tm[:group])
-            i += 1
-            if (to_start[0][:start] <= to_stop[0][:stop])
-              to_start.delete_at(0)
-            else
-              to_stop.delete_at(0)
-            end
+          groupStart = Proc.new { |g| 
+            s(:call, 
+              s(:call, nil, :group, 
+                s(:arglist, 
+                  s(:str, g))), 
+              :startApplications, 
+              s(:arglist)) 
+          }
+          groupStop = Proc.new { |g| 
+            s(:call, 
+              s(:call, nil, :group, 
+                s(:arglist, 
+                  s(:str, g))), 
+              :stopApplications, 
+              s(:arglist)) 
+          }          
+          while (to_start.size > 0 or to_stop.size > 0) do
+            prev_tm = tm            
+            tm = timeline_get_tm(tm, to_start, to_stop)
+            blockTimeline[i] = waitStatement.call(tm[:tm] - prev_tm[:tm]) 
+            if tm[:action] == "start"
+              blockTimeline[i+1] = groupStart.call(tm[:group])
+            elsif tm[:action] == "stop"
+              blockTimeline[i+1] = groupStop.call(tm[:group])
+            end           
+            i += 2
           end
+          blockTimeline[i] = experimentDone()
           return blockTimeline
         end
+
+        def timeline_get_tm(tm, to_start, to_stop)
+          start = to_start[0]; stop = to_stop[0]
+          if !start.nil? and start[:start] <= stop[:stop]
+            tm = { :action => "start", :tm => start[:start], :group => start[:group] }
+            to_start.delete_at(0)
+          elsif !stop.nil?
+            tm = { :action => "stop", :tm => stop[:stop], :group => stop[:group] }
+            to_stop.delete_at(0)
+          end
+          return tm
+        end
+        
         def autoNetworkProperties()
           return s(:iter, 
             s(:call, 

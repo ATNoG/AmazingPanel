@@ -172,6 +172,22 @@ Group.prototype.isEqual = function(nodes) {
   return (nodes_sel_str == group_nodes_str)
 }
 
+function Timeline(zones){
+  this.interval  = 20 // seconds
+  this.width = 14.17;
+  this.events = {}
+}
+
+Timeline.prototype.addEvent = function(group, start, duration){
+  // Accept UTC dates and convert them to seconds
+  this.events[group] = { 
+    start : start, 
+    stop : start+duration,
+    duration : duration
+  }
+  return this.events[group]
+}
+
 function Engine() {
   var color = "rgb(255,0,0)"
   this.groups = { "default" : new Group("default", color) }
@@ -183,8 +199,14 @@ function Engine() {
     defs: {},
     properties: {},
     measures: {},
+    my : {
+      applications : {}
+    }
   }
   this.properties = { duration : 30 }
+  this.timeline = new Timeline()
+
+
   $.getJSON("/eds/doc.json?type=all", function(data){
     this.loadOEDLReference(data);
   }.bind(this));
@@ -305,8 +327,9 @@ Engine.prototype.getApplicationDefinition = function(uri, cb){
 
 
 Engine.prototype.getGeneratedCode = function(){
-  var engine = this;
+  var engine = this, events = engine.timeline.events;
   var groups_data = new Array();
+  var group_events = new Array();
   for(var g in engine.groups){
     var group = engine.groups[g];
     var _nodes = new Array();    
@@ -315,6 +338,9 @@ Engine.prototype.getGeneratedCode = function(){
     }
     groups_data.push({ name : g, nodes : _nodes, applications: group.applications, properties : group.properties  });
   }
-  var data =  { meta : { groups : groups_data, properties : engine.properties }};
+  for(var g in events) {
+    group_events.push({ group : g, start: events[g].start, stop: events[g].stop })
+  }
+  var data =  { meta : { groups : groups_data, properties : engine.properties }, timeline : group_events };
   $.post("/eds/code.js", data);
 }
