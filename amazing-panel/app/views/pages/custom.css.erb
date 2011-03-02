@@ -98,13 +98,16 @@ a:link {
   height: 0%;
 }
 
-.italic {
-  font-style: italic;
-}
+.italic { font-style: italic; }
+.bold { font-weight: bold; }
 
-.bold {
-  font-weight: bold;
-}
+.left { float: left !important; }
+.no-float { float: none !important; }
+.right { float: right !important; }
+
+.inline { display: inline !important; }
+.round { border-radius: 5px; }
+.pad { padding: 2px; }
 
 .info {
   background: #DBE3FF url(/images/info.png) no-repeat 1px 1px;
@@ -268,6 +271,56 @@ a:link {
   height: 90%;
 }
 
+/* Side tabs */
+.sidetabs-container {
+  height: 450px;
+}
+
+.sidetabs {
+  float: left;
+  list-style: none;
+  position: relative;
+  width: 12%;
+}
+
+.sidetabs li {
+  float: left;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  background-color: white;
+  width: 100%;
+  text-align: center;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+
+.sidetabs li a {
+  color: #a4a4a4;
+}   
+
+.sidetabs li.sidetab-active {
+  font-weight: bold;
+  background-color: #f0f0f0;
+}
+
+.sidetabs li.sidetab-active a {
+  color: #1e1e1e;
+}   
+
+.sidetabs li:hover {
+  background: #ccc;
+}
+
+.sidetab {
+  background: white;
+  float: left;
+  width: 85%;
+  margin-left: -1px;
+}
+
+/* Embedded modal tabs */
 .modal-tab {
   height: 365px;
   overflow-y: auto;
@@ -819,12 +872,12 @@ ul.intervals li.first {
 
 #design > .sidebar {
   width: 90px;
-  height: 50%;
+  height: 200px;
   border: 1px solid #A4A4A4;
   padding: 5px 5px 5px 0px;
   float: left;
   background: #f0f0f0;
-  margin-top: 5px;
+  margin-top: 25px;
 }
 
 #design > #testbed-view {
@@ -884,6 +937,14 @@ ul.intervals li.first {
   margin-left: 5px;
 }
 */
+
+#add-application-button {
+  padding: 4px;
+  font-size: 11px;
+  margin-left: 10px;
+
+}
+
 #add-group > .group-add-action {
   margin-top: -25px;
   margin-left: 5px;
@@ -923,15 +984,15 @@ ul.intervals li.first {
   -webkit-border-radius: 0px;
   width: 95px;
   margin-left: 0px;
-  top: 8px;
+  top: 28px;
   height: 20px;
   font-family: sans;
   font-size: 10px;
   cursor: pointer;
-  border: 1px solid #A4A4A4;
+  border: 1px solid #7f7f7f;
   margin-bottom: 2px;
   text-align: center;
-  background-color: #C1C1C1;
+  background-color: #a4a4a4;
   color: white;
   line-height: 20px;
   height: 20px;
@@ -1197,7 +1258,7 @@ div.description {
   color: white !important; 
   border: 1px solid #107BAE;
   text-align:center;
-  float:right;
+  float: right;
   cursor: pointer;
   font-weight: bold;
 }

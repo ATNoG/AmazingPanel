@@ -16,12 +16,9 @@ module OMF
             duration = @meta[:properties][:duration]
             @testbed = @meta[:properties][:testbed]
             if duration.nil?
-              duration = 30
-              @meta[:properties] = {:duration => duration}
-            else
-              duration = duration.to_i
-              @meta[:properties][:duration] = duration
+              @duration = 30
             end
+            @meta[:properties][:duration] = duration.to_i
             @duration = duration
           end
         end
@@ -79,27 +76,29 @@ module OMF
           end
 
           # measurements
-          properties[:measures].each do |ms, fields|
-            blockMetrics = s(:block, nil)
-            bMetrics_index = 1
-            fields.each do |name, type|
-              blockMetrics[bMetrics_index] = s(:call, 
-                  s(:lvar, :mp), 
-                  :defMetric, 
-                  s(:arglist, 
-                    s(:str, name.to_s), 
-                    s(:lit, type.to_sym)))
-              bMetrics_index += 1
+          unless properties[:measures].nil?
+            properties[:measures].each do |ms, fields|
+              blockMetrics = s(:block, nil)
+              bMetrics_index = 1
+              fields.each do |name, type|
+                blockMetrics[bMetrics_index] = s(:call, 
+                    s(:lvar, :mp), 
+                    :defMetric, 
+                    s(:arglist, 
+                      s(:str, name.to_s), 
+                      s(:lit, type.to_sym)))
+                bMetrics_index += 1
+              end
+              blockMeasurements = s(:iter, 
+                  s(:call, 
+                    s(:lvar, :app), 
+                    :defMeasurement, 
+                    s(:arglist, 
+                      s(:str,  ms))), 
+                    s(:lasgn, :mp), blockMetrics)
+              blockApp[block_index] = blockMeasurements
+              block_index += 1
             end
-            blockMeasurements = s(:iter, 
-                s(:call, 
-                  s(:lvar, :app), 
-                  :defMeasurement, 
-                  s(:arglist, 
-                    s(:str,  ms))), 
-                  s(:lasgn, :mp), blockMetrics)
-            blockApp[block_index] = blockMeasurements
-            block_index += 1
           end
           
           iterApp = s(:lasgn, :app)
@@ -118,58 +117,65 @@ module OMF
         # Generates --
         # defGroup(name)        
         def createGroup(name, props, auto=false)
-          application = props[:applications]["0"]
+          applications = props[:applications].blank? ? nil : props[:applications]
           nodes = props[:nodes]
-          properties = props[:properties]
+          properties = props[:properties]          
 
           iterNode = s(:lasgn, :node)
           iterApp = s(:lasgn, :app)
-          blockApp = s(:block)          
+          group_block = s(:block, nil)
+          group_block_index = 1
           i = 1
-          application[:options][:properties].each do |k,v|
-            app_setProp = s(:call, 
-              s(:lvar, :app), 
-              :setProperty, 
-              s(:arglist, 
-                s(:str, k), 
-                s(:lit, v)))
-            blockApp[i] = app_setProp
-            i += 1
-          end
-          application[:measures][:selected].each do |m|
-            app_setProp = s(:call, 
-              s(:lvar, :app), 
-              :measure, 
-              s(:arglist, 
-                s(:str, m), 
-                s(:hash, 
-                  s(:lit, :samples), 
-                  s(:lit, 1))))
-
-            blockApp[i] = app_setProp
-            i += 1
-          end
-          addApplication = s(:iter, 
-            s(:call, 
-              s(:lvar, :node), 
-              :addApplication, 
-              s(:arglist, s(:str, application[:uri].to_s))), 
-            iterApp, 
-            blockApp
-          )
-
-          group_block = s(:block, addApplication)
+          unless applications.nil?
+            blockApp = s(:block, nil)                      
+            applications.each do |index,application|
+              unless application[:options].nil?
+                  application[:options][:properties].each do |k,v|
+                    app_setProp = s(:call, 
+                      s(:lvar, :app), 
+                      :setProperty, 
+                      s(:arglist, 
+                        s(:str, k), 
+                        s(:lit, v)))
+                    blockApp[i] = app_setProp
+                    i += 1
+                  end
+              end
+  
+              unless application[:measures].nil?
+                application[:measures][:selected].each do |m|
+                  app_setProp = s(:call, 
+                    s(:lvar, :app), 
+                    :measure, 
+                    s(:arglist, 
+                      s(:str, m), 
+                      s(:hash, 
+                        s(:lit, :samples), 
+                        s(:lit, 1))))
+    
+                  blockApp[i] = app_setProp
+                  i += 1
+                end
+              end
+              
+              group_block[group_block_index] = s(:iter, 
+                s(:call, 
+                  s(:lvar, :node), 
+                  :addApplication, 
+                  s(:arglist, s(:str, application[:uri].to_s))), 
+                s(:lasgn, :app), blockApp.deep_clone)
+              group_block_index += 1
+            end
+          end         
           unless auto
-            group_block = groupProperties(group_block, properties)            
+            group_block = groupProperties(group_block, group_block_index, properties)            
           end
           defGroup = s(:call, 
             nil, 
             :defGroup.to_sym, 
             s(:arglist, s(:str, name.to_s), s(:str, nodes.join(","))))
-          defGroup_block = s(:iter, 
-            defGroup, 
-            iterNode, 
-            group_block)
+          defGroup_block = s(:iter, defGroup, s(:lasgn, :node), group_block)
+          
           return defGroup_block
         end
         
@@ -203,19 +209,19 @@ module OMF
             nil, 
             :wait, 
             s(:arglist, 
-              s(:lit, @duration)))
+              s(:lit, @duration.to_i)))
           onEvent = s(:call, 
             nil, 
             :onEvent, 
             s(:arglist, 
               s(:lit, :APP_UP_AND_INSTALLED)))
           iterNode = s(:lasgn, :node)
-          onEvent_block = s(:block, startApplications, expDuration, 
-                            stopApplications, experimentDone)
+          onEvent_block = @params[:timeline].nil? ? s(:block, startApplications, expDuration, 
+                            stopApplications, experimentDone) : timeline()
           all_up_block = s(:iter, 
               onEvent, 
               iterNode, 
-              (@params[:timeline].nil?) ? onEvent_block : timeline())
+              onEvent_block)
           return all_up_block
         end
 
@@ -228,21 +234,22 @@ module OMF
 
         def to_s()          
           code = ""
-          ruby2ruby = Ruby2Ruby.new()
           # generate groups
-          auto = false
+          auto = false          
           if @meta[:properties][:network] == "on"
             auto = true
           end
+
           @meta[:groups].each do |index, group|
-            puts "#{index} => #{group.inspect}"
-            if !group[:applications].nil?
+            Rails.logger.debug "#{index} => #{group.inspect}"
+            unless group[:applications].blank? and group[:properties].blank?
               ruby_group = createGroup(group[:name], group, auto)
+              ruby2ruby = Ruby2Ruby.new()
               code += ruby2ruby.process(ruby_group)+"\n"
             end
           end 
           # generate ALL_UP event
-          ruby2ruby = Ruby2Ruby.new()
+          ruby2ruby = Ruby2Ruby.new()          
           if auto
             code += ruby2ruby.process(s(:block, autoNetworkProperties, all_up()))
           else
@@ -352,11 +359,11 @@ module OMF
                   s(:str, "192.168.0.%index")))))
         end
         
-        def groupProperties(sblock, properties)
+        def groupProperties(sblock, index, properties)
           if properties[:net].nil?
             return sblock;
           end
-          start = 2
+          start = index
           properties[:net].each do |k,v|
             v.each do |pkey, pvalue|
               next if (pvalue.size == 0)

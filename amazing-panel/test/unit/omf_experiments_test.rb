@@ -44,6 +44,14 @@ class OMFExperimentsTest < ActiveSupport::TestCase
                     "selected" => ["udp:local_host", "udp:local_port"], 
                     "properties" => {"udp:local_host"=>"192.168.0.2", "udp:local_port"=>"3000"}
                   }
+                }, 
+                "1" =>{
+                  "uri" => "test:app:otr3",
+                  "measures" => { "selected" => "udp_in"}, 
+                  "options" =>{
+                    "selected" => ["udp:local_host", "udp:local_port"], 
+                    "properties" => {"udp:local_host"=>"192.168.0.2", "udp:local_port"=>"3000"}
+                  }
                 }
               }
             }

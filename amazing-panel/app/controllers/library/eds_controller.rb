@@ -146,12 +146,17 @@ class Library::EdsController < Library::ResourceController
   def code
     puts params
     timeline = Array.new()
-    params[:timeline].each do |k,v|
-      v[:start] = v[:start].to_i
-      v[:stop] = v[:stop].to_i
-      timeline.push(v)      
+    param_timeline = params[:timeline]
+
+    unless param_timeline.nil?
+      param_timeline.each do |k,v|
+        v[:start] = v[:start].to_i
+        v[:stop] = v[:stop].to_i
+        timeline.push(v)      
+      end
+      params[:timeline] = timeline
     end
-    params[:timeline] = timeline
+
     params[:meta][:groups].each do |index, group|
       if group.has_key?(:nodes)
         nodes_hrn = Array.new()
@@ -165,6 +170,12 @@ class Library::EdsController < Library::ResourceController
 
     scriptgen = Script.new(params)
     @code = scriptgen.to_s();
+    @apps = Hash.new();
+    params[:apps][:applications].each do |uri, app|
+      args = [uri, app[:name], app]
+      @apps[uri] = scriptgen.from_sexp(:createApplicationDefinition, args)      
+    end
+    logger.debug @apps
   end
 
   def doc

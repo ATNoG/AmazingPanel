@@ -115,7 +115,7 @@ function Group(name, color){
   this.nodes = {}
   this.ids = []
   this.nid = 0
-  this.applications = []
+  this.applications = {}
   this.properties = {}
 }
 
@@ -158,7 +158,11 @@ Group.prototype.getResource = function(id){
 }
 
 Group.prototype.addApplication = function(application) {
-  this.applications.push(application);
+  this.applications[application.uri] = application;
+}
+
+Group.prototype.removeApplication = function(uri) {
+  delete this.applications[uri]
 }
 
 Group.prototype.setResourceProperties = function(properties) {
@@ -201,6 +205,11 @@ function Engine() {
     measures: {},
     my : {
       applications : {}
+    },
+    default : {
+      defs: { uri:"", shortDescription:"", path:"", description:"", name:"", version:"" },
+      properties: {},
+      measures: {}
     }
   }
   this.properties = { duration : 30 }
@@ -303,6 +312,24 @@ Engine.prototype.addApplication = function(gname, application){
     this.groups[gname].addApplication(application);
 }
 
+Engine.prototype.saveApplication = function(info, properties){
+  var app = {
+    name : info.name,
+    options : $.extend(info, { properties : {} })
+  }
+  for (p in properties){
+    var prop = properties[p]
+    app.options.properties[p] = { 
+      description : prop.description,
+      mnemonic : "",
+      options : {
+        dynamic : "false"
+      }
+    }
+  }
+  this.reference.my.applications[info.uri] = app
+}
+
 // 'XXX' double check delete - don't apply to native hash tables
 Engine.prototype.loadOEDLReference = function(data){
   var tmp = this.reference;
@@ -341,6 +368,13 @@ Engine.prototype.getGeneratedCode = function(){
   for(var g in events) {
     group_events.push({ group : g, start: events[g].start, stop: events[g].stop })
   }
-  var data =  { meta : { groups : groups_data, properties : engine.properties }, timeline : group_events };
+  var data =  { 
+    apps: this.reference.my, 
+    meta : { 
+      groups : groups_data, 
+      properties : engine.properties 
+    }, 
+    timeline : group_events 
+  };
   $.post("/eds/code.js", data);
 }

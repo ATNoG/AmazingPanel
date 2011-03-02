@@ -4,7 +4,7 @@
 function createDialog(title, options){
   var modal = $(".modal");
   var title = $(".title-box", modal).html(title);
-  modal.addClass("dialog-active");
+  modal.addClass("dialog-active");  
   return modal;
 }
 
@@ -93,6 +93,19 @@ EdEditor.prototype.resource_fields = [
 ]
 
 /**
+  * Templates
+  */
+EdEditor.prototype.templates = {
+  display_info: $.template("display_info","<div class=\"grid-view-row\"><div><b>${key} </b></div><div>${value}</div></div>"),
+  display_property: $.template("display_property","<div class=\"grid-view-row\"><div><b>${key}</b></div><div>${value}</div><div><input class=\"{{if v}}{{else}}hidden{{/if}}\" name=\"properties[${key}]\" type=\"text\" value=\"{{if v}}${v}{{/if}}\" /><input name=\"selected\" class=\"prop-check\" type=\"checkbox\" {{if v}}checked=\"true\"{{/if}} value=\"${key}\"/></div></div>"),
+  display_measure : $.template("display_measures", "<p><b>${key}<input name=\"selected\" type=\"checkbox\" value=\"${key}\"/></b><ul class=\"list\">{{each(i,m) metrics}} <li>${m.name} : ${m.type}</li>{{/each}} </ul></p>"),
+  insert_info: $.template("insert_info","<div class=\"grid-view-row\"><div><b>${key} </b></div><div><input name=\"info[${key}]\" type=\"text\"/>${value}</div></div>"),
+  insert_property: $.template("insert_property","<div class=\"grid-view-row\"><div><b> <input name=\"property_name\" type=\"text\"/> </b></div><div> <input name=\"property_description\" type=\"text\"/>  </div><div style=\"width:250px\"><input name=\"property_value\" type=\"text\"/><input name=\"has_value\" type=\"checkbox\"/> <div id=\"add-application-property-button\"class=\"button inline right\">Add</div></div></div>"),
+  inserted_info : $.template("inserted_info", "<input name=\"${key}\" type=\"hidden\" value=\"${value}\" />"),
+  inserted_property: $.template("inserted_property","<div class=\"grid-view-row\"><div><b>${key}</b><input name=\"properties[${key}][name]\" type=\"hidden\" value=\"${key}\" /></div><div><span>${value}</span><input name=\"properties[${key}][description]\" type=\"hidden\" value=\"${value}\" /></div><div><input class=\"{{if v}}{{else}}hidden{{/if}}\" name=\"properties[${key}][value]\" type=\"text\" value=\"{{if v}}${v}{{/if}}\" /><input name=\"selected\" class=\"prop-check\" type=\"checkbox\" {{if v}}checked=\"true\"{{/if}} value=\"${key}\"/></div></div>")
+}
+
+/**
   * JSON Forms for dialogs
   */
 EdEditor.prototype.forms = {
@@ -116,12 +129,22 @@ EdEditor.prototype.forms = {
   select_application: {
     "elements" : 
       [{ "type" : "p",
-         "elements" : [{
-           "id" : "app-name",
-           "type" : "select",
-           "name" : "resource[application]",
-           "caption" : "Application:",
-           "options" : {}
+           "elements" : [{
+             "id" : "app-name",
+             "type" : "select",
+             "name" : "resource[application]",
+             "caption" : "Application:",
+             "options" : {}
+        },{
+          "id" : "create_flag",
+          "type" : "hidden",
+          "name" : "resource[create]",
+          "value" : "0"
+        }, {
+          "id" : "add-application-button",
+          "type": "div",
+          "class" : "no-float inline pad round button",
+          "html" :  "New Application" 
         }]
       }]
   },
@@ -175,6 +198,8 @@ EdEditor.prototype.forms = {
   }
 }
 
+
+
 /**
   * Create group
   */
@@ -208,15 +233,20 @@ EdEditor.prototype.getApplicationsFromReference = function(reference) {
 EdEditor.prototype.selectApplication = function(t) {
   var app_selections = this.getApplicationsFromReference(this.engine.reference), prop_selections= {};
   this.forms.select_application.elements[0].elements[0].options = app_selections;
-  var modal = createDialog("Select an application for Node").css("height", "500px").css("width", "600px").css("left", "30%").css("top", "20%");
+  var modal = createDialog("Select an application for Node");
+  // Positioning and size
+  modal.css("height", "500px").css("width", "650px").css("left", "30%").css("top", "20%");
+
   $(".modal-container", modal).prepend("<form id=\"select-application\"></form>");  
   $(".modal-container", modal).css("height", "463px").append(this.html.tabs.application);
   $("#select-application").buildForm(this.forms.select_application);
   $("select#app-name").change(this.onApplicationChange.bind(this));
   modal.addClass("dialog-active");
   $("#modal-tabs > li:eq(0)").click();  
+  $("#add-application-button").unbind('click').click( this.onApplicationCreate.bind(this));
   $(".modal > .check-button").unbind('click').click( this.onApplicationAdd.bind(this));
   modal.show();
+  $("select#app-name").trigger('change');
 }
 
 /**
@@ -240,7 +270,7 @@ EdEditor.prototype.selectGroup = function(t) {
 }
 
 /**
-  * Displays "Properties" Dialog
+  * Displays 'Properties" Dialog
   */
 EdEditor.prototype.selectProperties = function(t) {
   var engine = this.engine, modal = createDialog("Select Properties for Node:");
@@ -283,6 +313,9 @@ EdEditor.prototype.showNotification = function(text) {
   $("#design").prepend(notification).slideDown().delay(5000).slideUp();
 }
 
+/**
+  * Displays the add event in the applications table
+  */
 EdEditor.prototype.showAddEvent = function(evt) { 
   var engine = this.engine, modal = createDialog("Event");
   var container = $(".modal-container", modal).html("<form id=\"application-add-event\"></form>");
@@ -296,6 +329,7 @@ EdEditor.prototype.showAddEvent = function(evt) {
   * @used: Resource Properties Dialog
   */
 EdEditor.prototype.generateResourceProperties = function(node,inet) {
+  var data = this.engine.resources[node.attr("id")];
   var fields = EdEditor.prototype.resource_fields;
   var validations ={};
   if (inet == undefined) {
@@ -317,13 +351,18 @@ EdEditor.prototype.generateResourceProperties = function(node,inet) {
       } else if (v.bool != undefined) {
         type = "checkbox"
       }
+      var value = ""
+      if ((data != undefined) && (data.properties.net[inet] != undefined)) {
+        value = data.properties.net[inet][f]
+      }
       var e =  {
         "type" : "p", 
         "elements" : [{
           "id": "resource-"+f, 
           "name" : "net["+inet+"]["+f+"]", 
           "caption" : v.caption, 
-          "type": type 
+          "type": type,
+          "value": value
         }] 
       }
     
@@ -348,13 +387,14 @@ EdEditor.prototype.generateApplicationsTable = function(groups) {
   // empty table
   $("#table-applications > .grid-view-row:not(.grid-view-header)").remove();
   $(".node-highlight").removeClass("node-highlight");
-  
-  var data = new Array();
+
+  var data = new Array(), has_apps = false;
   // generate data set
-  for (gname in groups){
+  for (var gname in groups){
     var group = groups[gname];
-    for (i=0;i<group.applications.length;++i){        
-      data.push({color:group.color, app:group.applications[i].uri, group:group.name});
+    for (var uri in group.applications){
+      has_apps = true;
+      data.push({ color:group.color, app:uri, group:group.name });
     }
   }
   // create template 'XXX' => move all templates to header
@@ -367,7 +407,11 @@ EdEditor.prototype.generateApplicationsTable = function(groups) {
       "<div>${app}</div>"+
     "</div>");
   $.tmpl("tmpl_apps", data).appendTo("#table-applications");
-  $("#table-applications").removeClass("hidden");
+  if (has_apps) {  
+    $("#table-applications").removeClass("hidden");
+  } else {
+    $("#table-applications").addClass("hidden");
+  }
 }
 
 /**
@@ -378,11 +422,12 @@ EdEditor.prototype.generateGroupsTable = function(groups) {
   $("#table-groups > .grid-view-row:not(.grid-view-header)").remove();
   $(".node-highlight").removeClass("node-highlight");
   
-  var data = new Array();
+  var data = new Array(), has_groups = false;
   // generate data set
   for (gname in groups){
     var group = groups[gname];
     if (group.ids.length > 0) {
+      has_groups = true;
       var nodes_str = group.ids.join(",").replace(/node-/gi, "");  
       data.push({color: group.color, name : group.name, nodes:nodes_str});
     }
@@ -397,9 +442,17 @@ EdEditor.prototype.generateGroupsTable = function(groups) {
       "<div>${nodes}</div>"+
     "</div>");
   $.tmpl("tmpl_groups", data).appendTo("#table-groups");
-  $("#table-groups").removeClass("hidden");
+
+  if (has_groups) {  
+    $("#table-groups").removeClass("hidden");
+  } else {
+    $("#table-groups").addClass("hidden");
+  }  
 }
 
+/**
+  * Generates the Timeline
+  */
 EdEditor.prototype.generateTimeline = function() {
   var timeline = this.engine.timeline
   $(".events").empty();
@@ -414,6 +467,9 @@ EdEditor.prototype.generateTimeline = function() {
   }
 }
 
+/**
+  * Event triggered when selecting on of the displayed tables (Groups|Applications)
+  */
 EdEditor.prototype.selectTableItems = function(table, selected, cb) { 
   var all_sel = $(".grid-view-row-selected", table);
   all_sel.toggleClass("grid-view-row-selected")
@@ -434,6 +490,9 @@ EdEditor.prototype.selectTableItems = function(table, selected, cb) {
 }
 
 
+/**
+  * Event triggered when selecting an item from Groups Table
+  */
 EdEditor.prototype.onGroupsTableClick = function(evt){
   var n = $(evt.target).parent();
   var same = this.selectTableItems($(n).parent(), n, function(){ 
@@ -459,6 +518,10 @@ EdEditor.prototype.onGroupsTableClick = function(evt){
   return false;
 }
 
+
+/**
+  * Event triggered when selecting an item from Applications Table
+  */
 EdEditor.prototype.onApplicationsTableClick = function(evt){  
   var n = $(evt.target).parent();
   var same = this.selectTableItems($(n).parent(), n);  
@@ -472,12 +535,14 @@ EdEditor.prototype.onApplicationsTableClick = function(evt){
   else { $("#table-applications-actions").hide(); }
   return false;
 }
+
 /**
   * Event triggered when changed the Network Interface, when filling Group/Node Properties Dialog
   */
 EdEditor.prototype.onInetChange = function(evt) {  
   var v = evt.currentTarget.value,
       node = $(".node-selected"),
+      properties = this.engine.resources[node.attr("id")],
       form = this.generateResourceProperties(node, v);
   $("#res-properties").empty();
   $("#res-properties").buildForm(form);
@@ -500,6 +565,7 @@ EdEditor.prototype.onResourceSetProperties = function(evt){
 
   if (g != undefined){
     this.engine.setResourceGroupProperties( g, params);
+    this.engine.setResourceProperties(nodes.attr("id"), params);
     nodes.css("background-color", g.color);
     this.generateGroupsTable(this.engine.groups);
     closeDialog("#modal-dialog");
@@ -514,12 +580,37 @@ EdEditor.prototype.onApplicationAdd = function(evt){
   var application = $("#select-application").formParams(),
       properties = $("#select-properties").formParams(),
       measures = $("#select-measures").formParams(),
+      has_create = ($("#create_flag").attr("value") == 1),  
       nodes = $(".node-selected"),  
       gname = this.engine.addGeneratedGroup(nodes), 
-      color = this.engine.groups[gname].color;
+      color = this.engine.groups[gname].color,
+      app = { 
+        "uri" : application.resource.application, 
+        "options" : properties, 
+        "measures" : measures 
+      };
+
+  if (has_create){
+    var info = $("#select-info").formParams().info,
+        uri = (info.uri == "" || info.uri == undefined) ? info.name : info.uri;
+    var eproperties = {};
+    for (p in properties.properties){
+      var _p = properties.properties[p];
+      eproperties[p] = _p.value;
+    }
+
+    app = { 
+      "uri" : info.uri,  
+      "options" : {
+        "selected" : properties.selected,
+        "properties": eproperties
+      }
+    };
+    this.engine.saveApplication(info, properties.properties);
+  }
 
   // modify groups
-  this.engine.addApplication(gname, { "uri" : application.resource.application, "options" : properties, "measures" : measures });
+  this.engine.addApplication(gname, app);
 
   //modify tables
   this.generateGroupsTable(this.engine.groups);
@@ -539,6 +630,7 @@ EdEditor.prototype.onGroupAdd = function(evt) {
   // add to engine
   evt.data.editor.addGroup(params.group.name);
   hideDialog();
+  return false;
 }
 
 
@@ -551,9 +643,12 @@ EdEditor.prototype.onGroupRemove = function(evt) {
     var g = $(groups[0]).attr("value");
     this.engine.removeGroup(g);
   }
+  $(".node-highlight").css("background-color", "");
   $(".sidetable-group-select").click();
   this.generateApplicationsTable(this.engine.groups);
   this.generateGroupsTable(this.engine.groups);
+  //evt.preventDefault();
+  return false;
 }
 
 /**
@@ -570,6 +665,7 @@ EdEditor.prototype.onGroupSelection = function(evt) {
   //nodes.toggleClass("node-selected");  
   hideDialog();
   nodes.trigger("click");
+  return false;
 }
 
 /**
@@ -615,59 +711,104 @@ EdEditor.prototype.onApplicationAddEvent = function(evt) {
   e = this.engine.timeline.addEvent(gname, p.event.start, p.event.duration);
   hideDialog();
   this.generateTimeline();
+  return false;
 }
 
 /**
   * Event triggered when it clicked remove application near table
   */
 EdEditor.prototype.onApplicationRemove = function(evt) {  
-  var groups = $("#table-applications > .grid-view-row-selected > .group-color > input");
+  var groups = $("#table-applications > .grid-view-row-selected > .group-color > input"),
+      uri = $("#table-applications > .grid-view-row-selected > div:eq(1)").html();
   for(i=0;i<groups.length;++i){
     var g = $(groups[0]).attr("value");
-    this.engine.groups[g].applications = [];
+    this.engine.groups[g].removeApplication(uri);
   }
   $(".sidetable-app-select").click();
   this.generateApplicationsTable(this.engine.groups);
+  return false;
+}
+
+EdEditor.prototype.fillApplicationForms = function(defs,pp,ms,mode) {
+    var defs_ct = $("#content-application").empty(), 
+        pp_ct = $("#select-properties").empty(),
+        ms_ct = $("#select-measures").empty(),    
+        defs_data = [], pp_data = [], ms_data = [];
+    if (mode==undefined) {
+      pp_ct.append("<div class=\"grid-view-row grid-view-header\">"+
+        "<div>Name</div>"+
+        "<div>Description</div>"+
+        "<div>Value</div>"+
+      "</div>");
+    } else if (mode=="insert") {
+      pp_ct.append("<div class=\"grid-view-row grid-view-header\"><div>Name</div><div>Description</div><div style=\"min-width:80px;max-width:250px\">Value</div></div>");
+    }
+
+    for(d in defs) { defs_data.push({ key: d, value: defs[d]}); }
+    for(d in pp) { pp_data.push({ key: d, value: pp[d].description }); }
+    for(d in ms) { 
+      ms_data.push({ 
+        key: d, 
+        metrics: (function() {
+            var values=[];
+            var measurement = ms[d];
+            for(m in measurement){ 
+              values.push({ name: m, type : measurement[m]["type"] })
+            }
+            return values;
+          })()
+      }); 
+    }
+    if (mode==undefined){
+      $.tmpl("display_info", defs_data).appendTo("#content-application");
+      $.tmpl("display_property", pp_data).appendTo("#select-properties");
+      $.tmpl("display_measures", ms_data).appendTo("#select-measures");
+    } else if(mode=="insert") {
+      $("#content-application").html("<form id=\"select-info\"></form>");
+      $.tmpl("insert_info", defs_data).appendTo("#select-info");
+      $.tmpl("insert_property", [{}]).appendTo("#select-properties");      
+    }    
+    pp_ct.html("<div class=\"grid-view\">"+pp_ct.html()+"</div>");    
+}
+
+EdEditor.prototype.onApplicationPropertyAdd = function(evt) {
+  var params = $("#select-properties").formParams(),
+      property = { key : params.property_name, value : params.property_value, description: params.property_description },
+      display = { key:property.key, value:property.description };
+  if (params.has_value=="on") {
+    property['has_value'] = true;
+    display['v'] = property.value;
+  }
+  var item = $.tmpl("inserted_property", display),
+      context = $("#select-properties");
+  $(".grid-view > .grid-view-row:last", context).before(item);  
+  $("input[name=property_name]", context).val("");
+  $("input[name=property_description]", context).val("");
+  $("input[name=property_value]", context).val("");
+  $("input[name=has_value]", context).attr('checked', false); 
 }
 
 /**
-  * Event triggered when application dropdown is changed
+  * Event triggered when "New application" button is clicked
   */
-EdEditor.prototype.onApplicationChange = function(evt) {
+EdEditor.prototype.onApplicationCreate = function(evt) {  
+    $("#create_flag").attr("value", "1");  
+    var defs = this.engine.reference.default.defs,
+        pp = this.engine.reference.default.properties,
+        ms = this.engine.reference.default.measures;
+    this.fillApplicationForms(defs,pp,ms, "insert");
+    $("a[href=#content-measures]").parent().addClass("hidden");
+    $("#add-application-property-button").unbind('click').click(this.onApplicationPropertyAdd.bind(this));
+}
+
+EdEditor.prototype.onApplicationChange = function(evt) {  
+    $("#create_flag").attr("value", "0");  
     var v = evt.currentTarget.value,
         defs = this.engine.reference.defs[v],
         pp = this.engine.reference.properties[v],
-        ms = this.engine.reference.measures[v],
-        defs_ct = $("#content-application").empty(), 
-        pp_ct = $("#select-properties").empty(),
-        ms_ct = $("#select-measures").empty(),    
-        tables = "<div class=\"grid-view-row grid-view-header\">"+
-          "<div>Name</div>"+
-          "<div>Description</div>"+
-          "<div>Value</div>"+
-        "</div>";
-    pp_ct.append(tables);
-    for(d in defs){
-      defs_ct.append("<div class=\"grid-view-row\"><div><b>"+d.underscore().humanize()+" </b></div><div>"+defs[d]+"</div></div>");
-    }
-    for(d in pp){
-      html_safe_d = d.replace(':', '__');
-      pp_ct.append("<div class=\"grid-view-row\"><div><b>"+d+"</b></div><div>"+pp[d].description+"</div><div>"+
-        "<input class=\"hidden\" name=\"properties["+d+"]\" type=\"text\"/>"+
-        "<input name=\"selected \"class=\"prop-check\" type=\"checkbox\" value=\""+d+"\"/></div></div>");
-    }
-    var html = pp_ct.html()    
-    pp_ct.html("<div class=\"grid-view\">"+html+"</div>");
-    $(".prop-check").change(function(evt){
-      var p = $(evt.target).parent();
-      $(p).children("input[type='text']").toggleClass("hidden");
-    });
-    for(d in ms){
-      var metrics = "", measurement = ms[d];
-      for(m in measurement){ metrics += "<li>"+m+" : "+measurement[m]["type"]+"</li>"; }
-      ms_ct.append("<p><b>"+d+"<input name=\"selected\" type=\"checkbox\" value=\""+d+"\"/></b><ul class=\"list\">"+metrics+"</ul></p>");
-    }
-
+        ms = this.engine.reference.measures[v];
+    this.fillApplicationForms(defs,pp,ms);
+    $("a[href=#content-measures]").parent().removeClass("hidden");
 }
 
 EdEditor.prototype.bindEvents = function() {
@@ -675,16 +816,16 @@ EdEditor.prototype.bindEvents = function() {
 
   // Node events click and context menu
   $(".node").live("click",this.onNodeClick.bind(editor));
-  $(".node").contextMenu('nodeCtxMenu', { 
-    onContextMenu : function(e) {
-      $(e.target).addClass("node-selected");
-      return true;
-    }, bindings : {
-      'application' : editor.selectApplication.bind(editor),
-      'group' : editor.selectGroup.bind(editor),
-      'properties' : editor.selectProperties.bind(editor)
-    }
-  });
+  //$(".node").contextMenu('nodeCtxMenu', { 
+  //  onContextMenu : function(e) {
+  //    $(e.target).addClass("node-selected");
+  //    return true;
+  //  }, bindings : {
+  //    'application' : editor.selectApplication.bind(editor),
+  //    'group' : editor.selectGroup.bind(editor),
+  //    'properties' : editor.selectProperties.bind(editor)
+  //  }
+  //});
 
   // Table actions
   $(".sidetable-app-select").live('click', this.onApplicationsTableClick.bind(editor));
@@ -702,9 +843,12 @@ EdEditor.prototype.bindEvents = function() {
   // In-Dialog
   $("#groups > li.group").live("click", {editor : this}, this.onGroupSelection.bind(editor))
   $(".group-add-action").live("click", {editor : this}, this.onGroupAdd)
-
+  $(".prop-check").live("change", function(evt){
+      var p = $(evt.target).parent();
+      $(p).children("input[type='text']").toggleClass("hidden");
+  });
   // generated code
-  $("#source").focus({editor:this}, function(evt){
+  $("li > a[href=#source]").click({editor:this}, function(evt){
     evt.data.editor.engine.getGeneratedCode();
   });
   // Configure tabbed env
@@ -717,5 +861,30 @@ EdEditor.prototype.bindEvents = function() {
     active_tab.focus();
     return false;
   });
+
+  // Sidetabs from source view
+  $(".sidetabs:not(#modal-tabs) li").live('click', function(evt){        
+    var href = $(this).find("a").attr("href").replace("#",""),
+        active_tab = $($(this).find("a").attr("href"));
+    $(".sidetab").hide();
+    $(".sidetabs li").removeClass("sidetab-active");
+    $(this).addClass("sidetab-active");    
+    active_tab.fadeIn().focus();
+    $(".CodeMirror-wrapping").remove();
+    CodeMirror.fromTextArea(href+"_code", {
+        parserfile: ["../tokenizeruby.js", "../parseruby.js"],
+        stylesheet: "/stylesheets/codemirror/rubycolors.css",
+        path: "/javascripts/codemirror/base/",
+        lineNumbers: false,
+        textWrapping: true,
+        indentUnit: 2,
+        parserConfig: {},
+        readOnly: false,
+        height: "400px",
+        width: "100%"
+    });
+
+    return false;
+  });  
 }
 
