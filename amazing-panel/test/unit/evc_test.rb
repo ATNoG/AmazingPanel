@@ -14,9 +14,18 @@ class EVCTest < ActiveSupport::TestCase
     b.commit_branch('long description, or not!', 'code here', {'resource_map' => 'here'})
   end
 
-
   test "save run" do
     b = EVC::Branch.new('exp1', 'user2')
     b.save_run(0, ["/tmp/evc.log", "/tmp/evc-state.xml", "/tmp/evc-prepare.xml"])
+  end
+
+  test "list branches" do
+    b = EVC::Branch.new('exp1', 'user2')
+    puts b.list_branches()
+  end
+
+  test "latest commit" do
+    b = EVC::Branch.new('exp1', 'user2')
+    puts b.latest_commit()
   end
 end

@@ -21,12 +21,10 @@ module EVC
       return "#{branch_path()}/.info"
     end
 
-    private
     def create_changelog_entry(message)
       return {"author" => @user, "message" => message}
     end
 
-    private
     def save_file(branch_info)
       File.open("#{branch_info_path()}", 'w') {|f|
         f.write(branch_info.to_yaml)
@@ -66,7 +64,7 @@ module EVC
       }
 
       # Write 'resource_map' to file
-      File.open("#{branch_path()}/objects/#{timestamp}/resource_map.rb", 'w') {|f|
+      File.open("#{branch_path()}/objects/#{timestamp}/resource_map.yml", 'w') {|f|
         f.write(resource_map.to_yaml)
       }
 
@@ -102,6 +100,28 @@ module EVC
       list.delete('.')
       list.delete('..')
       return list
+    end
+
+    # Returns the ID (timestamp of type Integer) of the latest commit
+    def latest_commit()
+      branch_info = YAML::load(File.open(branch_info_path()))
+      return branch_info[@name]['changelog'].max()[0]
+    end
+
+    # Checks if the resource map has changed
+    # Parameters: resource_map (YAML)
+    # Returns a boolean
+    def resource_map_changed?(resource_map)
+      rs = YAML::load(File.open("#{branch_path()}/objects/#{timestamp}/resource_map.yml"))
+      return !(rs == resource_map)
+    end
+
+    # Checks if the experiment definition has changed
+    # Parameters: ed (String)
+    # Returns a boolean
+    def ed_changed?(ed)
+      e = File.open("#{branch_path()}/objects/#{latest_commit()}/code.rb")
+      return !(e == ed)
     end
   end
 end
