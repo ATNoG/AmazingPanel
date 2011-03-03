@@ -4,8 +4,10 @@ require 'omf/experiments.rb'
 class ExperimentsController < ApplicationController
   include OMF::GridServices
   include OMF::Experiments::Controller
+  include Delayed::Backend::ActiveRecord
+
   include Library::SysImagesHelper
-  include ProjectsHelper
+  include ProjectsHelper  
 
 
   #layout 'experiments'
@@ -17,9 +19,22 @@ class ExperimentsController < ApplicationController
   def queue
     #not_init = Experiment.where(:status => nil) 
     #@experiments_not_init = not_init
-    @experiments_prepared = Experiment.prepared
-    @experiments = Experiment.active
-    @num_exps = @experiments.size + @experiments_prepared.size
+    @prepared = Experiment.prepared.collect{|e| link_to(e.id, e) }
+    @running = Experiment.running.collect{|e| link_to(e.id, e) }
+    
+    @queue = Array.new()
+    jobs = Job.all.each do |j|
+      object = YAML.load(j.handler)
+      if object.type == 'experiment'
+        exp = Experiment.find(object.id.to_i)
+        exp.attributes[:phase] = object.phase
+        @queue.push(exp)
+      end
+    end
+    unless jobs
+      @queue = jobs
+    end
+    #@num_exps = @experiments.size + @experiments_prepared.size
   end 
   
   def index
@@ -183,16 +198,7 @@ class ExperimentsController < ApplicationController
     ec = OMF::Experiments::Controller::Proxy.new(params[:id].to_i)
     @error = t("errors.experiment.failure.running")
     if ec.check(:init)
-      @error = nil
-      pid = fork { 
-        ec.prepare() 
-        @experiment = Experiment.find(params[:id])
-        Mailers.preparation_conclusion(@experiment).deliver
-        Mailers.preparation_conclusion(@experiment, User.find_by_username("jmartins")).deliver
-        Mailers.preparation_conclusion(@experiment, User.find_by_username("cgoncalves")).deliver
-        render :nothing=>true
-      }
-	  Process.detach(pid)
+      Delayed::Job.enqueue PrepareExperimentJob.new('prepare', params[:id])
     end
   end
 
@@ -200,16 +206,7 @@ class ExperimentsController < ApplicationController
     ec = OMF::Experiments::Controller::Proxy.new(params[:id].to_i)
     @error = t("errors.experiment.failure.running")
     if ec.check(:prepared)
-      @error = nil
-	  	pid = fork { 
-        ec.start()
-        @experiment = Experiment.find(params[:id])
-        Mailers.experiment_conclusion(@experiment)
-        Mailers.experiment_conclusion(@experiment, User.find_by_username("jmartins")).deliver
-        Mailers.experiment_conclusion(@experiment, User.find_by_username("cgoncalves")).deliver
-        render :nothing => true
-      }
-	  Process.detach(pid)
+      Delayed::Job.enqueue StartExperimentJob.new('start', params[:id])
     end
   end
 

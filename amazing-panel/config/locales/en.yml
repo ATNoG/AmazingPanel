@@ -30,6 +30,7 @@ en:
         bug_report: "If your have some problems on preparation/execution of the experiments, please report it <a href=\"mailto:jmartins@av.it.pt\">here</a>"
         execution_warn: "The execution of the experiment can be take several minutes, depending on your parameters. A notification will be sent once your experiment is finished."
         preparation_warn: "To prepare an experiment is to load the system images, selected in the Map step of the experiment creation. This operation can take several minutes. A notification will be sent once your experiment is prepared."
+        empty: "None"
 
   errors:
     project:

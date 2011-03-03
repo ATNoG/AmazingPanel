@@ -44,7 +44,7 @@ class Experiment < ActiveRecord::Base
   end
 
   def prepared?
-    if (status >= 2)
+    if (status >= 2 and status != 4)
       return true
     end
     return false
