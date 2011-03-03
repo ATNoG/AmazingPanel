@@ -1,9 +1,9 @@
 /**
   * Helper method for creating and showing a dialog
   */
-function createDialog(title, options){
+function createDialog(title){
   var modal = $(".modal");
-  var title = $(".title-box", modal).html(title);
+  title = $(".title-box", modal).html(title);
   modal.addClass("dialog-active");  
   return modal;
 }
@@ -20,6 +20,7 @@ function hideDialog(){
 
 /**
   * IDE Constructor
+  * @constructor
   */
 function EdEditor() {
   var canvas = $(".canvas")
@@ -76,7 +77,7 @@ EdEditor.prototype.nodes_selected = {
 //    "",
   group:
     "<div id=\"btn_properties\" class=\"oedl-action-button button\">Properties</div>"+
-    "<div id=\"btn_application\" class=\"oedl-action-button button\">Application</div>",
+    "<div id=\"btn_application\" class=\"oedl-action-button button\">Application</div>"
 }
 
 /**
@@ -155,7 +156,7 @@ EdEditor.prototype.forms = {
         "type" : "text"
       }, {
         "type" : "div",
-        "class" : "clear",
+        "class" : "clear"
       }, {
         "type" : "div",
         "class" : "group-add-action button",
@@ -216,7 +217,7 @@ EdEditor.prototype.addNodesToGroup = function(group, nodes) {
 
 /**
   * Converts the Applications loaded in engine to an HashTable
-  * @used: options in Application Dialog to create form
+  * - used: options in Application Dialog to create form
   */
 EdEditor.prototype.getApplicationsFromReference = function(reference) {
   var apps = {}, keys = reference.keys; 
@@ -276,7 +277,7 @@ EdEditor.prototype.selectProperties = function(t) {
   var engine = this.engine, modal = createDialog("Select Properties for Node:");
   var container = $(".modal-container", modal).html("<form id=\"inet-select\"></form><form id=\"res-properties\"></form>");
   var node = $(".node-selected");
-  var form = this.generateResourceProperties(node);
+  var form = this.generateResourceProperties(node,null);
   $("#inet-select").buildForm(this.forms.select_inet);
   $("select#inet-choose").unbind('change').change(this.onInetChange.bind(this));
   $("#res-properties").buildForm(form);
@@ -326,13 +327,13 @@ EdEditor.prototype.showAddEvent = function(evt) {
 
 /**
   * Generate the Resource Properties form
-  * @used: Resource Properties Dialog
+  * - used: Resource Properties Dialog
   */
 EdEditor.prototype.generateResourceProperties = function(node,inet) {
   var data = this.engine.resources[node.attr("id")];
   var fields = EdEditor.prototype.resource_fields;
   var validations ={};
-  if (inet == undefined) {
+  if (!inet) {
    inet = "w0";
    validations = Resource.wlan_inet_parameters;
   } else if (inet.indexOf("w") != -1) {
@@ -346,13 +347,13 @@ EdEditor.prototype.generateResourceProperties = function(node,inet) {
     if (f in validations) {
       var v = validations[f],
           type = "text";
-      if (v.options != undefined) {
+      if (v.options) {
         type = "select"
-      } else if (v.bool != undefined) {
+      } else if (v.bool) {
         type = "checkbox"
       }
       var value = ""
-      if ((data != undefined) && (data.properties.net[inet] != undefined)) {
+      if ((data) && (data.properties.net[inet])) {
         value = data.properties.net[inet][f]
       }
       var e =  {
@@ -473,7 +474,7 @@ EdEditor.prototype.generateTimeline = function() {
 EdEditor.prototype.selectTableItems = function(table, selected, cb) { 
   var all_sel = $(".grid-view-row-selected", table);
   all_sel.toggleClass("grid-view-row-selected")
-  if (cb != undefined) {
+  if (cb) {
     cb();
   }
 
@@ -524,7 +525,7 @@ EdEditor.prototype.onGroupsTableClick = function(evt){
   */
 EdEditor.prototype.onApplicationsTableClick = function(evt){  
   var n = $(evt.target).parent();
-  var same = this.selectTableItems($(n).parent(), n);  
+  var same = this.selectTableItems($(n).parent(), n, null);  
   var gname = $("#table-applications > .grid-view-row-selected > .group-color > input ").attr("value");
   if (same) { 
     $("#table-applications-actions").show();
@@ -759,7 +760,7 @@ EdEditor.prototype.fillApplicationForms = function(defs,pp,ms,mode) {
           })()
       }); 
     }
-    if (mode==undefined){
+    if (!mode){
       $.tmpl("display_info", defs_data).appendTo("#content-application");
       $.tmpl("display_property", pp_data).appendTo("#select-properties");
       $.tmpl("display_measures", ms_data).appendTo("#select-measures");
@@ -793,9 +794,9 @@ EdEditor.prototype.onApplicationPropertyAdd = function(evt) {
   */
 EdEditor.prototype.onApplicationCreate = function(evt) {  
     $("#create_flag").attr("value", "1");  
-    var defs = this.engine.reference.default.defs,
-        pp = this.engine.reference.default.properties,
-        ms = this.engine.reference.default.measures;
+    var defs = this.engine.reference.d.defs,
+        pp = this.engine.reference.d.properties,
+        ms = this.engine.reference.d.measures;
     this.fillApplicationForms(defs,pp,ms, "insert");
     $("a[href=#content-measures]").parent().addClass("hidden");
     $("#add-application-property-button").unbind('click').click(this.onApplicationPropertyAdd.bind(this));
@@ -807,7 +808,7 @@ EdEditor.prototype.onApplicationChange = function(evt) {
         defs = this.engine.reference.defs[v],
         pp = this.engine.reference.properties[v],
         ms = this.engine.reference.measures[v];
-    this.fillApplicationForms(defs,pp,ms);
+    this.fillApplicationForms(defs,pp,ms,null);
     $("a[href=#content-measures]").parent().removeClass("hidden");
 }
 

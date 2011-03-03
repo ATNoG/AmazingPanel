@@ -16,7 +16,8 @@ String.prototype.rtrim = function() {
 }
 
 /**
- * Designer engine
+ * Resource
+ * @constructor
  */
 function Resource(id, properties){
   this.id = id;
@@ -40,7 +41,7 @@ Resource.common_inet_parameters = {
   },
   netmask : { 
     value: "", 
-    caption:"Network Mask",
+    caption:"Network Mask"
   }, state : { 
     value : true, 
     caption: "State", 
@@ -71,7 +72,7 @@ Resource.common_inet_parameters = {
       options: ["mac","tcp"], 
       needed:[["src"], ["src","dst","sport","dport"]] 
     }, src : "", sport : "", dst : "", dport : "" 
-  },
+  }
 }
 
 Resource.wlan_inet_parameters = Resource.merge({ 
@@ -97,7 +98,7 @@ Resource.wlan_inet_parameters = Resource.merge({
   tx_power : { 
     caption: "Transmission Power",
     value:"" 
-  },
+  }
 }, Resource.common_inet_parameters)
 
 
@@ -109,6 +110,9 @@ Resource.prototype.properties = {
   properties : {}
 }
 
+/**
+ * @constructor
+ */
 function Group(name, color){
   this.name = name
   this.color = color
@@ -139,7 +143,7 @@ Group.prototype.removeResource = function(resource) {
   if (id in this.nodes){
     // 'XXX' double check delete - don't apply to native hash tables
     delete this.nodes[resource];
-    this.ids.remove(this.ids.indexOf(resource.id));
+    this.ids.remove(this.ids.indexOf(resource.id), null);
   }
 }
 
@@ -176,7 +180,10 @@ Group.prototype.isEqual = function(nodes) {
   return (nodes_sel_str == group_nodes_str)
 }
 
-function Timeline(zones){
+/**
+ * @constructor
+ */
+function Timeline(){
   this.interval  = 20 // seconds
   this.width = 14.17;
   this.events = {}
@@ -192,6 +199,9 @@ Timeline.prototype.addEvent = function(group, start, duration){
   return this.events[group]
 }
 
+/**
+ * @constructor
+ */
 function Engine() {
   var color = "rgb(255,0,0)"
   this.groups = { "default" : new Group("default", color) }
@@ -206,7 +216,7 @@ function Engine() {
     my : {
       applications : {}
     },
-    default : {
+    d: {
       defs: { uri:"", shortDescription:"", path:"", description:"", name:"", version:"" },
       properties: {},
       measures: {}
@@ -245,7 +255,7 @@ Engine.prototype.addResource = function(groupname, resource){
 Engine.prototype.removeGroup = function(name){  
   var index = this.group_keys.indexOf(name);
   delete this.groups[name];
-  this.group_keys.remove(index);
+  this.group_keys.remove(index,null);
 }
 
 Engine.prototype.setResourceGroupProperties = function(group, properties) {
