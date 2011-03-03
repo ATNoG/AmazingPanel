@@ -2,23 +2,31 @@ module EVC
   class Branch
     attr_accessor :name, :user
 
+    # Initialize a new Branch class instance
+    # Parameters: name (String), user (String)
     def initialize(name, user)
       @name = name
       @user = user
     end
 
+    def branches_path()
+      return "#{APP_CONFIG['evc']}/branches/"
+    end
+
     def branch_path()
-      return "#{APP_CONFIG['evc']}/branches/#{@name}"
+      return "#{branches_path()}/#{@name}"
     end
 
     def branch_info_path()
       return "#{branch_path()}/.info"
     end
 
+    private
     def create_changelog_entry(message)
       return {"author" => @user, "message" => message}
     end
 
+    private
     def save_file(branch_info)
       File.open("#{branch_info_path()}", 'w') {|f|
         f.write(branch_info.to_yaml)
@@ -40,7 +48,7 @@ module EVC
 
       # Branch info YAML file
       branch_info = Hash.new
-      branch_info[@name] = {"author" => @user, "runs" => 0, "failures" => 0, "changelog" => {Time.now.to_i => create_changelog_entry("Initial commit") } }
+      branch_info[@name] = {"description" => description, "author" => @user, "runs" => 0, "failures" => 0, "changelog" => {Time.now.to_i => create_changelog_entry("Initial commit") } }
       save_file(branch_info)
 
       return [true, "Branch #{name} created successfully"]
@@ -78,6 +86,22 @@ module EVC
       files.each {|f|
         File.copy(f, run_path)
       }
+    end
+
+    # List all branches
+    # Returns an array of Strings
+    def list_branches()
+      list = []
+
+      # Add only directories
+      Dir.foreach(branches_path()) {|e|
+        list << e if (File.directory?("#{branches_path()}/#{e}"))
+      }
+
+      # ... and discard '.' and '..' dir entries
+      list.delete('.')
+      list.delete('..')
+      return list
     end
   end
 end
