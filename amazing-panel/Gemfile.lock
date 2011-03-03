@@ -34,6 +34,10 @@ GEM
     builder (2.1.2)
     cancan (1.5.1)
     columnize (0.3.1)
+    daemons (1.1.0)
+    delayed_job (2.1.4)
+      activesupport (~> 3.0)
+      daemons
     devise (1.1.3)
       bcrypt-ruby (~> 2.1.2)
       warden (~> 0.10.7)
@@ -130,6 +134,7 @@ PLATFORMS
 
 DEPENDENCIES
   cancan
+  delayed_job
   devise
   gravatar_image_tag (= 0.1.0)
   jquery-rails (~> 0.2)

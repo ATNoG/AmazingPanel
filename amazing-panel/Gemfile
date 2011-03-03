@@ -5,22 +5,41 @@ gem 'rails', '3.0.0'
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
+# mySQL
 gem 'mysql', '2.8.1'
+
+# Experiment results
 gem 'sqlite3-ruby', :require => 'sqlite3'
+
+# rails.js using jquery 
 gem 'jquery-rails', "~>0.2"
+
+# Gravatar support
 gem 'gravatar_image_tag', '0.1.0'
 
+# Users/Permissions
 gem 'devise'
 gem 'cancan'
 
+# To paginate tables
 gem 'will_paginate', '~> 3.0.pre2'
+
+# Ruby Code Generation 
 gem 'ruby_parser', '2.0.5'
 gem 'ruby2ruby'
+
+# PDF's
 gem 'prawn'
 gem 'prawn_rails'
-gem 'rack-raw-upload'
 #gem 'spawn'
 #gem 'pdfkit'
+
+# HTML5 Upload
+gem 'rack-raw-upload'
+
+# Queue
+gem 'delayed_job'
+
 # Use unicorn as the web server
 # gem 'unicorn'
 
@@ -33,8 +52,7 @@ gem 'ruby-debug'
 #gem 'autotest-rails-pure'
 #gem 'autotest-notification'
 
-
-group :test do
+group :test do  
   gem 'single_test'
   gem 'rspec', '2.2.0'
   #gem 'rspec-rails'
