@@ -13,19 +13,21 @@ module EVC
       return "#{APP_CONFIG['evc']}/branches/"
     end
 
-    def branch_path()
-      return "#{branches_path()}/#{@name}"
+    def branch_path(name=nil)
+      name = @name if name.nil?
+      return "#{branches_path()}/#{name}"
     end
 
-    def branch_info_path()
-      return "#{branch_path()}/.info"
+    def branch_info_path(name=nil)
+      name = @name if name.nil?
+      return "#{branch_path(name)}/.info"
     end
 
     def create_changelog_entry(message)
       return {"author" => @user, "message" => message}
     end
 
-    def save_file(branch_info)
+    def save_branch_info(branch_info)
       File.open("#{branch_info_path()}", 'w') {|f|
         f.write(branch_info.to_yaml)
       }
@@ -47,7 +49,7 @@ module EVC
       # Branch info YAML file
       branch_info = Hash.new
       branch_info[@name] = {"description" => description, "author" => @user, "runs" => 0, "failures" => 0, "changelog" => {Time.now.to_i => create_changelog_entry("Initial commit") } }
-      save_file(branch_info)
+      save_branch_info(branch_info)
 
       return [true, "Branch #{name} created successfully"]
     end
@@ -71,7 +73,25 @@ module EVC
       # Update changelog
       branch_info = YAML::load(File.open(branch_info_path()))
       branch_info[@name]['changelog'][timestamp] = create_changelog_entry(message)
-      save_file(branch_info)
+      save_branch_info(branch_info)
+    end
+
+    # Clones a branch
+    # Parameters: name (String)
+    def clone_branch(name, description=nil, message=nil)
+      # Create the new branch
+      description = "Clone of branch #{name}" if description.nil?
+      new_branch(description)
+
+      # Update changelog
+      message = "Clone of branch #{name}" if message.nil?
+      timestamp = Time.now.to_i
+      branch_info = YAML::load(File.open(branch_info_path()))
+      branch_info[@name]['changelog'][timestamp] = create_changelog_entry(message)
+      save_branch_info(branch_info)
+
+      # Copy files
+      FileUtils.cp_r("#{branch_path(name)}/objects/#{latest_commit(name)}", "#{branch_path()}/objects/#{timestamp}")
     end
 
     # Store the results of a given run
@@ -103,9 +123,11 @@ module EVC
     end
 
     # Returns the ID (timestamp of type Integer) of the latest commit
-    def latest_commit()
-      branch_info = YAML::load(File.open(branch_info_path()))
-      return branch_info[@name]['changelog'].max()[0]
+    # Parameters: name (String)
+    def latest_commit(name=nil)
+      name =  @name if name.nil?
+      branch_info = YAML::load(File.open(branch_info_path(name)))
+      return branch_info[name]['changelog'].max()[0]
     end
 
     # Checks if the resource map has changed

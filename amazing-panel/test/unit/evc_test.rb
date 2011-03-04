@@ -27,5 +27,11 @@ class EVCTest < ActiveSupport::TestCase
   test "latest commit" do
     b = EVC::Branch.new('exp1', 'user2')
     puts b.latest_commit()
+    puts b.latest_commit('exp1')
+  end
+
+  test "clone branch" do
+    b = EVC::Branch.new('exp2', 'user2')
+    b.clone_branch('exp1', 'Doing highly experimental new stuff!', 'My new branch based on branch exp1')
   end
 end
