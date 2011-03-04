@@ -3,8 +3,7 @@ class ExperimentJob < Jobs::Job
   def initialize(phase, id)
     super('experiment', id.to_i)
     @phase = phase
-    
-  end
+  end  
 end
 
 
