@@ -1,0 +1,28 @@
+<% creator = @experiment.user %>
+<% project = @experiment.project %>
+<p>
+  <b>Creator:</b>
+  <%= link_to creator.name, user_path(:id => creator.id) %>
+</p>
+
+<p>
+  <b>Workspace:</b>
+  <%= add_image_action(project_path(project), project_logo_path(project), project.name, { :link => true } ) %>
+</p>
+
+<p>
+  <b>Duration:</b>
+  <%= @experiment.duration %>
+</p>
+
+<p>
+  <b>Description:</b>
+  <%= link_to "[See Ed]", "#nav-global", :class=>"more-ed-anchor", :ed => @experiment.ed.id %>
+  <%= @experiment.ed.description %>
+  <%= link_to "[Edit Ed]", edit_ed_path(@experiment.ed), :class => "more-ed-anchor" %>
+</p>        
+
+<p>
+  <b>Runs:</b>
+  <%= @experiment.runs %>
+</p>        

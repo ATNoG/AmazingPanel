@@ -23,65 +23,52 @@ class Experiment < ActiveRecord::Base
   scope :active, where("status >= 0 and status != 4")
 
   def finished?
-    if (status == 4 or status == 5)
-      return true
-    end 
+    if (status == 4 or status == 5) then return true end 
     return false
   end
 
   def started?
-    if (status == 3)
-      return true
-    end
+    if (status == 3) then return true end
     return false
   end
 
   def prepared_only?
-    if (status == 2)
-      return true
-    end
+    if (status == 2) then return true end
     return false
   end
 
   def prepared?
-    if (status >= 2 and status != 4)
-      return true
-    end
+    if (status >= 2 and status != 4) then return true end
     return false
   end
 
   def preparing?
-    if (status == 1)
-      return true
-    end
+    if (status == 1) then return true end 
     return false
   end
 
   def not_init?
-    if (status == 0)
-      return true
-    end
+    if (status == 0) then return true end
     return false
   end 
-  def init?
-    if (status == 0 or status == 4)
-      return false
-    end
+  
+  def init?    
+    if (status == 0 or status == 4) then return false end
     return true
   end
 
   def failed?
-    return true if (status < 0)
+    if (status < 0) then return true end
     return false    
   end
 
   def preparation_failed?
-    return true if (status==-1)
+    if (status==-1) then return true end
     return false
   end
 
   def experiment_failed?
-    return true if (status==-2)
+    if (status==-2) then return true end
     return false
   end
 end

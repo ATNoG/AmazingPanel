@@ -5,8 +5,7 @@ function experiment_stat(){
 $("#error-experiment").addClass("hidden");
 $("#caption-experiment").show();
 $(".image-progress").show();
-setTimeout(experiment_stat,2000);
+setTimeout(experiment_stat,5000);
 <% else %>
-$("#error-experiment").removeClass("hidden");
-$("#error-experiment > .text").html("<%= @error %>");
+  $("#caption-experiment > .text").html(<%= escape_javascript("<p class=\"info\">#{@error}</p>") %>);
 <% end %>

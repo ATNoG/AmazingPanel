@@ -1,0 +1,42 @@
+<div id="results" class="tab">
+<% # GRAPHS %>
+  <%= content_tag :div, :id => "graph-choose-run" do %>
+    <span class="bold">Run:</span>
+    <%= select_tag :runs, options_for_select(@raw_results.collect { |k| [ k, k ]  }) %>
+  <% end %>
+  <%= content_tag :div, :id => "download-data-set-button", :class => "button" do %>  
+    <%= link_to "Download", experiment_path(@experiment, :format => "sq3", :run => @raw_results.first ), :id => "run-download-link", 
+                "original-title" => "Download raw results" %>
+  <% end %> 
+  <%= link_to "[See Dump]", "#nav-global", :class=>"show-dump-anchor" %>
+ 
+  <%= clear %>
+  <%= content_tag :div, :id => "graph-choose-box" do %>   
+    <%= content_tag :div, :id => "graph-choose-source" do %>
+      <span class="bold">Source:</span>
+      <%= select_tag :sources, options_for_select(@results.keys.collect { |k| [ k, k ]  }) %>
+    <% end %>
+    <%= clear %>    
+    <% i = 0 %>
+    <% @results.each do |k,v| %>
+      <% css_class = (i>0 ? " hidden " : "") %>
+      <% css_class += (i==0 ? " column-active  " : "") %>
+      <%= content_tag :div, :id => "exp#{@experiment.id.to_s}_"+k , :class => "column-select "+ css_class do %>
+        <span class="bold">Field:</span>
+        <%= select_tag :columns, options_for_select(v[:columns].collect { |c| [ c, c ]  }) %>
+      <% end %>
+      <% i += 1 %>
+    <% end %>    
+  <% end %>  
+  <%= clear %>
+  <%= content_tag :div, :class =>"graph-actions" do %>
+    <%= content_tag :div, "Add Series", :id => "choose-data-set-button", :class => 'button' %>
+    <%= content_tag :div, "Clear", :id => "clear-data-set-button", :class => 'button' %>
+  <% end %>
+  <%= content_tag :div, "", :id => "graph", :class => "graph-container" %>  
+
+
+<script>
+  <%= render :partial => 'graphics.js' %>
+</script>
+</div>

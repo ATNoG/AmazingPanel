@@ -9,18 +9,6 @@
   <% end %>
 
   <p>
-    <span class="bold">Running</span>
-  </p>
-  <% if @running.blank? %>
-    <%= content_tag(:span, t("amazing.experiments.messages.empty"), :class => "indented") %>
-  <% else %>
-    <p class="info">
-      <%= t("amazing.experiments.messages.queue_tip") %>
-    </p>
-    <%= render :partial => 'queue_list', :locals => { :experiments => @running, :style => "running" } %>
-  <% end %>  
-
-  <p>
     <span class="bold">Queue</span>
   </p>
   <% if @queue.blank? %>

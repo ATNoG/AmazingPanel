@@ -1,7 +1,7 @@
 <%= content_for :content do %>
   <!-- render the experiment phase state -->
   <%= phase_sequence_widget() %>  
-  <%= content_tag :div, :class => "current-phase-content" do %>
+  <%= content_tag :div, :class => "phase-content current-phase-content" do %>
     <%= content_tag :div, :class => :phase_title do %>
       <p class="italic"><%= session[:phase].description %></p>
       <hr/>

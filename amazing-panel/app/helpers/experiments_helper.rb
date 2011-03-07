@@ -32,14 +32,14 @@ module ExperimentsHelper
   def render_for_phase
     phase = session[:phase]
     canonical_name = phase.label.downcase
-    render :partial => "experiments/#{canonical_name}"
+    render :partial => "experiments/e_#{canonical_name}"
   end
 
   def experiment_widget(experiment, nodes)
     status = experiment.status
     l_button = "button giant-button"
     #l_run_class= (experiment.finished? or experiment.prepared? or experiment.not_init?) ? l_button : l_button+" button-disabled"
-    l_prepare_class = (!experiment.prepared?) ? l_button : l_button+" button-disabled"
+    l_prepare_class = (!experiment.prepared? and !experiment.preparing? ) ? l_button : l_button+" button-disabled"
     l_start_class = (experiment.prepared? and !experiment.started?) ? l_button : l_button+" button-disabled"
     l_stop_class = (experiment.started? or experiment.preparing?) ? l_button : l_button+" button-disabled"
     

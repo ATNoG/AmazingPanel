@@ -46,34 +46,8 @@
 <% end %>
 
 <% content_for :content do %>
-  <% creator = @experiment.user %>
-  <% project = @experiment.project %>
-  <p>
-    <b>Creator:</b>
-    <%= link_to creator.name, user_path(:id => creator.id) %>
-  </p>
 
-  <p>
-    <b>Workspace:</b>
-    <%= add_image_action(project_path(project), project_logo_path(project), project.name, { :link => true } ) %>
-  </p>
-
-  <p>
-    <b>Duration:</b>
-    <%= @experiment.duration %>
-  </p>
-
-  <p>
-    <b>Description:</b>
-    <%= link_to "[See Ed]", "#nav-global", :class=>"more-ed-anchor", :ed => @experiment.ed.id %>
-    <%= @experiment.ed.description %>
-    <%= link_to "[Edit Ed]", edit_ed_path(@experiment.ed), :class => "more-ed-anchor" %>
-  </p>        
-  
-  <p>
-    <b>Runs:</b>
-    <%= @experiment.runs %>
-  </p>        
+  <%= render :partial => 'details' %>
   <hr/>
 
 <% # EXPERIMENT STATUS %>
@@ -82,150 +56,16 @@
     <% if @experiment.finished? and @raw_results.length > 0%>
 	  <li><a href="#results">Results</a></li>
     <% end %>
-    <% if !@experiment.prepared? %>
+    <% Rails.logger.debug @experiment.inspect %>
+    <% unless @experiment.prepared? %>
 	  <li id="log-tab-sel"><a href="#log">Log</a></li>
     <% end %>
 </ul>
-<div id="status" class="tab">
-    <p class="notice">
-      <%= t("amazing.experiments.messages.bug_report").html_safe %>    
-    </p> 
-  <% if @experiment.experiment_failed? %>
-    <p class="alert">
-      <%= t("amazing.experiments.messages.exp_failed") %>    
-    </p>
-  <% end %>
-  <% if @experiment.started? or @experiment.prepared? %>
-    <p class="info">
-      <%= t("amazing.experiments.messages.execution_warn") %>    
-    </p>
-  <% end %>
-  <% if !@experiment.init? or @experiment.preparing? %>
-    <p class="info">
-      <%= t("amazing.experiments.messages.preparation_warn") %>    
-    </p>
-  <% end %>
-  <%= experiment_widget(@experiment, @nodes) %>
-</div>
+
+<%= render :partial => 'status' %>
+
 <% if @experiment.finished? and @raw_results.length > 0 %>
-<div id="results" class="tab">
-<% # GRAPHS %>
-  <%= content_tag :div, :id => "graph-choose-run" do %>
-    <span class="bold">Run:</span>
-    <%= select_tag :runs, options_for_select(@raw_results.collect { |k| [ k, k ]  }) %>
-  <% end %>
-  <%= content_tag :div, :id => "download-data-set-button", :class => "button" do %>  
-    <%= link_to "Download", experiment_path(@experiment, :format => "sq3", :run => @raw_results.first ), :id => "run-download-link", 
-                "original-title" => "Download raw results" %>
-  <% end %> 
-  <%= link_to "[See Dump]", "#nav-global", :class=>"show-dump-anchor" %>
- 
-  <%= clear %>
-  <%= content_tag :div, :id => "graph-choose-box" do %>   
-    <%= content_tag :div, :id => "graph-choose-source" do %>
-      <span class="bold">Source:</span>
-      <%= select_tag :sources, options_for_select(@results.keys.collect { |k| [ k, k ]  }) %>
-    <% end %>
-    <%= clear %>    
-    <% i = 0 %>
-    <% @results.each do |k,v| %>
-      <% css_class = (i>0 ? " hidden " : "") %>
-      <% css_class += (i==0 ? " column-active  " : "") %>
-      <%= content_tag :div, :id => "exp#{@experiment.id.to_s}_"+k , :class => "column-select "+ css_class do %>
-        <span class="bold">Field:</span>
-        <%= select_tag :columns, options_for_select(v[:columns].collect { |c| [ c, c ]  }) %>
-      <% end %>
-      <% i += 1 %>
-    <% end %>    
-  <% end %>  
-  <%= clear %>
-  <%= content_tag :div, :class =>"graph-actions" do %>
-    <%= content_tag :div, "Add Series", :id => "choose-data-set-button", :class => 'button' %>
-    <%= content_tag :div, "Clear", :id => "clear-data-set-button", :class => 'button' %>
-  <% end %>
-  <%= content_tag :div, "", :id => "graph", :class => "graph-container" %>  
-
-
-<script>
-var data = {
-  <% @results.each do |k,v| %>
-  "<%= k %>" : <%= v[:set].to_json.html_safe %>,
-  <% end %>
-}
-
-chart = new Highcharts.Chart({
-  chart: {
-    renderTo: 'graph',
-    defaultSeriesType: 'line',
-    marginRight: 130,
-    marginBottom: 25
-  },
-  title: {
-    text: 'Experiment <%= @experiment.id  %>',
-    x: -20 //center
-  },
-  xAxis: {
-    categories: <%= @seq_num.to_json %>
-  },
-  yAxis: {
-    plotLines: [{
-      value: 0,
-      width: 1,
-      color: '#808080'
-    }]
-  },
-  tooltip: {
-    formatter: function() {
-                return '<b>'+ this.series.name +'</b><br/>'+
-        this.x +': '+ this.y;
-    }
-  },
-  credits: {
-    enabled: false
-  },
-  legend: {
-    layout: 'vertical',
-    align: 'right',
-    verticalAlign: 'top',
-    x: -10,
-    y: 100,
-    borderWidth: 0
-  },
-  series: []
-});                
-
-$("#sources").change(function(){
-  var $this = $(this);
-  var value = $this.val();
-  var not_hidden = $(".column-select").hide().removeClass("column-active");
-  var showed = $("#exp<%= @experiment.id %>_"+value);
-  showed.show().addClass("column-active");
-});
-
-$("#choose-data-set-button").live('click', function(){
-  var run = $("#runs option:selected").text();
-  var table = $("#sources option:selected").text();
-  var field = $(".column-active option:selected").text();
-  var _tmp = Array();
-  var results = data[table];
-  for (i=0;i<results.length; ++i) {
-    _tmp.push(results[i].data[field]);
-  }
-  chart.addSeries({
-    name : field+"("+table+", run="+run+")",
-    data : _tmp,
-    redraw: false,
-  });
-});
-
-$("#clear-data-set-button").live('click', function(){
-  while(chart.series.length != 0){
-    chart.series[0].remove(false);
-  }
-  chart.redraw();
-});
-</script>
-</div>
+  <%= render :partial => 'results' %>
 <% end %>  
 <% if !@experiment.prepared? %>
   <div id="log" class="tab">

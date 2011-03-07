@@ -1,4 +1,4 @@
-<table id="experiments" class="grid-view">
+<table class="grid-view">
   <%= generate_table_headers(experiments, experiments_path, :fields => ["id","project_id", "creator", "ed", "duration", ""], :labels => { "id" => "#", "project_id" => "Workspace", "ed"=>"Description" }) %>
   <tbody>
   <% experiments.each do |exp| %>

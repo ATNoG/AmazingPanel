@@ -1,7 +1,7 @@
-class Jobs::StartExperimentJob < Jobs::ExperimentJob
+class StartExperimentJob < Jobs::ExperimentJob
   def perform              
     ec = OMF::Experiments::Controller::Proxy.new(@id)
-    #ec.start()
+    ec.start()
     experiment = Experiment.find(@id)
     Delayed::Worker.logger.debug experiment.inspect
     #Mailers.experiment_conclusion(experiment)

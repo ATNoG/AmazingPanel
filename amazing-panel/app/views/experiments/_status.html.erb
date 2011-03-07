@@ -1,0 +1,21 @@
+<div id="status" class="tab">
+    <p class="notice">
+      <%= t("amazing.experiments.messages.bug_report").html_safe %>    
+    </p> 
+  <% if @experiment.experiment_failed? %>
+    <p class="alert">
+      <%= t("amazing.experiments.messages.exp_failed") %>    
+    </p>
+  <% end %>
+  <% if @experiment.started? or @experiment.prepared? %>
+    <p class="info">
+      <%= t("amazing.experiments.messages.execution_warn") %>    
+    </p>
+  <% end %>
+  <% if !@experiment.init? or @experiment.preparing? %>
+    <p class="info">
+      <%= t("amazing.experiments.messages.preparation_warn") %>    
+    </p>
+  <% end %>
+  <%= experiment_widget(@experiment, @nodes) %>
+</div>

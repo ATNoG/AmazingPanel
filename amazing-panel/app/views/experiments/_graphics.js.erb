@@ -1,0 +1,77 @@
+var data = {
+  <% @results.each do |k,v| %>
+  "<%= k %>" : <%= v[:set].to_json.html_safe %>,
+  <% end %>
+}
+
+chart = new Highcharts.Chart({
+  chart: {
+    renderTo: 'graph',
+    defaultSeriesType: 'line',
+    marginRight: 130,
+    marginBottom: 25
+  },
+  title: {
+    text: 'Experiment <%= @experiment.id  %>',
+    x: -20 //center
+  },
+  xAxis: {
+    categories: <%= @seq_num.to_json %>
+  },
+  yAxis: {
+    plotLines: [{
+      value: 0,
+      width: 1,
+      color: '#808080'
+    }]
+  },
+  tooltip: {
+    formatter: function() {
+                return '<b>'+ this.series.name +'</b><br/>'+
+        this.x +': '+ this.y;
+    }
+  },
+  credits: {
+    enabled: false
+  },
+  legend: {
+    layout: 'vertical',
+    align: 'right',
+    verticalAlign: 'top',
+    x: -10,
+    y: 100,
+    borderWidth: 0
+  },
+  series: []
+});                
+
+$("#sources").change(function(){
+  var $this = $(this);
+  var value = $this.val();
+  var not_hidden = $(".column-select").hide().removeClass("column-active");
+  var showed = $("#exp<%= @experiment.id %>_"+value);
+  showed.show().addClass("column-active");
+});
+
+$("#choose-data-set-button").live('click', function(){
+  var run = $("#runs option:selected").text();
+  var table = $("#sources option:selected").text();
+  var field = $(".column-active option:selected").text();
+  var _tmp = Array();
+  var results = data[table];
+  for (i=0;i<results.length; ++i) {
+    _tmp.push(results[i].data[field]);
+  }
+  chart.addSeries({
+    name : field+"("+table+", run="+run+")",
+    data : _tmp,
+    redraw: false,
+  });
+});
+
+$("#clear-data-set-button").live('click', function(){
+  while(chart.series.length != 0){
+    chart.series[0].remove(false);
+  }
+  chart.redraw();
+});

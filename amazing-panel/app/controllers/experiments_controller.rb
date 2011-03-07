@@ -19,8 +19,7 @@ class ExperimentsController < ApplicationController
   def queue
     #not_init = Experiment.where(:status => nil) 
     #@experiments_not_init = not_init
-    @prepared = Experiment.prepared.collect{|e| link_to(e.id, e) }
-    @running = Experiment.running.collect{|e| link_to(e.id, e) }
+    @prepared = Experiment.prepared
     
     @queue = Array.new()
     jobs = Job.all.each do |j|
@@ -132,7 +131,7 @@ class ExperimentsController < ApplicationController
   def update    
     if params.key?('reset')      
       @experiment = Experiment.find(params[:id])
-      @experiment.update_attributes(:status => nil)
+      @experiment.update_attributes(:status => 0)
     end
     redirect_to(experiment_url(@experiment)) 
   end
@@ -196,23 +195,29 @@ class ExperimentsController < ApplicationController
 
   def prepare
     ec = OMF::Experiments::Controller::Proxy.new(params[:id].to_i)
-    @error = t("errors.experiment.failure.running")
-    if ec.check(:init)
-      Delayed::Job.enqueue PrepareExperimentJob.new('prepare', params[:id])
+    njobs = Job.all.size
+    Delayed::Job.enqueue PrepareExperimentJob.new('prepare', params[:id])
+    @error = nil
+    if njobs > 0
+      @error = "Preparation of this Experiment added to queue."
     end
+    #if ec.check(:init)
+    #  @error = nil
+    #  Delayed::Job.enqueue PrepareExperimentJob.new('prepare', params[:id])
+    #end
   end
 
   def start
     ec = OMF::Experiments::Controller::Proxy.new(params[:id].to_i)
-    @error = t("errors.experiment.failure.running")
+    Delayed::Job.enqueue StartExperimentJob.new('start', params[:id])
     if ec.check(:prepared)
-      Delayed::Job.enqueue StartExperimentJob.new('start', params[:id])
+      @error = nil
+
     end
   end
 
   def stop
     ec = OMF::Experiments::Controller::Proxy.new(params[:id].to_i)
-    @error = t("errors.experiment.failure.running")
     if ec.check(:started) or ec.check(:prepared)
       @error = nil
       ec.stop()
