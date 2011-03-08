@@ -69,7 +69,7 @@
 <% end %>  
 <% if !@experiment.prepared? %>
   <div id="log" class="tab">
-  <% unless @experiment.init? %>
+  <% unless @experiment.prepared? %>
     <textarea id="log_area" readonly="readonly">
     </textarea>
   <% end  %>

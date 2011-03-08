@@ -196,11 +196,12 @@ class ExperimentsController < ApplicationController
   def prepare
     ec = OMF::Experiments::Controller::Proxy.new(params[:id].to_i)
     njobs = Job.all.size
-    Delayed::Job.enqueue PrepareExperimentJob.new('prepare', params[:id])
     @error = nil
     if njobs > 0
       @error = "Preparation of this Experiment added to queue."
     end
+
+    Delayed::Job.enqueue PrepareExperimentJob.new('prepare', params[:id])
     #if ec.check(:init)
     #  @error = nil
     #  Delayed::Job.enqueue PrepareExperimentJob.new('prepare', params[:id])
@@ -209,10 +210,14 @@ class ExperimentsController < ApplicationController
 
   def start
     ec = OMF::Experiments::Controller::Proxy.new(params[:id].to_i)
-    Delayed::Job.enqueue StartExperimentJob.new('start', params[:id])
-    if ec.check(:prepared)
-      @error = nil
+    njobs = Job.all.size
+    @error = nil
 
+    if ec.check(:prepared)
+      if njobs > 0
+        @error = "Preparation of this Experiment added to queue."
+      end
+      Delayed::Job.enqueue StartExperimentJob.new('start', params[:id])
     end
   end
 

@@ -1,4 +1,8 @@
-<% if @error.nil? %>
+<% if !@error.nil? %>
+  $("#caption-experiment > .text").html("<p class=\"info\"><%= @error %></p>");
+  $("#caption-experiment > img").hide();
+  $("#caption-experiment").show();
+<% else %>
 function experiment_stat(){
   $.getScript("<%= stat_experiment_path(:id => params[:id], :format => :js) %>");
 }
@@ -6,6 +10,4 @@ $("#error-experiment").addClass("hidden");
 $("#caption-experiment").show();
 $(".image-progress").show();
 setTimeout(experiment_stat,5000);
-<% else %>
-  $("#caption-experiment > .text").html(<%= escape_javascript("<p class=\"info\">#{@error}</p>") %>);
 <% end %>

@@ -1,5 +1,5 @@
 <table class="grid-view">
-  <%= generate_table_headers(experiments, experiments_path, :fields => ["id","project_id", "creator", "ed", "duration", ""], :labels => { "id" => "#", "project_id" => "Workspace", "ed"=>"Description" }) %>
+  <%= generate_table_headers(experiments, experiments_path, :fields => ["id","project_id", "creator", "ed", ""], :labels => { "id" => "#", "project_id" => "Workspace", "ed"=>"Description" }) %>
   <tbody>
   <% experiments.each do |exp| %>
     <tr class="<%= defined?(style) ? style : "" %>">	
@@ -9,7 +9,6 @@
       <td><%= add_image_action(project_path(project), project_logo_path(project), project.name, { :link => true } ) %></td>
       <td><%= link_to creator.name, user_path(:id => creator.id)  %></td>
       <td><%= exp.ed.description %></td>
-      <td><%= exp.duration %></td>
       <td>
 	      <div class="table-actions">
           <%= add_image_action(experiment_path(exp, :format => "js")+"?resources",

@@ -15,7 +15,7 @@ function experiment_stat() {
   $(".image-progress").show()
   <% @nodes.each do |k, v| %> 
     <% v[:state].gsub!(".", "_") %>
-    $("#image-node-<%= k %> > .image-label").removeClass("node-RESETTING node-LOADING node-DONE_ERR node-DONE_TIMEOUT node-TIMEDOUT node-DONE_OK").addClass("node-<%= v[:state] %>")
+    $("#image-node-<%= k %> > .image-label").removeClass("node-GIVENUP node-RESETTING node-LOADING node-DONE_ERR node-DONE_TIMEOUT node-TIMEDOUT node-DONE_OK").addClass("node-<%= v[:state] %>")
     $("#image-node-<%= k %> > .image-status").html("<%= v[:msg] %>");
     $("#image-node-<%= k %> > .progress-container > .progress_text").html("<%= v[:progress] %>%")
     $("#image-node-<%= k %> > .progress-container > .progress_bar").css("width","<%= v[:progress] %>%")
