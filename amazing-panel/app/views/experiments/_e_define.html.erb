@@ -1,6 +1,3 @@
-<%= form_for(@experiment, experiments_path, :method => 'post') do |f| %>
-  <%= render 'shared/error_messages', :object => f.object %>
-
   <div class="field">
     <%= f.label :ed, "From Library: "  %>
     <%= f.select :ed_id, @eds %>
@@ -10,9 +7,3 @@
     <%= f.label :project, "Workspace: "  %>
     <%= f.select :project_id, options_for_select(@projects, session[:project_id].to_i) %>
   </div>
-  
-  <div class="field">
-    <%= f.submit "Next" %>
-  </div>
-
-<% end %>

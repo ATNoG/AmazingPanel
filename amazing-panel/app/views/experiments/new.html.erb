@@ -1,11 +1,23 @@
 <%= content_for :content do %>
-  <!-- render the experiment phase state -->
-  <%= phase_sequence_widget() %>  
-  <%= content_tag :div, :class => "phase-content current-phase-content" do %>
-    <%= content_tag :div, :class => :phase_title do %>
-      <p class="italic"><%= session[:phase].description %></p>
-      <hr/>
+  <%= form_for(@experiment, experiments_path) do |f| %>
+    <%= render 'shared/error_messages', :object => f.object %>
+
+    <% ExperimentPhases.each do |name, phase| %>
+      <%= content_tag :div, :class => "phase-content current-phase-content" do %>
+        <%= content_tag :div, :class => :phase_title do %>
+          <p class="italic"><%= phase.description %></p>
+          <hr/>
+        <% end %>
+        <%= render_for_phase(name.to_s, f) %>
+      <% end %>
     <% end %>
-    <%= render_for_phase %>
+    
+    <div class="field">
+      <%= f.submit "Next", { :id=>"create-experiment-hidden"} %>
+      <%= link_to "Create Experiment", "#",
+                :id => "create-experiment-button", :class => "button giant-button",  
+                :onclick => "$(\"#new_experiment\").submit()" %>
+    </div>
+  
   <% end %>
 <% end %>

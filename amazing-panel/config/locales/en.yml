@@ -52,6 +52,7 @@ en:
         empty: " empty."
       testbed: "doesn't exist."
       resources_map: 
+        dont_exist: "dont exist."
         empty: "empty."
         invalid: "invalid."
 

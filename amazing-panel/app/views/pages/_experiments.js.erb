@@ -1,6 +1,6 @@
 <% params.merge!(Rails.application.routes.recognize_path(params[:p])) %>
 
-<% if (@a == "new")%>
+<% if (@a == "new") or (@a == "create")%>
 $(".field > #experiment_submit").hover(function() {
   var _toggle = 'arrow-active-toggle'
   var _selector = $('.arrow-active')

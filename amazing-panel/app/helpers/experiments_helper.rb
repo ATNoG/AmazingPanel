@@ -29,10 +29,9 @@ module ExperimentsHelper
     return session[:phase].number.to_i
   end
 
-  def render_for_phase
-    phase = session[:phase]
-    canonical_name = phase.label.downcase
-    render :partial => "experiments/e_#{canonical_name}"
+  def render_for_phase(phase, object)    
+    canonical_name = phase
+    render :partial => "experiments/e_#{canonical_name}", :locals => { :f => object }
   end
 
   def experiment_widget(experiment, nodes)
