@@ -1,20 +1,7 @@
-<% if @error.nil? %>
-function experiment_stat(){
-  $.getScript("<%= stat_experiment_path(:id => params[:id], :format => :js) %>");
-}
-
-$("#log-tab-sel").hide();
-$("#log").hide();
-$("#images-loading").hide()
-$("#graph-choose-box").hide()
-$("#graph").hide()
-$(".graph-actions").hide()
-
-$("#error-experiment").addClass("hidden");
-$("#caption-experiment").show().find("span").html(" ");
-$(".image-progress").show();
-setTimeout(experiment_stat,2000);
+<% if @msg %>
+var options = {};
+options.text = "<p class=\"text info\"><%= @msg %><p>";
+showStatus(<%= ExperimentStatus.PREPARED %>, options);
 <% else %>
-$("#error-experiment").removeClass("hidden");
-$("#error-experiment > .text").html("<%= @error %>");
+setTimeout(experimentStat,5000);
 <% end %>

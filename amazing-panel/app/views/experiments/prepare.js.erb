@@ -1,13 +1,7 @@
-<% if !@error.nil? %>
-  $("#caption-experiment > .text").html("<p class=\"info\"><%= @error %></p>");
-  $("#caption-experiment > img").hide();
-  $("#caption-experiment").show();
+<% if @msg %>
+var options = {};
+options.text = "<p class=\"text info\"><%= @msg %><p>";
+showStatus(<%= ExperimentStatus.UNINITIALIZED %>, options);
 <% else %>
-function experiment_stat(){
-  $.getScript("<%= stat_experiment_path(:id => params[:id], :format => :js) %>");
-}
-$("#error-experiment").addClass("hidden");
-$("#caption-experiment").show();
-$(".image-progress").show();
-setTimeout(experiment_stat,5000);
+setTimeout(experimentStat,5000);
 <% end %>

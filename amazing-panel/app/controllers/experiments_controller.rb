@@ -109,8 +109,7 @@ class ExperimentsController < ApplicationController
       @experiment.destroy
       @experiment.resources_map.destroy
       default_vars()
-      logger.debug @allowed.inspect
-      respond_with(@experiment)
+      render :actions => 'new'
     end
   end
 
@@ -122,9 +121,9 @@ class ExperimentsController < ApplicationController
 
   def prepare
     njobs = Job.all.size
-    @error = nil
+    @msg = nil
     if njobs > 0
-      @error = "Preparation of this Experiment added to queue."
+      @msg = "Preparation of this Experiment added to queue."
     end
     Delayed::Job.enqueue PrepareExperimentJob.new('prepare', params[:id])
   end
@@ -132,10 +131,10 @@ class ExperimentsController < ApplicationController
   def start
     ec = OMF::Experiments::Controller::Proxy.new(params[:id].to_i)
     njobs = Job.all.size
-    @error = nil
+    @msg = nil
     if ec.check(:prepared)
       if njobs > 0
-        @error = "Preparation of this Experiment added to queue."
+        @msg = "Execution of this Experiment added to queue."
       end
       Delayed::Job.enqueue StartExperimentJob.new('start', params[:id])
     end
@@ -144,7 +143,6 @@ class ExperimentsController < ApplicationController
   def stop
     ec = OMF::Experiments::Controller::Proxy.new(params[:id].to_i)
     if ec.check(:started) or ec.check(:prepared)
-      @error = nil
       ec.stop()
     end
   end

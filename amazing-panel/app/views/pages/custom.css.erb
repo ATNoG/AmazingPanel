@@ -108,6 +108,7 @@ a:link {
 
 .info {
   background: #DBE3FF url(/images/info.png) no-repeat 1px 1px;
+  background-size: 16px;
   border: 1px solid #A2B4EE;
   color: #556652;
   padding-left: 20px;
@@ -119,6 +120,7 @@ a:link {
 
 .notice {
   background: #FFFBCC url(/images/warn.png) no-repeat 1px 1px;
+  background-size: 16px;
   border: 1px solid #E6DB55;
   color: #666452;
   padding-left: 20px;
@@ -130,6 +132,7 @@ a:link {
 
 .success {
   background: #D5FFCE url(/images/success.png) no-repeat 1px 1px;
+  background-size: 16px;
   border: 1px solid #9ADF8F;
   color: #556652;
   padding-left: 20px;
@@ -141,8 +144,21 @@ a:link {
 
 .error, .alert {
   background: #FFCECE url(/images/error.png)no-repeat 1px 1px;
+  background-size: 16px;
   border: 1px solid #DF8F8F;
   color: #665252;
+  padding-left: 20px;
+  margin: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;  
+}
+
+.loading {
+  background: #FFFFFF url(/images/loading.gif)no-repeat 1px 1px;
+  background-size: 16px;
+  border: 1px solid #A4A4A4;
+  color: #7F7F7F;
   padding-left: 20px;
   margin: 5px;
   -moz-border-radius: 5px;
@@ -1325,13 +1341,19 @@ div.description {
   float:left;
   line-height: 30px;
   height: 30px;
-  display: none;
+  /*'XXX' display: none;*/
 }
 
 #caption-experiment > img {
   vertical-align: middle;
   height: 16px;
   width: 16px;
+}
+
+.text {
+  float: left;
+  background-position: left center;
+  height: 28px;
 }
 
 .progress-container {
@@ -1363,7 +1385,7 @@ div.description {
 .image-progress {
   margin-top: 10px;
   margin-bottom: 10px;
-  display: none;
+  /* 'XXX' display: none;*/
 }
 
 .image-progress {

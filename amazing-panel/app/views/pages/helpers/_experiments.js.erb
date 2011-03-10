@@ -1,0 +1,98 @@
+<% unless params[:id].nil? then @experiment = Experiment.try(:find, params[:id]) end %>
+function caption(options){  
+  var context = $("#caption-experiment");
+  var img = $("img", context);
+  if (options.image) { img.show() } else { img.hide() }
+  if (options.text)  { $(".text", context).html(options.text); }
+  if (options.action && context[options.action]) { context[options.action](); }
+}
+
+function hideCaption(){ 
+  caption({ action : "hide" }); 
+}
+
+function showCaption(text, loading){
+  var options = { action : "show"};
+  if (loading) { options.image = true; }
+  if (text) { 
+    options.text = text;
+    caption(options);
+  }
+}
+
+function log(text){ 
+  $("#log_area").val(text); 
+}
+
+function hideLog(){
+  $("#log-tab-sel").hide();
+  $("#log").hide();  
+}
+
+<% unless @experiment.blank? %>
+function buttonChange(buttons){
+  var values = ["start","stop","prepare"];    
+  for(i=0;i<values.length;++i){ 
+    $("#"+values[i]+"-experiment-button").addClass("button-disabled"); 
+  }
+  for(i=0;i<buttons.length;++i) {
+    if (values.indexOf(buttons[i]) != -1){
+      $("#"+buttons[i]+"-experiment-button").removeClass("button-disabled");
+    }
+  }
+}
+  
+function showStatus(estatus, options) {
+  var target = "#experiment-briefing", buttons = ["stop"];
+  $("#experiment-briefing").empty();
+
+  switch(estatus){
+    case <%= ExperimentStatus.UNINITIALIZED %>:
+      buttons = ["prepare"];
+      break;
+    case <%= ExperimentStatus.PREPARED %>:
+      if (!options.text) {
+        options.text = "<p class=\"text success\">Preparation finished</p>";
+      }
+      buttons = ["start"];
+      break;    
+    case <%= ExperimentStatus.PREPARING %>:
+      $("#images-loading").empty();
+      $("#prepare-status-template").tmpl(options.data).appendTo("#images-loading");
+      options.text = "Loading system images on nodes";
+      options.image = true;
+      setTimeout(experimentStat,2000);
+      break;
+    case <%= ExperimentStatus.STARTED %>:
+      options.text = "Running experiment";
+      options.image = true;
+      setTimeout(experimentStat,2000);
+      break;
+    case <%= ExperimentStatus.FINISHED %>:
+      buttons = ["prepare"];
+      break;
+    case <%= ExperimentStatus.FINISHED_AND_PREPARED %>:
+      buttons = ["start"];
+      break;
+    case <%= ExperimentStatus.PREPARATION_FAILED %>:
+      options.error = "Preparation failed";
+      buttons = ["prepare"]
+      break;
+    case <%= ExperimentStatus.EXPERIMENT_FAILED %>:
+      options.error = "Experiment failed";
+      buttons = ["prepare", "start"];
+      break;
+    default:      
+      break;
+  }
+  $("#experiment-status-template").tmpl(options).appendTo("#experiment-briefing");
+  buttonChange(buttons);
+}
+<% end %>
+function experimentStat() {
+  var extra = "?log";
+  var tab = $(".tab-active")  
+  var base = "<%= stat_experiment_path(:id => @experiment.try(:id), :format => :js) %>"
+  var url = (tab.find("a").attr("href") == "#log") ? base+"?log" : base 
+  $.getScript(url)
+}

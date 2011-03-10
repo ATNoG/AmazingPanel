@@ -9,3 +9,14 @@ ExperimentPhases = {
     :description => "Map your resources in the necessary nodes for the experiment"
   }),
 }
+
+ExperimentStatus = OpenStruct.new({
+  :UNINITIALIZED => 0,
+  :PREPARING => 1,
+  :PREPARED => 2,
+  :STARTED => 3,
+  :FINISHED => 4,
+  :FINISHED_AND_PREPARED => 5,
+  :PREPARATION_FAILED => -1,
+  :EXPERIMENT_FAILED => -2,
+});

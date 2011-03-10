@@ -133,6 +133,7 @@ $(".show-dump-anchor").live("click", function(evt){
 
 });
 
+
 $("#run-experiment-button").live('click', function(evt){
     $.getScript("<%= run_experiment_path(experiment) %>", function(evt){  
       $("#run-experiment-button").addClass("button-disabled");
@@ -141,14 +142,14 @@ $("#run-experiment-button").live('click', function(evt){
 });
 
 $("#prepare-experiment-button").live('click', function(evt){
-    $.getScript("<%= prepare_experiment_path(experiment) %>", function(evt){  
+    $.getScript("<%= prepare_experiment_path(experiment) %>", function(evt){
       $("#prepare-experiment-button").addClass("button-disabled");
       $("#stop-experiment-button").removeClass("button-disabled");
       });
 });
 
 $("#start-experiment-button").live('click', function(evt){
-  $.getScript("<%= start_experiment_path(experiment) %>", function(evt){  
+  $.getScript("<%= start_experiment_path(experiment) %>", function(evt){
     $("#start-experiment-button").addClass("button-disabled");
     $("#stop-experiment-button").removeClass("button-disabled");
   });
@@ -162,15 +163,15 @@ $("#stop-experiment-button").live('click', function(evt){
 });
 
 <% if experiment.finished? %>
-$("select#runs").change(function(){      
-  var _this = $(this);  
+$("select#runs").change(function(){
+  var _this = $(this);
   var run = _this.val();
   var download_link = "<%= experiment_path(:id => experiment.id , :format => "sq3") %>?run="+run;
   var data_link = "<%= experiment_path(:id => experiment.id , :format => "js") %>?data&run="+run;
   $("#run-download-link").attr("href", download_link);
   $.getScript(data_link);
 });
-<% else %>
+<% elsif !experiment.failed? %>
   $.getScript("<%= stat_experiment_path(experiment) %>");
 <% end %>
 <% end %>

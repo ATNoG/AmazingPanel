@@ -34,7 +34,7 @@ module ExperimentsHelper
     render :partial => "experiments/e_#{canonical_name}", :locals => { :f => object }
   end
 
-  def experiment_widget(experiment, nodes)
+  def experiment_widget(experiment)
     status = experiment.status
     l_button = "button giant-button"
     #l_run_class= (experiment.finished? or experiment.prepared? or experiment.not_init?) ? l_button : l_button+" button-disabled"
@@ -59,20 +59,8 @@ module ExperimentsHelper
     end
     text  = content_tag(:span, _str_, :class => "text")
     err_text  = content_tag(:span, "", :class => "text")
-    capt_exp  = content_tag(:div, img+text, :id => "caption-experiment")
-    err_exp  = content_tag(:div, error+err_text, :id => "error-experiment", :class =>"hidden")
-    container = content_tag(:div, l_prepare+l_start+l_stop+capt_exp+err_exp, :id => "experiment-briefing")
-    #container = content_tag(:div, l_run+l_stop+capt_exp+err_exp, :id => "experiment-briefing")
-    nodes_str = "".html_safe
-    nodes.each do |k,v|
-       lbl = content_tag(:span, "node-#{k}:", :class => "image-label bold")
-       lbls = content_tag(:span, "", :class => "image-status")
-       pb = progress_bar()
-       cls = clear()
-       image_node = content_tag(:div, lbl+pb+lbls+cls, :id => "image-node-#{k}", :class => "image-progress").html_safe
-       nodes_str += image_node
-    end
-    images_loader = content_tag(:div, nodes_str, :id => "images-loading", :class=>__started_class);
+    container = content_tag(:div, l_prepare+l_start+l_stop, :id => "experiment-briefing")
+    images_loader = content_tag(:div, "", :id => "images-loading");
     return (container+images_loader).html_safe
   end  
 end
