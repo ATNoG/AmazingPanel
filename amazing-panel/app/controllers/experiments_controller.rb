@@ -18,8 +18,17 @@ class ExperimentsController < ApplicationController
 
   def queue
     @prepared = Experiment.prepared
-    @queue = get_experiment_jobs()
+    @queue = Experiment.jobs(current_user)
+    @failed = Experiment.failed_jobs(current_user)
   end 
+
+  def delete_queue
+    job = Job.try(:find, params[:job_id])
+    unless job.nil?
+      job.destroy
+    end
+    redirect_to queue_experiments_path
+  end
   
   def index
     @has_exp_in_cache = (session[:experiment].nil? ) ? false : true;
@@ -56,13 +65,10 @@ class ExperimentsController < ApplicationController
       @has_map = service.has_map()
       #@nodes = OMF::GridServices.testbed_status(@testbed.id)
     when @experiment.finished?
-      run = params[:run]      
-      @raw_results = ec.runs
-      if ec.runs.length > 0
-        ret = run.nil? ? fetch_results(@experiment) : fetch_results(@experiment, run) 
-        @results = ret[:results]
-        @seq_num = ret[:seq_num]
-      end
+      ret = @experiment.results(params[:run]) 
+      @results = ret[:results]
+      @seq_num = ret[:seq_num]
+      @raw_results = ret[:runs_list]
     end
     respond_to do |format|
       format.sq3 {
@@ -96,10 +102,11 @@ class ExperimentsController < ApplicationController
     @experiment.runs = 0
     @experiment.failures = 0      
     testbed = params[:experiment][:nodes]["testbed"]
-    @experiment.nodes = params[:experiment][:nodes]   
     if @experiment.save
       params[:experiment][:nodes].each do |k,v|
-        rm = @experiment.resources_map.create(:node_id => k, :sys_image_id => v[:sys_image], :testbed_id => testbed)
+        rm = @experiment.resources_map.create(:node_id => k, 
+                                              :sys_image_id => v[:sys_image], 
+                                              :testbed_id => testbed)
       end
     end
 
@@ -122,6 +129,7 @@ class ExperimentsController < ApplicationController
   def prepare
     njobs = Job.all.size
     @msg = nil
+    session[:estatus] = nil
     if njobs > 0
       @msg = "Preparation of this Experiment added to queue."
     end
@@ -131,12 +139,14 @@ class ExperimentsController < ApplicationController
   def start
     ec = OMF::Experiments::Controller::Proxy.new(params[:id].to_i)
     njobs = Job.all.size
+    session[:estatus] = nil
     @msg = nil
     if ec.check(:prepared)
       if njobs > 0
         @msg = "Execution of this Experiment added to queue."
       end
       Delayed::Job.enqueue StartExperimentJob.new('start', params[:id])
+      Rails.logger.debug("Queueing experiment")
     end
   end
 
@@ -169,19 +179,19 @@ class ExperimentsController < ApplicationController
     end
 	@status = status
 	@ec = ec
+    if (@status == ExperimentStatus.PREPARING) or (@status == ExperimentStatus.STARTED)
+      session['estatus'] = @status
+    end
   end
   
   private    
   def render_sqlite_file
-    id = @experiment.id
-    ec = OMF::Experiments::Controller::Proxy.new(id)
-    exp_id = params[:run].nil? ? "#{id}_#{ec.runs.first}.sq3" : "#{id}_#{params[:run]}.sq3"
-    results = "#{APP_CONFIG['exp_results']}#{id}/#{params[:run]}/#{exp_id}"       
-    if params[:dump].nil? or params[:dump] == "false"
-      send_file results, :type => "application/octet-stream", :x_sendfile => true
-    else
-      render :text => IO.popen("sqlite3 #{results} .dump").read
+    has_dump = !(params[:dump].nil? or params[:dump] == "false")
+    ret = @experiment.sq3(params[:run], has_dump)
+    unless has_dump
+      return send_file ret, :type => "application/octet-stream", :x_sendfile => true
     end
+    render :text => ret
   end
   
   def is_public
@@ -201,20 +211,7 @@ class ExperimentsController < ApplicationController
       return false
     end
     return true
-  end
-
-  def get_experiment_jobs()
-    exp_jobs = Array.new()
-    jobs = Job.all.each do |j|
-      object = YAML.load(j.handler)
-      if object.type == 'experiment'
-        exp = Experiment.find(object.id.to_i)
-        exp.attributes[:phase] = object.phase
-        exp_jobs.push(exp)
-      end
-    end
-    return exp_jobs
-  end
+  end  
 
   def default_vars()
     @projects = Project.all.select { |p| 
@@ -231,34 +228,6 @@ class ExperimentsController < ApplicationController
     @nodes = service.mapping();
     @has_map = service.has_map
     @allowed = Ed.first.allowed
-  end
-
-  def last_run(e)
-    return e.runs - 1 
-  end
-
-  def fetch_results(e, run=last_run(e))
-    _tmp = OMF::Experiments.results(e, {:run => run})
-    db = _tmp[:results]
-    metrics = _tmp[:metrics]
-    results = Hash.new()
-    seq_num = Array.new()
-    length = 0;
-    metrics.each do |m|
-      model = db.select_model_by_metric(m[:app], m[:metrics])
-      table = model.table_name()
-      columns = model.column_names()
-      oml_seq = model.find(:all, :from => "#{table}", :select => "oml_seq")      
-      dataset = model.find(:all, :from => "#{table}")      
-      length = dataset.length
-      results[table] = { 
-        :columns => columns, 
-        :set => dataset, 
-        :length => length
-      }
-    end
-    seq_num = (1..length).to_a
-    return { :seq_num => seq_num, :results => results }
   end
 end
 

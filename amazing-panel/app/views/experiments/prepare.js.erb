@@ -1,7 +1,7 @@
 <% if @msg %>
 var options = {};
 options.text = "<p class=\"text info\"><%= @msg %><p>";
-showStatus(<%= ExperimentStatus.UNINITIALIZED %>, options);
+showStatus(<%= ExperimentStatus.UNINITIALIZED %>, null, options);
 <% else %>
 setTimeout(experimentStat,5000);
 <% end %>

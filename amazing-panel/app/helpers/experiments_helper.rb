@@ -34,6 +34,16 @@ module ExperimentsHelper
     render :partial => "experiments/e_#{canonical_name}", :locals => { :f => object }
   end
 
+  def showStatus(experiment)
+    estatus = session['estatus']
+    if estatus.nil?
+      estatus = "null"
+    end
+    status = experiment.status    
+    session['estatus'] = status
+    "showStatus(#{status}, #{estatus}, options);"    
+  end
+
   def experiment_widget(experiment)
     status = experiment.status
     l_button = "button giant-button"

@@ -17,7 +17,7 @@
     <p class="info">
       <%= t("amazing.experiments.messages.queue_tip") %>
     </p>
-    <%= render :partial => 'queue_list', :locals => { :experiments => @queue } %>
+    <%= render :partial => 'queue_list', :locals => { :experiments => @queue, :with_job => true } %>
   <% end %>  
 <% end %>
 

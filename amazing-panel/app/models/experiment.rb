@@ -1,3 +1,6 @@
+require 'omf.rb'
+require 'omf/experiments.rb'
+
 class ResourceMapValidator < ActiveModel::Validator
   def validate(record)
     allowed = record.experiment.ed.allowed()
@@ -32,26 +35,33 @@ class ExperimentEdValidator < ActiveModel::Validator
   def validate(record)
     record.errors.add(:ed, I18n.t("errors.experiment.ed.empty")) unless record.ed.code.size > 0
     record.errors.add(:nodes, I18n.t("errors.experiment.nodes.invalid")) if record.ed.allowed.blank?
-    begin
-      unless record.errors.has_key?(:nodes)    
-        nodes = record.send(:nodes)
-        allowed = record.ed.allowed
-        missing = Array.new(allowed).delete_if { |x| 
-          !nodes.index(x).nil?
-        } 
-        if missing.size > 0
-          record.errors.add(:nodes, I18n.t("errors.experiment.nodes.missing", :nodes => missing.sort.join(",")))
+    unless record.nodes.blank?
+      begin
+        unless record.errors.has_key?(:nodes)    
+          nodes = record.nodes.collect { |x| x.id }
+          allowed = record.ed.allowed
+          missing = Array.new(allowed).delete_if { |x| 
+            !nodes.index(x).nil?
+          } 
+          if missing.size > 0
+            record.errors.add(:nodes, I18n.t("errors.experiment.nodes.missing", :nodes => missing.sort.join(",")))
+          end
         end
+      rescue
+        record.errors.add(:nodes, I18n.t("errors.experiment.nodes.invalid"))
       end
-    rescue
-      record.errors.add(:nodes, I18n.t("errors.experiment.nodes.invalid"))
     end
   end
 end
 
 class Experiment < ActiveRecord::Base 
+  include OMF::Experiments::Controller
+  include Delayed::Backend::ActiveRecord
+  
   attr_accessible :description, :status, :created_at, :updated_at, :resources_map, :user, :runs, :failures
-  attr_accessor :nodes
+
+  attr_accessor :job_phase, :job_id
+  
   belongs_to :ed
   belongs_to :phase
   belongs_to :user
@@ -66,29 +76,107 @@ class Experiment < ActiveRecord::Base
 
   validates_with ExperimentEdValidator, :fields => [ :nodes ]
 
-  def nodes=(_nodes)
-    _nodes.delete("testbed") unless _nodes.blank?
-    unless _nodes.blank?
-      ns = Array.new()
-      _nodes.each do |k,v|
-        node = Node.find(k)
-        sysimage = SysImage.find(v["sys_image"])              
-        ns.push(node.id.to_i)
-      end
-      logger.debug(ns)
-      write_attribute(:nodes, ns)
-    end
-  end
-
-  def nodes
-    read_attribute(:nodes)
-  end
-
   scope :finished, where("status = 4 or status = 5") 
   scope :prepared, where("status = 2 or status = 5")
   scope :started, where("status = 3")
   scope :running, where("status = 1 or status = 3")
   scope :active, where("status >= 0 and status != 4")
+
+  private
+  
+  # Fetch all jobs from queue
+  def self.get_jobs(&block)
+    ret = Array.new()
+    jobs = Job.all.each do |job|
+      object = YAML.load(job.handler)
+      if block_given?
+        block.call(job, object)
+      else
+        ret.push(job)
+      end
+    end
+  end
+  
+
+  # From YAML File in the job convert to Experiment
+  def self.from_job(job, object, user)
+    exp = find(object.id.to_i)
+    exp.job_phase = object.phase
+    unless user.nil?
+      exp.job_id = job.id if exp.project.users.where(:id => user.id).exists?
+    end
+    return exp
+  end
+
+  public
+  # All experiment jobs from the queue
+  def self.jobs(user, &block)    
+    exp_jobs = Array.new()
+    get_jobs do |job, object|
+      if object.type == 'experiment'
+        if block_given?
+          block.call(job, object)
+        else
+          exp_jobs.push(from_job(job,object,user))
+        end
+      end
+    end
+    return exp_jobs
+  end
+ 
+  # All experiment failed jobs from the queue
+  def self.failed_jobs(user)
+    exp_jobs = Array.new()
+    jobs(user) do |job, object|
+      unless job.failed_at.nil?
+        exp_jobs.push(from_job(job,object,user))
+      end
+    end
+    return exp_jobs
+  end
+
+  #
+  # Fetch SQLite3 Database
+  def sq3(run=nil, dump=false)
+    id = self.id
+    ec = OMF::Experiments::Controller::Proxy.new(id)
+    exp_id = run.nil? ? "#{id}_#{ec.runs.first}.sq3" : "#{id}_#{run}.sq3"
+    results = "#{APP_CONFIG['exp_results']}#{id}/#{run}/#{exp_id}"       
+    unless dump == false
+      return IO.popen("sqlite3 #{results} .dump").read
+    end
+    return results
+  end
+
+  # Fetch content of SQLite3 Database
+  def results(run)
+    Rails.logger.debug self.id
+    ec = OMF::Experiments::Controller::Proxy.new(self.id)
+    r = ec.runs
+    run = r.max() if r.length > 0 and run.nil?
+    
+    _tmp = OMF::Experiments.results(self, {:run => run})
+    db = _tmp[:results]
+    metrics = _tmp[:metrics]
+    results = Hash.new()
+    seq_num = Array.new()
+    length = 0;
+    metrics.each do |m|
+      model = db.select_model_by_metric(m[:app], m[:metrics])
+      table = model.table_name()
+      columns = model.column_names()
+      oml_seq = model.find(:all, :from => "#{table}", :select => "oml_seq")      
+      dataset = model.find(:all, :from => "#{table}")      
+      length = dataset.length
+      results[table] = { 
+        :columns => columns, 
+        :set => dataset, 
+        :length => length
+      }
+    end
+    seq_num = (1..length).to_a
+    return { :seq_num => seq_num, :results => results, :runs_list => r }
+  end
   
   # Helper methods for the experiment status
   def finished?

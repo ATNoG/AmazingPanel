@@ -56,7 +56,7 @@ $(document).ready(function(){
     <%= render :partial => 'network' %>
   <% end %>
 
-  <% if (@c == "experiments") %>
+  <% if (@c == "experiments") and (@a != "queue") %>
     <% params.merge!(Rails.application.routes.recognize_path(params[:p])) %>
     <%= render :partial => 'experiments' %>    
   <% end %>
@@ -189,7 +189,7 @@ function updateStatus() {
   setTimeout(updateStatus, 60000);  
 }
   <% end %>
-  <% if (@c == "experiments") %>
+  <% if (@c == "experiments") and (@a != "queue") %>
     <%= render :partial => "pages/helpers/experiments" %>
   <% end %>
 <% end %>                           

@@ -42,16 +42,18 @@ function buttonChange(buttons){
   }
 }
   
-function showStatus(estatus, options) {
+function showStatus(estatus, session, options) {
   var target = "#experiment-briefing", buttons = ["stop"];
   $("#experiment-briefing").empty();
+  var started = (session == <%= ExperimentStatus.STARTED %>),
+      preparing = (session == <%= ExperimentStatus.PREPARING %>);
 
   switch(estatus){
     case <%= ExperimentStatus.UNINITIALIZED %>:
       buttons = ["prepare"];
       break;
-    case <%= ExperimentStatus.PREPARED %>:
-      if (!options.text) {
+    case <%= ExperimentStatus.PREPARED %>:      
+      if (!options.text && preparing) {
         options.text = "<p class=\"text success\">Preparation finished</p>";
       }
       buttons = ["start"];
@@ -69,17 +71,27 @@ function showStatus(estatus, options) {
       setTimeout(experimentStat,2000);
       break;
     case <%= ExperimentStatus.FINISHED %>:
+      if (!started) { 
+        options.text = undefined; 
+      }
       buttons = ["prepare"];
       break;
     case <%= ExperimentStatus.FINISHED_AND_PREPARED %>:
+      if (!started) { 
+        options.text = undefined; 
+      }
       buttons = ["start"];
       break;
     case <%= ExperimentStatus.PREPARATION_FAILED %>:
-      options.error = "Preparation failed";
+      if (preparing) { 
+        options.error = "Preparation failed";
+      }
       buttons = ["prepare"]
       break;
     case <%= ExperimentStatus.EXPERIMENT_FAILED %>:
-      options.error = "Experiment failed";
+      if (started) { 
+        options.error = "Experiment failed";
+      }
       buttons = ["prepare", "start"];
       break;
     default:      

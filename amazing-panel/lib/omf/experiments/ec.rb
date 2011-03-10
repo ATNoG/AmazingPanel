@@ -101,13 +101,13 @@ module OMF
           }
           status(3) # experiment started
 
-          @@logger.debug("STARTING! #{Process.pid}")
+          @@logger.debug("start: pid => #{Process.pid}")
           ret = system("omf exec -e #{exp_id} #{OMF::Workspace.ed_for(experiment.ed.user, experiment.ed.id.to_s)}");
           @@logger.debug("start: #{ret.to_s}")
           #sleep 5 # 'XXX' - REMOVE DUMMY
           @@logger.debug("get_results: #{exp_id.to_s}")
           get_results(exp_id, experiment, runs)
-          @@logger.debug("FINISHING!")
+          @@logger.debug("get_results: done!")
 
           stat = IO::read("#{APP_CONFIG['omlserver_tmp']}/#{id}-state.xml")
           status = Hash.from_xml(stat)
@@ -212,7 +212,11 @@ module OMF
         end
 
         def runs
-          entries = Pathname.new("#{APP_CONFIG['exp_results']}/#{@id}").children.select{|e| e.directory?}.map{|d| d.basename.to_s}
+          entries = Pathname.new("#{APP_CONFIG['exp_results']}/#{@id}").children.select { |e| 
+            valid_run(e) 
+          }.map{ |d| 
+            d.basename.to_s.to_i 
+          }
           #@@logger.debug(entries.inspect)
           return entries
         end
@@ -239,7 +243,15 @@ module OMF
         end
 
         protected
-
+        def valid_run(e)
+          run = e.basename.to_s
+          f = "#{APP_CONFIG['exp_results']}#{@id}/#{run}/#{@id}_#{run}.sq3"
+          if e.directory? and File.exists?(f)
+            return (File.size(f) > 0)
+          end
+          return false
+        end
+        
         def clean_log
           @@logger.debug("File.exists?(#{APP_CONFIG['omlserver_tmp']}/#{@id}-prepare.xml")
           if File.exists?("#{APP_CONFIG['omlserver_tmp']}/#{@id}-prepare.xml")
@@ -250,7 +262,7 @@ module OMF
 
         def status(v)
           ActiveRecord::Base.verify_active_connections!
-          Experiment.find(@id).update_attributes(:status => v)
+          Experiment.find(@id).update_attributes!(:status => v)
         end
 
         def testbeds
@@ -334,14 +346,18 @@ module OMF
         end
 
         def get_results(exp_id, experiment, run)
+          @@logger.debug("\tCreating HTTP Env")
           http = Net::HTTP.new(APP_CONFIG['aggmgr_url'])
           root_path = '/result/'
           path = "#{root_path}/dumpDatabase?expID=#{exp_id}"
+          @@logger.debug("\tHTTP GET #{path}")
           request = Net::HTTP::Get.new(path)
           exp_path = "#{APP_CONFIG['exp_results']}/#{experiment.id}/#{run}"
           tmp_basename = "#{APP_CONFIG['omlserver_tmp']+exp_id.to_s}"
           exp_basename = "#{exp_path}/#{exp_id.to_s}"
-          #response = http.request(request)
+          @@logger.debug("Requesting AM: Paths => #{exp_path}, #{tmp_basename}, #{exp_basename}")
+          response = http.request(request)
+          @@logger.debug("Creating Experiment Run Path...")
           FileUtils.mkdir_p(exp_path)
           FileUtils.cp("#{tmp_basename}.sq3", "#{exp_basename}.sq3")
           @@logger.debug("FileUtils.mv(#{tmp_basename}.sq3, #{exp_basename}.sq3)")

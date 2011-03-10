@@ -1,5 +1,7 @@
-<table class="grid-view">
-  <%= generate_table_headers(experiments, experiments_path, :fields => ["id","project_id", "creator", "ed", ""], :labels => { "id" => "#", "project_id" => "Workspace", "ed"=>"Description" }) %>
+<table class="grid-view">  
+  <% fields = ["id","project_id", "creator", "ed", ""] %>
+  <% labels = { "id" => "#", "project_id" => "Workspace", "ed"=>"Description" } %>
+  <%= generate_table_headers(experiments, experiments_path, :fields => fields, :labels => labels) %>
   <tbody>
   <% experiments.each do |exp| %>
     <tr class="<%= defined?(style) ? style : "" %>">	
@@ -12,8 +14,10 @@
       <td>
 	      <div class="table-actions">
           <%= add_image_action(experiment_path(exp, :format => "js")+"?resources",
-                       'network2.png', '', { :remote => true, :link => true, "original-title" => "See Resource Map in this experiment" }) %>
-          <%= delete_action(exp, {:link => true, :text => false, "original-title" => "Delete Experiment"}) %>
+                               'network2.png', '', { :remote => true, :link => true, "original-title" => "See Resource Map in this experiment" }) %>
+          <% if defined?(with_job) and !exp.job_id.nil? %>
+              <%= delete_action(delete_queue_experiments_path(:job_id => exp.job_id), {:link => true, :text => false, "original-title" => "Remove from queue"}) %>
+          <% end %>
     	  </div>
       </td>
     </tr>

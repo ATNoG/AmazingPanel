@@ -51,6 +51,7 @@ AmazingPanel::Application.routes.draw do
     get 'stop', :action => 'stop', :on => :member
     get 'stat', :action => 'stat', :on => :member
     get 'queue', :action => 'queue', :on => :collection
+    delete 'queue/:job_id', :action => 'delete_queue', :as => "delete_queue", :on => :collection
   end
   
   match 'javascripts/application.js' => 'pages#application'

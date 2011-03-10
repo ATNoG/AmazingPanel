@@ -2,11 +2,9 @@ var options = { data : {} };
 <% if @log %>
   log("<%= escape_javascript(@log) %>");
 <% end %>
-
 <% if @msg %>
   //options.warn = "<p class=\"text info\"><%= @msg %></p>";
 <% end %>
-
 <% if @experiment.preparing? %>
   options.text = "";
   options.data = {
@@ -16,5 +14,4 @@ var options = { data : {} };
 <% elsif @experiment.finished? %>
   options.text = "<p class=\"text success\">Experiment Finished! <%= escape_javascript(link_to('See Results', "#results", :onclick => "window.location.reload()")) %> </p>"
 <% end %>
-
-showStatus(<%= @status %>, options);
+<%= showStatus(@experiment) %>
