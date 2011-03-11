@@ -1,0 +1,7 @@
+var elem = $("#node-<%= @id %>")
+
+if (!elem.hasClass("<%= @status %>")){
+  elem.removeClass('on off toggle run');
+  elem.addClass("<%= @status %>")
+}
+  

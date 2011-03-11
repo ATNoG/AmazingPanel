@@ -40,6 +40,9 @@ class Users::UsersController < Library::ResourceController
 
   def update
     @user = User.find(params[:id])    
+    params[:user].delete(:roles)
+    params[:user].delete(:email)
+    params[:user].delete(:password)
     if @user.update_attributes(params[:user])
       flash[:success] = 'Profile updated.'
       redirect_to(user_path(@user))

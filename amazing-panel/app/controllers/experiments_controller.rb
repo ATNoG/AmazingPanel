@@ -7,20 +7,23 @@ class ExperimentsController < ApplicationController
   include Delayed::Backend::ActiveRecord
 
   include Library::SysImagesHelper
-  include ProjectsHelper  
+  include ProjectsHelper
 
 
   #layout 'experiments'
-  before_filter :authenticate
-  append_before_filter :is_public, :only => [:show] 
-  
+  load_and_authorize_resource :experiment
+
+  prepend_before_filter :authenticate
+
+  #append_before_filter :is_public, :only => [:show]
+
   respond_to :html, :js
 
   def queue
     @prepared = Experiment.prepared
     @queue = Experiment.jobs(current_user)
     @failed = Experiment.failed_jobs(current_user)
-  end 
+  end
 
   def delete_queue
     job = Job.try(:find, params[:job_id])
@@ -29,7 +32,7 @@ class ExperimentsController < ApplicationController
     end
     redirect_to queue_experiments_path
   end
-  
+
   def index
     @has_exp_in_cache = (session[:experiment].nil? ) ? false : true;
     case 
@@ -50,12 +53,12 @@ class ExperimentsController < ApplicationController
     @experiment.resources_map.each do |rm|
       @nodes[rm.node_id] = rm.sys_image_id
     end
-    
+
     unless params.has_key?("resources")    
       #@log = OMF::Experiments::Controller::Proxy.new(params[:id].to_i).log
       @log = ""
     end
-    
+
     case 
     when params.has_key?("resources")
       @resources = @experiment.resources_map

@@ -1,11 +1,14 @@
 class Library::ResourceController < ApplicationController
-  layout 'library'
+  layout 'library'  
   respond_to :html
-  before_filter :authenticate
+  
+  prepend_before_filter :authenticate
   after_filter :save_previous_path
-  append_before_filter :has_resource_permission, :only => [:update, :destroy, :edit]
   append_before_filter :filter_resources, :only => [:index]
+  #append_before_filter :has_resource_permission, :only => [:update, :destroy, :edit]
 
+  load_and_authorize_resource
+  
   def resource_find_all
   end
 

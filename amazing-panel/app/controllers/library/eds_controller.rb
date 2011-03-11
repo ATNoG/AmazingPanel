@@ -3,7 +3,7 @@ require 'omf.rb'
 class Library::EdsController < Library::ResourceController
   include OMF::GridServices
   include OMF::Experiments::OEDL
-
+  
   def resource_group()
     return "eds"
   end

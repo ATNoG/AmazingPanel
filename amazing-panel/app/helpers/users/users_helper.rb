@@ -11,4 +11,18 @@ module Users::UsersHelper
     ul = content_tag(:ul, _projects.html_safe)
     return ul.html_safe
   end
+ 
+  def activate_user_action(object, options={})
+    user = object
+    if can?(:activate, user)
+      if user.activated?
+       return add_image_action(user_activate_path(:user_id => user.id), 'disable.png', "Deactivate", 
+                               options.merge({:method=>:put, "original-title" => "Deactivate account"})) 
+      else 
+       return add_image_action(user_activate_path(:user_id => user.id), 'enable.png', "Activate", 
+                               options.merge({:method=>:put, "original-title" => "Activate account"}))
+      end
+    end 
+  end  
+
 end

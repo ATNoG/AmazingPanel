@@ -1,0 +1,3 @@
+$("#popup .title-box").html("Node Information: <span class=\""+$("#node-<%= @node.id %>").attr('class').replace("node", "").replace("node-active", "")+"\"><%= @node.id %></span>");
+$("#popup .modal-container").html("<% @data.each do |k,v| %> <p><strong><%= k %></strong><%= v %></p> <% end %>");
+$("#popup").addClass('dialog-active');

@@ -3,7 +3,12 @@ class ApplicationController < ActionController::Base
   
   before_filter :set_locale
   rescue_from ActionController::RoutingError, :with => :route_not_found
-  
+
+  rescue_from CanCan::AccessDenied do |exception|  
+    flash[:error] = t(:permission_denied)
+    redirect_to(root_path)
+  end 
+
   private
 
     def set_locale

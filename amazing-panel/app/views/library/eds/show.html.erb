@@ -5,10 +5,8 @@
 <% content_for :sub_actions do %>
   <% sub_toolbar do %>
     <%= back_action(eds_path) %>
-    <% if (current_user.admin? or current_user.id == @ed.user_id) %>
-      <%= edit_action(edit_ed_path(@ed)) %>
-      <%= delete_action(eds_path) %>
-    <% end %>
+    <%= edit_action(@ed) %>
+    <%= delete_action(@ed) %>
   <% end %>
 <% end %>
 

@@ -29,12 +29,15 @@ AmazingPanel::Application.routes.draw do
     end
   end
   
-  resources :testbeds
+  resources :testbeds do
+    get '/nodes/:node_id/info', :action => "node_info", :as => "info", :on => :member
+    put '/nodes/:node_id/toggle', :action => "node_toggle", :as => "toggle", :on => :member
+  end
   
   scope :module => "admin", :as => "admin" do
     resources :admin, :path => "admin", :only => [:index]
     devise_for :users , :path => "admin/users", :controllers => { :registrations => "admin/registrations" }    
-    resources :users, :path => "admin/users", :only => [:index, :show, :destroy] do
+    resources :users, :path => "admin/users" do
       put '/activate', :action => "activate"
     end    
     resources :sys_images, :path => "admin/sys_images"  

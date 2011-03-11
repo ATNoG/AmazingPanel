@@ -1,11 +1,9 @@
 <% content_for :sub_actions do %>
   <%= sub_toolbar do %>
     <%= back_action(projects_path) %>
-    <% if is_user_leader(@project, current_user) %>
-      <%= edit_action(edit_project_path(@project), {"original-title" => "Edit workspace"} ) %>
-      <%= assign_action(assign_project_path(@project), {"original-title" => "Assign users to workspace"} ) %>
-      <%= delete_action(@project, { :confirm => "Are you sure you want to delete this project?\nAll associated experiments will also be deleted.", "original-title" => "Delete workspace" }) %>
-    <% end %>
+    <%= edit_action(@project, {"original-title" => "Edit workspace"} ) %>
+    <%= assign_action(@project, {"original-title" => "Assign users to workspace"} ) %>
+    <%= delete_action(@project, { :confirm => "Are you sure you want to delete this project?\nAll associated experiments will also be deleted.", "original-title" => "Delete workspace" }) %>
   <% end %>
 <% end %>
 
@@ -33,9 +31,7 @@
     <br/> 
     <div class="table-title">
       <div class="bold">Experiments: </div>
-      <% if !project_is_user_assigned?(@project, current_user.id) %>
-        <div class="table-top-action"><%= new_action(new_experiment_path(:reset => 1), {"original-title" => "New Experiment"} ) %></div>
-      <% end %>
+      <div class="table-top-action"><%= new_action([Experiment, {:reset => 1}], {"original-title" => "New Experiment"}) %></div>
     </div>
     <%= clear %>
       

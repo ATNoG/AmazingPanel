@@ -2,13 +2,15 @@
   <% if params[:action] == "index" or params[:action] == "new" or params[:action] == "create" %>
   <div id="toolbar" class="invisible">  
   </div>
-  <% else %>
+<% else %> 
+  <% if can? :users, Project %>
   <div id="toolbar">  
-    <ul id="toolbar-action-list">
-      <%= add_action 'Users', users_project_path, { :controller => 'projects', :action => 'users', :has_action => true } %>
+    <ul id="toolbar-action-list">      
+      <%= users_action({ :controller => 'projects', :action => 'users', :has_action => true })%>
     </ul>
   </div>
   <% end %>
+<% end %>
 
   <div id="sub-toolbar">
     <%= yield :sub_actions %>

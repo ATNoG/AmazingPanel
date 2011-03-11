@@ -1,14 +1,21 @@
 <% content_for :sub_actions do %>
   <%= sub_toolbar do %>
     <%= back_action(project_path(@project)) %>
-    <% if is_user_leader(@project, current_user) %>
-      <%= assign_action(assign_project_path(@project), {"original-title" => "Assign users to workspace"} ) %>
-    <% end %>
+    <%= assign_action(@project, {"original-title" => "Assign users to workspace"} ) %>
   <% end %>
 <% end %>
 
 <% content_for :content do %>
 <%= will_paginate @users, :previous_label => "Previous", :next_label =>"Next" %>
-<%= render :partial => 'users', :locals => { :gravatar => true, :grid => true, :search => false, :title => "", :with_assignment_check => false, :disabled => true, :make_leader => true, :users => @users } %>
+<%= render :partial => 'users', :locals => { 
+    :gravatar => true, 
+    :grid => true, 
+    :search => false, 
+    :title => "", 
+    :with_assignment_check => false, 
+    :disabled => true, 
+    :make_leader => true, 
+    :users => @users 
+} %>
 <%= page_entries_info @users %>
 <% end %>

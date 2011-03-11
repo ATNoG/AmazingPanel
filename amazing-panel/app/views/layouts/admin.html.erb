@@ -1,8 +1,14 @@
 <% content_for :main_content do %> 
   <% toolbar do %>
-    <%= add_action 'Users', admin_users_path, { :controller => 'admin/users'} %>
-    <%= add_action 'Baseline Images', admin_sys_images_path, { :controller => 'admin/sys_images'} %>
-    <%= add_action 'Testbeds', admin_testbeds_path, { :controller => 'admin/testbeds'} %>
+    <% if can? :manage, User %>
+      <%= add_action 'Users', admin_users_path, { :controller => 'admin/users'} %>
+    <% end %>
+    <% if can? :manage, SysImage %>
+      <%= add_action 'Baseline Images', admin_sys_images_path, { :controller => 'admin/sys_images'} %>
+    <% end %>
+    <% if can? :manage, Testbed %>
+      <%= add_action 'Testbeds', admin_testbeds_path, { :controller => 'admin/testbeds'} %>
+    <% end %>
   <% end %>
  
   <% sub_toolbar do %>
