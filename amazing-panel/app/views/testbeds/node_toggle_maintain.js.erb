@@ -1,0 +1,5 @@
+<% if @status %>
+  $("#node-<%= @id %>").removeClass('on off toggle run');
+<% else %>
+  $("#node-<%= @id %>").removeClass('on off toggle run').addClass('off');
+<% end %>

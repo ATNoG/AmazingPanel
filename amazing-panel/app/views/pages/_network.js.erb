@@ -13,14 +13,14 @@ $(".node").live('click', function(evt){
     $("#sub-toolbar").hide();
     } else {
   var id  = $(".testbed").attr("id").replace(/testbed-/, "");
-  <% if current_user.is? :admin %>
-  var href = "/admin/testbeds/"+id+"/nodes/";
-  <% else %>
   var href = "/testbeds/"+id+"/nodes/";
-  <% end %>
-  var toggle_url = href + node_id +"/toggle";
-  var info_url = href + node_id +"/info";
+    var maintain_url = href + node_id +"/maintain";
+    var toggle_url = href + node_id +"/toggle";
+    var info_url = href + node_id +"/info";
     $("#sub-toolbar").html("<ul id=\"toolbar-action-list\">"+
+    <% if (can? :node_toggle_maintain, Testbed) %>
+        "<li class=\"action\"><a class=\"action\" href=\""+maintain_url+"\" data-remote=\"true\" data-method=\"put\"><img src=\"/images/maintain.png\"/> Maintain</a></li>"+
+    <% end %>
     <% if (can? :node_toggle, Testbed) %>
         "<li class=\"action\"><a class=\"action\" href=\""+toggle_url+"\" data-remote=\"true\" data-method=\"put\"><img src=\"/images/toggle2.png\"/> Toggle</a></li>"+
     <% end %>

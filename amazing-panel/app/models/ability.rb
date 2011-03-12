@@ -28,6 +28,9 @@ class Ability
     unless user.nil? 
       if user.is? :experimenter        
         # user
+        can [:read, :update], User, { :id => user.id }
+
+        # projects
         can :create, Project
         can [:users, :read, :index], Project do |p|
           !p.private? || ProjectsUsers.where({:project_id => p.id, :user_id => user.id}).length > 0
@@ -54,11 +57,9 @@ class Ability
         
         # can see nodes info and state
         can [:read, :node_info], Testbed
-        can [:node_toggle], Testbed do |t|
-          ProjectsUsers.where(:user_id => user.id, :leader => 1).length >= 1
-        end
-
-        can [:read, :update], User, { :id => user.id }
+      end
+      if user.is? :maintainer        
+        can :manage, Testbed
       end
       if user.is? :moderator
         can :manage, Ed

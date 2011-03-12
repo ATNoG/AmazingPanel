@@ -9,7 +9,7 @@ class User < Resource
   attr_accessible :email, :username, :intention, :password, :password_confirmation, :remember_me, 
                   :activated, :name, :institution, :roles
   
-  ROLES = %w[admin experimenter moderator]
+  ROLES = %w[admin experimenter moderator maintainer]
 
   def roles=(roles)
     self.roles_mask = (roles & ROLES).map { |r| 2**ROLES.index(r) }.sum

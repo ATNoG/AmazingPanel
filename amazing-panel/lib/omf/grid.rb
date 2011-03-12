@@ -1,19 +1,30 @@
 module OMF
   module GridServices 
     class TestbedService
-      attr_accessor :has_map      
+      attr_accessor :has_map  
+      
+      private
+      def read_properties
+        return OMF::GridServices.testbed_properties_load(@id)["testbed"]
+      end
+      
+      def write_properties(hash)
+        return OMF::GridServices.testbed_properties_save(@id, hash)
+      end
+
+      public
       def initialize(id)
         @id = id
         begin
-          @@properties = OMF::GridServices.testbed_properties_load(id)["testbed"]
+          @@properties = read_properties
           @@http = Net::HTTP.new(@@properties["server_url"])
           @@path = @@properties["server_path"]
           @has_map = ( @@properties["positions"].nil? ) ? false : true;
         rescue
           @@properties = nil
         end
-      end
-        
+      end      
+
       def mapping
         return @@properties["positions"] unless @@properties.nil? or @@properties["positions"].nil?
         nodes = Node.joins(:location => :testbed).where("testbeds.id" => @id).order("id").collect do |n| 
@@ -21,14 +32,38 @@ module OMF
         end
         return nodes 
       end
+
+      def disabled
+        ds = @@properties["disabled"]
+        return ds.keys() unless ds.nil?
+      end
+
+      def maintain(node_id, cause="Empty")
+        ret = true
+        disabled = @@properties["disabled"]
+        if disabled.nil? then disabled = Hash.new() end
+        if disabled[node_id].nil?
+          disabled[node_id] = cause
+        else
+          disabled.delete(node_id)
+          ret = false
+        end
+        @@properties["disabled"] = disabled
+        write_properties({ "testbed" => @@properties })
+        @@properties = read_properties()
+        return ret
+      end
   
       def statusAll
         status = get("power", "status")
         status.delete("type")
         nodes = mapping()
+        ds = disabled()
         for n in nodes
-          query_id = (n['id'].to_i - 1).to_s
-          n["status"] = status[query_id]
+          query_id = (n['id'].to_i - 1)
+          unless ds.include?(query_id)
+            n["status"] = status[query_id.to_s]
+          end
         end
         return nodes
       end
@@ -61,6 +96,17 @@ module OMF
       end        
     end
     
+    def self.testbed_properties_save(testbed_id, hash)
+      begin
+        File.open(properties_file_str(testbed_id), 'w') {|f|
+          f.write(hash.to_yaml);
+        }
+        return true
+      rescue 
+        return false
+      end
+    end
+
     def self.testbed_properties_load(testbed_id)
       return YAML.load_file(properties_file_str(testbed_id))
     end
@@ -82,9 +128,12 @@ module OMF
   
     def self.testbed_node_toggle(id, node)
       ts = TestbedService.new(id)
-      system "echo #{node.to_i - 1} > /tmp/logging_dumb"
       return ts.toggle(node.to_i - 1)
-      #return true
+    end
+    
+    def self.testbed_node_maintain(id, node)
+      ts = TestbedService.new(id)
+      return ts.maintain(node.to_i - 1)
     end
   end
 end

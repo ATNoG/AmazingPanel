@@ -8,14 +8,11 @@ AmazingPanel::Application.routes.draw do
   
   resources :projects, :path => "workspaces" do
     member do
-#      get 'experiments'
       get 'users'
       get 'assign'
       put 'user/:user_id', :action => "assign_user"
       put 'user/:user_id/leader', :action => "make_leader"      
       delete 'user/:user_id', :action => "unassign_user"
-#      put 'assign_user/:id', :action => "testbeds#assign_user"
-#      delete 'unassign_user/:id', :action => "testbeds#unassign_user"
     end
   end
   
@@ -32,6 +29,7 @@ AmazingPanel::Application.routes.draw do
   resources :testbeds do
     get '/nodes/:node_id/info', :action => "node_info", :as => "info", :on => :member
     put '/nodes/:node_id/toggle', :action => "node_toggle", :as => "toggle", :on => :member
+    put '/nodes/:node_id/maintain', :action => "node_toggle_maintain", :as => "maintain", :on => :member
   end
   
   scope :module => "admin", :as => "admin" do
