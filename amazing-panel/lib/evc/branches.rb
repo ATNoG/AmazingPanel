@@ -1,16 +1,17 @@
 module EVC
   class Branch
-    attr_accessor :name, :user
+    attr_accessor :id, :name, :user
 
     # Initialize a new Branch class instance
-    # Parameters: name (String), user (String)
-    def initialize(name, user)
+    # Parameters: id(String), name (String), user (String)
+    def initialize(id, name, user)
+      @id = id
       @name = name
       @user = user
     end
 
     def branches_path()
-      return "#{APP_CONFIG['evc']}/branches/"
+      return "#{APP_CONFIG['inventory']}/experiments/#{@id}/branches"
     end
 
     def branch_path(name=nil)
@@ -48,7 +49,15 @@ module EVC
 
       # Branch info YAML file
       branch_info = Hash.new
-      branch_info[@name] = {"description" => description, "author" => @user, "runs" => 0, "failures" => 0, "changelog" => {Time.now.to_i => create_changelog_entry("Initial commit") } }
+      branch_info[@name] = {
+        "description" => description, 
+        "author" => @user, 
+        "runs" => 0, 
+        "failures" => 0, 
+        "changelog" => {
+          Time.now.to_i => create_changelog_entry("Init branch") 
+        } 
+      }
       save_branch_info(branch_info)
 
       return [true, "Branch #{name} created successfully"]
@@ -105,23 +114,7 @@ module EVC
         File.copy(f, run_path)
       }
     end
-
-    # List all branches
-    # Returns an array of Strings
-    def list_branches()
-      list = []
-
-      # Add only directories
-      Dir.foreach(branches_path()) {|e|
-        list << e if (File.directory?("#{branches_path()}/#{e}"))
-      }
-
-      # ... and discard '.' and '..' dir entries
-      list.delete('.')
-      list.delete('..')
-      return list
-    end
-
+    
     # Returns the ID (timestamp of type Integer) of the latest commit
     # Parameters: name (String)
     def latest_commit(name=nil)

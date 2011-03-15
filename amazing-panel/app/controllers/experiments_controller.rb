@@ -9,14 +9,9 @@ class ExperimentsController < ApplicationController
   include Library::SysImagesHelper
   include ProjectsHelper
 
-
-  #layout 'experiments'
   load_and_authorize_resource :experiment
 
   prepend_before_filter :authenticate
-
-  #append_before_filter :is_public, :only => [:show]
-
   respond_to :html, :js
 
   def queue
@@ -46,7 +41,7 @@ class ExperimentsController < ApplicationController
   end
 
   def show
-    @experiment = Experiment.find(params[:id])
+    #load_experiment
     ec = OMF::Experiments::Controller::Proxy.new(params[:id].to_i)
   	@status = @experiment.status
     @nodes = Hash.new()
@@ -55,7 +50,6 @@ class ExperimentsController < ApplicationController
     end
 
     unless params.has_key?("resources")    
-      #@log = OMF::Experiments::Controller::Proxy.new(params[:id].to_i).log
       @log = ""
     end
 
@@ -89,7 +83,7 @@ class ExperimentsController < ApplicationController
 
   def update    
     if params.key?('reset')      
-      @experiment = Experiment.find(params[:id])
+      #@experiment = Experiment.find(params[:id])
       @experiment.update_attributes(:status => 0)
     end
     redirect_to(experiment_url(@experiment)) 
@@ -124,70 +118,56 @@ class ExperimentsController < ApplicationController
   end
 
   def destroy
-    @exp = Experiment.find(params[:id])
-    @exp.destroy
-    redirect_to(project_path(@exp.project)) 
+    #load_experiment
+    @experiment.destroy
+    redirect_to(project_path(@experiment.project)) 
   end
 
-  def prepare
-    njobs = Job.all.size
-    @msg = nil
-    session[:estatus] = nil
-    if njobs > 0
-      @msg = "Preparation of this Experiment added to queue."
-    end
-    Delayed::Job.enqueue PrepareExperimentJob.new('prepare', params[:id])
+  def prepare    
+    #load_experiment
+    reset_stat_session
+    @experiment.prepare
+    @msg = "Experiment preparation job is added to queue."
+    Rails.logger.debug("Queueing preparation experiment")
   end
 
   def start
-    ec = OMF::Experiments::Controller::Proxy.new(params[:id].to_i)
-    njobs = Job.all.size
-    session[:estatus] = nil
-    @msg = nil
-    if ec.check(:prepared)
-      if njobs > 0
-        @msg = "Execution of this Experiment added to queue."
-      end
-      Delayed::Job.enqueue StartExperimentJob.new('start', params[:id])
-      Rails.logger.debug("Queueing experiment")
-    end
-  end
+    #load_experiment
+    reset_stat_session
+    @experiment.prepare
+    @msg = "Experiment run job added to queue."
+    Rails.logger.debug("Queueing run experiment")
+  end 
 
   def stop
-    ec = OMF::Experiments::Controller::Proxy.new(params[:id].to_i)
-    if ec.check(:started) or ec.check(:prepared)
-      ec.stop()
-    end
+    #load_experiment
+    @experiment.stop
   end
 
   def stat 
-    ec = OMF::Experiments::Controller::Proxy.new(params[:id].to_i)
-	@experiment = Experiment.find(params[:id])
-	status = @experiment.status
-    slice = nil
-	case 
-	when (@experiment.started? or @experiment.finished?)
-	  tmp = ec.experiment_status()		
-	  @msg = tmp
-	when (@experiment.preparing? or @experiment.prepared? or @experiment.preparation_failed?)
-      tmp = ec.prepare_status()  
-	  @nodes = tmp[:nodes]
-	  @state = tmp[:state]
-      slice = tmp[:slice]
-      if params.has_key?('log') and !slice.nil?
-        @log = ec.log(slice)
-      elsif params.has_key?('log')      
-        @log = ec.log()
-      end
-    end
-	@status = status
-	@ec = ec
-    if (@status == ExperimentStatus.PREPARING) or (@status == ExperimentStatus.STARTED)
-      session['estatus'] = @status
-    end
+    stat = @experiment.stat(!params[:log].blank?)
+	@nodes = stat[:nodes] if stat.has_key?(:nodes)
+	@state = stat[:state] if stat.has_key?(:state)
+    @log = ec.log(slice) if stat.has_key?(:log)
+    stat_session
   end
   
   private    
+  def load_experiment  
+    @experiment = Experiment.find(params[:id])
+  end
+
+  def reset_stat_session
+    session[:estatus] = nil
+  end
+  
+  def stat_session
+    status = @experiment.status
+    if (status == ExperimentStatus.PREPARING) or (status == ExperimentStatus.STARTED)
+      session[:estatus] = status
+    end
+  end
+
   def render_sqlite_file
     has_dump = !(params[:dump].nil? or params[:dump] == "false")
     ret = @experiment.sq3(params[:run], has_dump)
@@ -196,25 +176,6 @@ class ExperimentsController < ApplicationController
     end
     render :text => ret
   end
-  
-  def is_public
-    begin
-      project = Experiment.find(params[:id]).project
-      is_assigned = project.users.where(:id => current_user.id).exists?
-      if !is_assigned and project.private?        
-        respond_to do |format|
-          format.html { render 'shared/403' }
-          format.js { render 'shared/403' }
-        end
-        return false
-      end
-
-    rescue ActiveRecord::RecordNotFound
-      render 'shared/404', :status => 404
-      return false
-    end
-    return true
-  end  
 
   def default_vars()
     @projects = Project.all.select { |p| 

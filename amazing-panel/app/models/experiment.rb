@@ -59,8 +59,7 @@ class Experiment < ActiveRecord::Base
   include Delayed::Backend::ActiveRecord
   
   attr_accessible :description, :status, :created_at, :updated_at, :resources_map, :user, :runs, :failures
-
-  attr_accessor :job_phase, :job_id
+  attr_accessor :job_phase, :job_id, :proxy, :repository
   
   belongs_to :ed
   belongs_to :phase
@@ -75,6 +74,7 @@ class Experiment < ActiveRecord::Base
   has_many :testbeds, :through => :resources_map
 
   validates_with ExperimentEdValidator, :fields => [ :nodes ]
+  after_initialize :load_proxy
 
   scope :finished, where("status = 4 or status = 5") 
   scope :prepared, where("status = 2 or status = 5")
@@ -82,8 +82,14 @@ class Experiment < ActiveRecord::Base
   scope :running, where("status = 1 or status = 3")
   scope :active, where("status >= 0 and status != 4")
 
-  private
-  
+
+  private    
+  def load_proxy
+    unless self.id.blank?
+      self.proxy = OMF::Experiments::Controller::Proxy.new(id)      
+    end
+  end
+
   # Fetch all jobs from queue
   def self.get_jobs(&block)
     ret = Array.new()
@@ -135,11 +141,12 @@ class Experiment < ActiveRecord::Base
     return exp_jobs
   end
 
+
   #
   # Fetch SQLite3 Database
   def sq3(run=nil, dump=false)
     id = self.id
-    ec = OMF::Experiments::Controller::Proxy.new(id)
+    ec = self.proxy
     exp_id = run.nil? ? "#{id}_#{ec.runs.first}.sq3" : "#{id}_#{run}.sq3"
     results = "#{APP_CONFIG['exp_results']}#{id}/#{run}/#{exp_id}"       
     unless dump == false
@@ -151,7 +158,7 @@ class Experiment < ActiveRecord::Base
   # Fetch content of SQLite3 Database
   def results(run)
     Rails.logger.debug self.id
-    ec = OMF::Experiments::Controller::Proxy.new(self.id)
+    ec = self.proxy
     r = ec.runs
     run = r.max() if r.length > 0 and run.nil?
     
@@ -178,7 +185,62 @@ class Experiment < ActiveRecord::Base
     return { :seq_num => seq_num, :results => results, :runs_list => r }
   end
   
-  # Helper methods for the experiment status
+  def start
+    ec = self.proxy
+    njobs = Job.all.size
+    ret = false
+    if ec.check(:prepared)
+      if njobs > 0
+        ret = true
+      end
+      Delayed::Job.enqueue StartExperimentJob.new('start', self.id)      
+    end
+    return ret
+  end
+
+  def stop
+    if ec.check(:started) or ec.check(:prepared)
+      ec.stop()
+    end
+  end
+
+  def prepare
+    njobs = Job.all.size
+    ret = false
+    if njobs > 0
+      ret = true
+    end
+    Delayed::Job.enqueue PrepareExperimentJob.new('prepare', self.id.to_i)
+    return ret
+  end
+
+  def stat(with_log=false)
+    tmp = {}
+    ec = self.proxy
+	case 
+	when (started? or finished?)
+	  tmp[:msg] = ec.experiment_status()		
+	when (preparing? or prepared? or preparation_failed?)
+      tmp = ec.prepare_status()  
+      if with_log then tmp[:log] = ec.log() end
+    end   
+    return tmp
+  end
+  
+  """
+    Initializes the repository related to a user
+  """
+  def set_user_repository(user) 
+    self.repository = EVC::Repository.new(self.id, current_user)
+  end
+  
+  """
+    Fetch the list of all branches from EVC
+    Parameters: None.
+  """
+  def branches        
+  end
+
   def finished?
     if (status == 4 or status == 5) then return true end 
     return false
