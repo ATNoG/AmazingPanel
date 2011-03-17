@@ -28,7 +28,7 @@
   <%= render :partial => 'env_templates' %>
   <script>    
     function onChange(){
-      var code = "<%= escape_javascript(@experiment.ed.code) %>";
+      var code = "<%= raw escape_javascript(@experiment.ed.code) %>";
       var sizeo = this.historySize();
       var current_content = this.editor.getCode();
       var equal = (code == current_content);
