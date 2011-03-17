@@ -1041,7 +1041,8 @@ div.description {
 }
 
 .grid-view > tbody > tr:hover, .grid-line-hover {
-  background-color: #fff8dc;
+  /*background-color: #fff8dc;*/
+  background-color: #ccf8dc;
 }
 
 .grid-view > tbody > tr > td > .table-actions{
@@ -1502,16 +1503,20 @@ div.description {
   display: inline-block;
 }
 
-#new-branch-action > #branch_name_input {
+#new-branch-block > #branch_name_input {
   display: none;
 }
 
-#new-branch-action:hover > #branch_name_input {
+#new-branch-block {
+  display: inline-block;
+}
+
+#new-branch-block:hover > #branch_name_input {
   display: inline-block;
   opacity: 1.0;
 }
 
-#new-branch-action > #branch_name_input:focus {
+#new-branch-block > #branch_name_input:focus {
   display: inline-block;
   opacity: 1.0;
 }
@@ -1526,6 +1531,11 @@ div.description {
 
 .omnip-image-action:hover { 
   opacity: 1.0;
+}
+
+#changes_warning {
+  margin: 0px;
+  display: inline-block;
 }
 
 .show-dump-anchor {

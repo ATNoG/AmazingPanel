@@ -76,6 +76,7 @@ class Experiment < ActiveRecord::Base
   validates_with ExperimentEdValidator, :fields => [ :nodes ]
   after_initialize :load_proxy
 
+
   scope :finished, where("status = 4 or status = 5") 
   scope :prepared, where("status = 2 or status = 5")
   scope :started, where("status = 3")
@@ -88,6 +89,11 @@ class Experiment < ActiveRecord::Base
     unless self.id.blank?
       self.proxy = OMF::Experiments::Controller::Proxy.new(id)      
     end
+  end
+
+  def check_repository
+    if self.repository.blank? then return false end
+    return true
   end
 
   # Fetch all jobs from queue
@@ -142,8 +148,9 @@ class Experiment < ActiveRecord::Base
   end
 
 
-  #
-  # Fetch SQLite3 Database
+  """
+  Fetch SQLite3 Database
+  """
   def sq3(run=nil, dump=false)
     id = self.id
     ec = self.proxy
@@ -155,7 +162,9 @@ class Experiment < ActiveRecord::Base
     return results
   end
 
-  # Fetch content of SQLite3 Database
+  """
+  Fetch content of SQLite3 Database
+  """
   def results(run)
     Rails.logger.debug self.id
     ec = self.proxy
@@ -185,6 +194,9 @@ class Experiment < ActiveRecord::Base
     return { :seq_num => seq_num, :results => results, :runs_list => r }
   end
   
+  """
+  Enqueue a experiment start job to the queue
+  """
   def start
     ec = self.proxy
     njobs = Job.all.size
@@ -198,12 +210,18 @@ class Experiment < ActiveRecord::Base
     return ret
   end
 
+  """
+  Enqueue a experiment stop job to the queue
+  """
   def stop
     if ec.check(:started) or ec.check(:prepared)
       ec.stop()
     end
   end
 
+  """
+  Enqueue a experiment prepare job to the queue
+  """
   def prepare
     njobs = Job.all.size
     ret = false
@@ -214,6 +232,9 @@ class Experiment < ActiveRecord::Base
     return ret
   end
 
+  """
+  Enqueue a experiment stat job to the queue
+  """
   def stat(with_log=false)
     tmp = {}
     ec = self.proxy
@@ -233,18 +254,48 @@ class Experiment < ActiveRecord::Base
   def set_user_repository(user) 
     self.repository = EVC::Repository.new(self.id, user)
   end
-  
+   
   """
     Fetch the list of all branches from EVC
     Parameters: None.
   """
-  def branches     
-    repository = self.repository
-    unless repository.nil?
-      return repository.list_branches
-    end
+  def branches
+    unless check_repository then return nil end
+    return self.repository.branches.keys
   end
 
+  def clone(name, parent="master")
+    unless check_repository then return false end
+    return self.repository.clone_branch(name, parent)
+  end
+  """
+    Fetch current branch from repository
+    Parameters: None.
+  """
+  def current
+    unless check_repository then return nil end
+    return self.repository.current.name
+  end
+
+  """
+    Commit the changes on current working branch
+  """
+  def commit(branch, code, rm, message="Empty message")
+    unless check_repository then return nil end
+    return self.repository.branches[branch].commit_branch(message, code, rm)
+  end
+
+  """
+    Change the current working branch on experiment
+  """
+  def change(branch='master')
+    unless check_repository then return nil end
+    return self.repository.change_branch(branch)
+  end
+
+  """
+    Check for experiment statuses: finished, started, prepared, failed, finished.
+  """
   def finished?
     if (status == 4 or status == 5) then return true end 
     return false

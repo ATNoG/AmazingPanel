@@ -1,6 +1,6 @@
 module EVC
   class Branch
-    attr_accessor :id, :name, :user
+    attr_accessor :id, :name, :user, :info
 
     # Initialize a new Branch class instance
     # Parameters: id(String), name (String), user (String)
@@ -26,6 +26,10 @@ module EVC
 
     def create_changelog_entry(message)
       return {"author" => @user, "message" => message}
+    end
+
+    def load_branch_info
+      return YAML.load_file(branch_info_path())
     end
 
     def save_branch_info(branch_info)
@@ -59,7 +63,7 @@ module EVC
         } 
       }
       save_branch_info(branch_info)
-
+      load_branch_info
       return [true, "Branch #{name} created successfully"]
     end
 
@@ -80,7 +84,7 @@ module EVC
       }
 
       # Update changelog
-      branch_info = YAML::load(File.open(branch_info_path()))
+      branch_info = YAML.load_file(branch_info_path())
       branch_info[@name]['changelog'][timestamp] = create_changelog_entry(message)
       save_branch_info(branch_info)
     end
@@ -95,8 +99,10 @@ module EVC
       # Update changelog
       message = "Clone of branch #{name}" if message.nil?
       timestamp = Time.now.to_i
-      branch_info = YAML::load(File.open(branch_info_path()))
+      branch_info = YAML.load_file(branch_info_path())
+      Rails.logger.debug branch_info.inspect
       branch_info[@name]['changelog'][timestamp] = create_changelog_entry(message)
+
       save_branch_info(branch_info)
 
       # Copy files
@@ -119,15 +125,23 @@ module EVC
     # Parameters: name (String)
     def latest_commit(name=nil)
       name =  @name if name.nil?
-      branch_info = YAML::load(File.open(branch_info_path(name)))
+      branch_info = YAML.load_file(branch_info_path(name))
       return branch_info[name]['changelog'].max()[0]
+    end
+
+    def commits(author=@user)
+      commits = Hash.new()
+      load_branch_info()[@name]['changelog'].each do |tm, c|
+        commits[tm] = c if (c['author'] == author.to_s) or (author == :all)
+      end
+      return commits
     end
 
     # Checks if the resource map has changed
     # Parameters: resource_map (YAML)
     # Returns a boolean
     def resource_map_changed?(resource_map)
-      rs = YAML::load(File.open("#{branch_path()}/objects/#{timestamp}/resource_map.yml"))
+      rs = YAML.load_file("#{branch_path()}/objects/#{timestamp}/resource_map.yml")
       return !(rs == resource_map)
     end
 

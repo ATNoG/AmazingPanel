@@ -98,38 +98,34 @@ module ExperimentsHelper
     pane_link("commit-branch-action", "Commit Branch", 'commit_branch.png', "Commit the current alterations on selected branch")
   end
   
-  def commit_branch_image_link
+  def commit_branch_image_link(branch="master")
     options = {
       :id => "commit-branch-action",
       "original-title" => "Save current alterations, on selected branch"
     }
+    #return  link_to(commit_experiment_branch_path(:experiment_id => @experiment.id, :id => "master"), options) do
     return  link_to("#", options) do
       image_tag('save.png', :width => 16, :height => 16)
     end
   end
   
-  def new_branch_image_link(path)
-    options = {
-      :id => "new-branch-action",
-      :class => "omnip-image-action",      
-    }
-    return form_tag(experiment_branches_path(:experiment_id => @experiment.id), options) do 
+  def new_branch_image_link(branch="master")    
+    return content_tag(:div, :id=>"new-branch-block") do 
       text_field_tag(:name, nil, :class => "left", :id=>"branch_name_input") + 
-      link_to(path, {
-        "original-title" => "Create a new branch from the selected at the right"
-      }) do        
-        image_tag('new_branch.png', :width => 16, :height => 16)
+        link_to("#", { "original-title" => "Create a new branch from the selected at the right",
+                       :id => "new-branch-action" }) do        
+          image_tag('new_branch.png', :width => 16, :height => 16)                  
+        end
       end
-    end
   end
   
-  def change_branch_image_link(path)
+  def change_branch_image_link(branch="master")
     options = {
       :id => "change-branch-action",
       :class => "omnip-image-action",      
       "original-title" => "Change the working branch"
     }
-    return  link_to(path, options) do
+    return  link_to(change_experiment_branch_path(:experiment_id => @experiment.id, :id => "master"), options) do
       image_tag('branch.png', :width => 16, :height => 16)
     end
   end

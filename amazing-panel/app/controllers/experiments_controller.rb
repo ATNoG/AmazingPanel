@@ -48,8 +48,11 @@ class ExperimentsController < ApplicationController
     @experiment.resources_map.each do |rm|
       @resources[rm.node_id] = rm.sys_image_id
     end    
-    set_resources_instance_variables()
+    
+    change_branch()
+    set_resources_instance_variables()    
     results_for_run if @experiment.finished?
+
     respond_to do |format|
       format.sq3 {
         render_sqlite_file
@@ -136,8 +139,8 @@ class ExperimentsController < ApplicationController
   end
   
   private    
-  def load_experiment  
-    @experiment = Experiment.find(params[:id])
+  def change_branch
+    @experiment.repository.change_branch(params[:branch]) unless params[:branch].blank?
   end
 
   def reset_stat_session

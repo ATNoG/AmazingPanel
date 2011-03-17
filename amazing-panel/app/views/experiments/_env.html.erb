@@ -1,3 +1,4 @@
+<% current_branch = @experiment.repository.current.name %>
 <ul id="experiment-widget-tabs" class="tabs">
   <li><a href="#status">Status</a></li>
   <li><%= ed_pane_link %> </li>
@@ -12,7 +13,7 @@
 
 <%= render :partial => 'status' %>
 
-<%= form_tag(experiment_branches_path(:experiment_id => @experiment.id)) do %>
+<%= form_tag(commit_experiment_branch_path(:experiment_id => @experiment.id, :id => current_branch), :id => 'commit-branch-form') do %>
 <div id="ed" class="tab">
   <%= text_area_tag :code, @experiment.ed.code  %>
 </div>

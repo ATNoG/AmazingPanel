@@ -27,8 +27,8 @@
 <% content_for :bottom_scripts do %>
   <%= render :partial => 'env_templates' %>
   <script>    
+    var code = "<%= raw escape_javascript(@experiment.ed.code) %>";
     function onChange(){
-      var code = "<%= raw escape_javascript(@experiment.ed.code) %>";
       var sizeo = this.historySize();
       var current_content = this.editor.getCode();
       var equal = (code == current_content);
@@ -40,25 +40,25 @@
     }
     
     function onSave(){
+      changeBranchActions();
     }
-    <%= render :partial => 'library/eds/codemirror.js', :locals => { :target => 'code', :readonly => false, :change => "onChange"} %>
+
+    <%= render :partial => 'library/eds/codemirror.js', 
+               :locals => { 
+                :target => 'code', 
+                :readonly => false, 
+                :change => "onChange", 
+                :save => "onSave",
+                :syntax => 'ruby' 
+               } %>
   <%= render :partial => 'resources_map.js' %>
   <% if @experiment.preparing? or @experiment.started? %>
     experimentStat();  
-  <% end %>  
+  <% end %>
+  $("#commit-branch-action").click(function(evt){$("#commit-branch-form").submit();});
+  $("#new-branch-action").click(function(evt){$("#new-branch-form").submit();});
+  $("select#parent").change(function(){      
+    changeBranchActions();      
+  });
   </script>
 <% end %>
-<!--
-  $(".pane").hide();
-  $(".pane:eq(0)").show();
-  $(".pane-links > a:first-child").addClass("pane-link-active");
-  $(".pane-links a").live('click', function(evt){
-      var active_tab = $($(this).attr("href"));
-      $(".pane").hide();
-      $(".pane-links > a").removeClass("pane-link-active");
-      $(this).addClass("pane-link-active");
-      active_tab.fadeIn();
-      active_tab.focus();
-      return false;
-  });
-  -->

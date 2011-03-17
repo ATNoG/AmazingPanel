@@ -24,6 +24,9 @@ en:
     testbed:
       status: "Status in about %{interval} seconds."
     experiments:
+      evc:
+        branch_commit: "Commit done on branch %{branch}" 
+        branch_clone: "Clone done from %{branch}" 
       messages:
         exp_failed: "Your experiment has failed, either you can prepare or start it again."
         queue_tip: "Experiments highlighted in green are prepared to run. Prepared means with the images loaded into the nodes, therefore booted and able to run your experiment."
@@ -42,6 +45,9 @@ en:
     sys_image:
       destroy: "Error deleting system image."
     experiment:
+      evc:
+        branch_commit: "Commit error on branch %{branch}" 
+        branch_clone: "Clone error from %{branch}" 
       failure:
         running: "Another experiment is running."
       nodes: 

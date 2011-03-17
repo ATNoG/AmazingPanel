@@ -53,11 +53,11 @@ AmazingPanel::Application.routes.draw do
     get 'stat', :action => 'stat', :on => :member
     get 'queue', :action => 'queue', :on => :collection
     delete 'queue/:job_id', :action => 'delete_queue', :as => "delete_queue", :on => :collection
-    resources :branches, :only => [:create, :update, :destroy] do 
-      get 'info', :action => 'info', :on => :member
-      get 'clone', :action => 'clone', :on => :member
-      get 'commit', :action => 'commit', :on => :member
-      get 'change', :action => 'change', :on => :member
+    resources :branches, :except => [:index, :edit, :new] do 
+      member do 
+        post 'clone', :action => 'clone'
+        post 'commit', :action => 'commit'
+      end
     end
   end
   

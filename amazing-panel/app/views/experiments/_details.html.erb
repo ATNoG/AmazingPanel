@@ -2,12 +2,13 @@
 <% project = @experiment.project %>
 
 <div class="branch-info">
-  <b>Branch:</b>
-  <%= select_tag "experiment[branches]", options_for_select(@experiment.branches.collect {|b| [ b.name ] }) %>
-  <%= commit_branch_image_link %>
-  <%= change_branch_image_link(edit_ed_path(@experiment.ed)) %>
-  <%= new_branch_image_link(edit_ed_path(@experiment.ed)) %>
-  <p id="changes_warning" class="notice" style="display:none">Need to save your changes</p>
+  <% options = { :id => "new-branch-form" } %>
+  <%= form_tag(clone_experiment_branch_path(:experiment_id => @experiment.id), options) do %>
+    <b>Branch:</b>
+    <%= select_tag "parent", options_for_select(@experiment.branches, @experiment.current) %>
+    <%= commit_branch_image_link %>
+    <%= new_branch_image_link %>    
+    <% end %>
 </div>
 
 <p>

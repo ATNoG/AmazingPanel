@@ -1,6 +1,6 @@
 class Resource < ActiveRecord::Base
   self.abstract_class = true
-  scope :ge, lambda { |column, value| { :conditions => [column+" >= " + value] } }
+  scope :ge, lambda { |column, value| { :conditions => [column+" >= " + value] } } 
   scope :le, lambda { |column, value| { :conditions => [column+" <= " + value] } }
   scope :l, lambda { |column, value| { :conditions => [column+" < " + value] } }
   scope :g, lambda { |column, value| { :conditions => [column+" > " + value] } }

@@ -42,6 +42,7 @@ $("#remove-action").live("click", function(evt){
      $("#node-"+node).removeClass("mapped").css("background-color", "gray");
   }
 });
+
 $("#associate-action").live("click", function(evt){    
     var n_images = $("#experiment_sys_images").attr("last");
     var __sys_image = $("#experiment_sys_images option:selected");
@@ -99,25 +100,11 @@ $(".show-dump-anchor").live("click", function(evt){
   var run = $("#runs option:selected").text();
   $("#modal-dialog > .modal-container > #dump").load("<%= experiment_path(experiment, :format=>"sq3") %>?run="+run+"&dump=true",
     function(){
-      if (CodeMirror != undefined) {
-        CodeMirror.fromTextArea('dump', {
-          parserfile: ["../parsesql.js"],
-          stylesheet: "/stylesheets/codemirror/sqlcolors.css",
-          path: "/javascripts/codemirror/base/",
-          lineNumbers: false,
-          textWrapping: false,
-          indentUnit: 2,
-          parserConfig: {},
-          readOnly: true,
-          height: "465px",
-          width: "100%"
-        }, 0);
-      }        
+      <%= render :partial => 'library/eds/codemirror.js', :locals => {:target => 'dump', :syntax => 'sql'} %>
       $("#modal-dialog").fadeIn();
       $("#modal-dialog").toggleClass("dialog-active");
     }
   );  
-
 });
 
 
