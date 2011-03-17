@@ -41,32 +41,15 @@ class ExperimentsController < ApplicationController
   end
 
   def show
-    #load_experiment
-    ec = OMF::Experiments::Controller::Proxy.new(params[:id].to_i)
+    @experiment.set_user_repository(current_user)
   	@status = @experiment.status
-    @nodes = Hash.new()
+    @code = @experiment.ed.code
+    @resources = Hash.new()
     @experiment.resources_map.each do |rm|
-      @nodes[rm.node_id] = rm.sys_image_id
-    end
-
-    unless params.has_key?("resources")    
-      @log = ""
-    end
-
-    case 
-    when params.has_key?("resources")
-      @resources = @experiment.resources_map
-      @testbed = @resources.first.testbed
-      service = OMF::GridServices::TestbedService.new(@testbed.id);
-      @nodes = service.mapping()
-      @has_map = service.has_map()
-      #@nodes = OMF::GridServices.testbed_status(@testbed.id)
-    when @experiment.finished?
-      ret = @experiment.results(params[:run]) 
-      @results = ret[:results]
-      @seq_num = ret[:seq_num]
-      @raw_results = ret[:runs_list]
-    end
+      @resources[rm.node_id] = rm.sys_image_id
+    end    
+    set_resources_instance_variables()
+    results_for_run if @experiment.finished?
     respond_to do |format|
       format.sq3 {
         render_sqlite_file
@@ -176,8 +159,26 @@ class ExperimentsController < ApplicationController
     end
     render :text => ret
   end
+  
+  def set_resources_instance_variables(embedded=true)
+    @resources = @experiment.resources_map
+    @testbed = @resources.first.testbed
+    service = OMF::GridServices::TestbedService.new(@testbed.id);
+    if embedded
+      @nodes = service.mapping()
+      @has_map = service.has_map()
+    end
+    #@nodes = OMF::GridServices.testbed_status(@testbed.id)
+  end
 
-  def default_vars()
+  def results_for_run
+    ret = @experiment.results(params[:run]) 
+    @results = ret[:results]
+    @seq_num = ret[:seq_num]
+    @raw_results = ret[:runs_list]
+  end
+
+  def default_vars
     @projects = Project.all.select { |p| 
       !project_is_user_assigned?(p, current_user.id) ? true : false 
     }.collect { |p| 

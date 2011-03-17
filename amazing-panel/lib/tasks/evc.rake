@@ -19,7 +19,7 @@ namespace :evc do
     end
 
     user = experiment.user unless (user_by_username.blank? and user_by_id.blank?)
-    
+
     if user.blank?
       puts "User not found."
       return false

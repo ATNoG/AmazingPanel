@@ -1,0 +1,18 @@
+<% if defined?(target) %>
+if (CodeMirror != undefined){
+  var <%= target %> = CodeMirror.fromTextArea("<%= target %>", {
+    parserfile: ["../tokenizeruby.js", "../parseruby.js"],
+    stylesheet: "/stylesheets/codemirror/rubycolors.css",
+    path: "/javascripts/codemirror/base/",
+    lineNumbers: false,
+    textWrapping: true,
+    indentUnit: 2,
+    parserConfig: {},
+    readOnly: <%= defined?(readonly) ? readonly  : true %>,
+    height: "<%= defined?(height) ? height : "465px" %>",
+    width: "<%= defined?(width) ? width : "100%" %>",
+    onChange: <%= defined?(change) ? "onChange" : "null" %>,
+    saveFunction: <%= defined?(change) ? "onSave" : "null" %>
+  }, 0);
+}
+<% end %>

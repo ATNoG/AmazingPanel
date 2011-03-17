@@ -5,7 +5,7 @@ module EVC
     def initialize(id, user)      
       @id = id    
       @user = user
-      @current = Branch.new(@id, "master", user.username)
+      @current = EVC::Branch.new(@id, "master", user.username)
     end
 
     def repository_path()
@@ -26,7 +26,7 @@ module EVC
       Dir.mkdir(branches_path())
 
       # Create 'master' Repository
-      master_branch = Branch.new(@id, "master", user.username)
+      master_branch = EVC::Branch.new(@id, "master", user.username)
       ret = master_branch.new_branch("Main branch of ##{@id}")
 
       # Fetchs experiment information
@@ -52,9 +52,11 @@ module EVC
 
       # Add only directories
       # discarding '.' and '..' dir entries
+      blacklist = [".", ".."]
       Dir.foreach(branches_path()) { |e|
-        valid = (e != ".") and ( e != "..")
-        list << Branch.new(@id,e,user.username) if (File.directory?("#{branches_path()}/#{e}") and valid)
+        unless blacklist.include?(e)
+          list << EVC::Branch.new(@id,e,user.username) if File.directory?("#{branches_path()}/#{e}")
+        end
       }
       return list
     end

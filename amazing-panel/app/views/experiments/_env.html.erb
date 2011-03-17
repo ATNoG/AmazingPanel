@@ -1,0 +1,34 @@
+<ul id="experiment-widget-tabs" class="tabs">
+  <li><a href="#status">Status</a></li>
+  <li><%= ed_pane_link %> </li>
+  <li><%= rm_pane_link %> </li>
+  <% if @experiment.finished? and @raw_results.length > 0%>
+    <li><a href="#results">Results</a></li>
+  <% end %>
+  <% unless @experiment.prepared? %>
+    <li id="log-tab-sel"><a href="#log">Log</a></li>
+  <% end %>
+</ul>
+
+<%= render :partial => 'status' %>
+
+<%= form_tag(experiment_branches_path(:experiment_id => @experiment.id)) do %>
+<div id="ed" class="tab">
+  <%= text_area_tag :code, @experiment.ed.code  %>
+</div>
+<div id="rm" class="tab">
+<%= render :partial => 'e_map' %>
+</div>
+<% end %>
+
+<% if @experiment.finished? and @raw_results.length > 0 %>
+  <%= render :partial => 'results' %>
+<% end %>  
+<% if !@experiment.prepared? %>
+  <div id="log" class="tab">
+  <% unless @experiment.prepared? %>
+    <textarea id="log_area" readonly="readonly">
+    </textarea>
+  <% end  %>
+  </div>
+  <% end %>

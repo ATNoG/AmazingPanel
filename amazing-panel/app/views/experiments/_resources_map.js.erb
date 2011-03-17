@@ -1,0 +1,13 @@
+<% last = SysImage.last.id %>
+<% @resources.each do |rm| %>
+  <% d = rm.sys_image_id.to_f/last.to_f %>
+  $("#node-<%= rm.node_id %>").css("background-color", rgb_color("<%= d %>"));
+  $("#node-<%= rm.node_id %>").attr("description", "<%= "#{rm.sys_image.name}" %>");
+  $("#table-mapped-nodes").append("<tr id='map-<%= rm.node_id %>'>"+
+      "<td><%= rm.node_id %></td>"+
+      "<td><%= rm.sys_image.name%></td>"+
+      "<td style='width:12px;height:12px;background-color:"+rgb_color("<%= d %>")+"'>"+
+      "<input id='node_<%= rm.node_id %>_<%= rm.sys_image.id %>' name=experiment[nodes][<%= rm.node_id %>][sys_image] type='hidden' value='<%= rm.sys_image.id%>' />"+
+      "</td>"+
+    "</tr>");   
+<% end %>

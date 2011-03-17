@@ -226,19 +226,68 @@ a:link {
 }
 
 .tabs li {
-	float: left;
-	list-style: none;
-    margin: 0;
-    padding: 0;
-    height: 20px;
-    line-height: 20px;
-    border: 1px solid #999;
-    border-left: none;
-    margin-top: -1px;
-    background: #e0e0e0;
-    overflow: hidden;
-    position: relative;
- }
+  float: left;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  height: 20px;
+  line-height: 20px;
+  border: 1px solid #999;
+  border-left: none;
+  margin-top: -1px;
+  background: #e0e0e0;
+  overflow: hidden;
+  position: relative;
+}
+
+.pane-tab > img {
+  vertical-align: sub;
+}
+#experiment-widget-tabs{
+  height: 24px;
+}
+
+#experiment-widget-tabs > li {
+  height: 24px;
+  line-height: 24px;
+}
+
+#experiment-widget-tabs > li > a {
+  height: 24px;
+  line-height: 24px;
+  border: none;
+  /*padding: 2px 20px 3px 7px;*/
+  text-align: center;
+}
+
+.pane-link-active {
+  color: white;
+  background-color: #e0e0e0;
+  border-radius: 3px;
+  border: 1px solid #a4a4a4;
+}
+
+.pane-links > a {
+  font-size: 11px;
+  color: gray;
+  margin-left: 5px;
+  padding: 4px;
+  margin: 1px;
+}
+
+.pane-links > a > img {
+  vertical-align: sub;
+  padding-right: 4px;
+}
+
+.pane {
+  display: none;
+  padding-top: 10px;
+}
+
+.pane-links + .pane {
+  display: block;
+}
 
 .tabs li a {
     text-decoration: none;
@@ -1166,10 +1215,10 @@ div.description {
   clear: both;
 }
 <% if user_signed_in? %>
-  <% if current_user.admin? or (can? :node_info, Testbed) or (can? :node_toggle, Testbed) %>
-    <%= render :partial => "testbeds", :locals => { :selectable => true, :toggleable => false} %>
-  <% elsif params[:c] == "experiments" or params[:c] == "projects" or (params[:c] == "library/eds" and params[:a] == "new") %>
+  <% if params[:c] == "experiments" or params[:c] == "projects" or (params[:c] == "library/eds" and params[:a] == "new") %>
     <%= render :partial => "testbeds", :locals => { :selectable => true, :toggleable => true } %>
+  <% elsif current_user.admin? or (can? :node_info, Testbed) or (can? :node_toggle, Testbed) %>
+    <%= render :partial => "testbeds", :locals => { :selectable => true, :toggleable => false} %>
   <% end %>
 <% else %>
   <%= render :partial => "testbeds", :locals => { :selectable => false, :toggleable => false } %>
@@ -1447,6 +1496,36 @@ div.description {
 .more-ed-anchor {
   font-size: 9px;
   color:#3e5c6b;
+}
+
+.branch-info > * {
+  display: inline-block;
+}
+
+#new-branch-action > #branch_name_input {
+  display: none;
+}
+
+#new-branch-action:hover > #branch_name_input {
+  display: inline-block;
+  opacity: 1.0;
+}
+
+#new-branch-action > #branch_name_input:focus {
+  display: inline-block;
+  opacity: 1.0;
+}
+
+#branch_name_imput:hover > a {
+  opacity: 1.0;
+}
+
+.omnip-image-action { 
+  opacity: 0.3;
+}
+
+.omnip-image-action:hover { 
+  opacity: 1.0;
 }
 
 .show-dump-anchor {

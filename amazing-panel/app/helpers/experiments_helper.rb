@@ -73,4 +73,64 @@ module ExperimentsHelper
     images_loader = content_tag(:div, "", :id => "images-loading");
     return (container+images_loader).html_safe
   end  
+
+  def pane_link(resource, name, image=nil, desc=nil)
+    options = { 
+      :id => "edit-#{resource}-action", 
+      :class => "pane-tab"
+    }
+    
+    return link_to("##{resource}", options) do
+      ret = image_tag(image, :width => 16, :height => 16) unless image.blank?
+      ret + name
+    end
+  end
+
+  def ed_pane_link
+    pane_link("ed", "Definition", 'edit.png')
+  end
+
+  def rm_pane_link
+    pane_link("rm", "Map", 'rm_edit.png')
+  end
+  
+  def commit_branch_image_link
+    pane_link("commit-branch-action", "Commit Branch", 'commit_branch.png', "Commit the current alterations on selected branch")
+  end
+  
+  def commit_branch_image_link
+    options = {
+      :id => "commit-branch-action",
+      "original-title" => "Save current alterations, on selected branch"
+    }
+    return  link_to("#", options) do
+      image_tag('save.png', :width => 16, :height => 16)
+    end
+  end
+  
+  def new_branch_image_link(path)
+    options = {
+      :id => "new-branch-action",
+      :class => "omnip-image-action",      
+    }
+    return form_tag(experiment_branches_path(:experiment_id => @experiment.id), options) do 
+      text_field_tag(:name, nil, :class => "left", :id=>"branch_name_input") + 
+      link_to(path, {
+        "original-title" => "Create a new branch from the selected at the right"
+      }) do        
+        image_tag('new_branch.png', :width => 16, :height => 16)
+      end
+    end
+  end
+  
+  def change_branch_image_link(path)
+    options = {
+      :id => "change-branch-action",
+      :class => "omnip-image-action",      
+      "original-title" => "Change the working branch"
+    }
+    return  link_to(path, options) do
+      image_tag('branch.png', :width => 16, :height => 16)
+    end
+  end
 end

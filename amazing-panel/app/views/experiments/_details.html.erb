@@ -1,5 +1,15 @@
 <% creator = @experiment.user %>
 <% project = @experiment.project %>
+
+<div class="branch-info">
+  <b>Branch:</b>
+  <%= select_tag "experiment[branches]", options_for_select(@experiment.branches.collect {|b| [ b.name ] }) %>
+  <%= commit_branch_image_link %>
+  <%= change_branch_image_link(edit_ed_path(@experiment.ed)) %>
+  <%= new_branch_image_link(edit_ed_path(@experiment.ed)) %>
+  <p id="changes_warning" class="notice" style="display:none">Need to save your changes</p>
+</div>
+
 <p>
   <b>Creator:</b>
   <%= link_to creator.name, user_path(:id => creator.id) %>
@@ -15,14 +25,12 @@
   <%= @experiment.duration %>
 </p>
 
-<p>
+<p class="ed-description">
   <b>Description:</b>
-  <%= link_to "[See Ed]", "#nav-global", :class=>"more-ed-anchor", :ed => @experiment.ed.id %>
   <%= @experiment.ed.description %>
-  <%= link_to "[Edit Ed]", edit_ed_path(@experiment.ed), :class => "more-ed-anchor" %>
-</p>        
+</p>
 
 <p>
   <b>Runs:</b>
   <%= @experiment.runs %>
-</p>        
+</p>

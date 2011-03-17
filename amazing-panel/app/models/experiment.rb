@@ -231,14 +231,18 @@ class Experiment < ActiveRecord::Base
     Initializes the repository related to a user
   """
   def set_user_repository(user) 
-    self.repository = EVC::Repository.new(self.id, current_user)
+    self.repository = EVC::Repository.new(self.id, user)
   end
   
   """
     Fetch the list of all branches from EVC
     Parameters: None.
   """
-  def branches        
+  def branches     
+    repository = self.repository
+    unless repository.nil?
+      return repository.list_branches
+    end
   end
 
   def finished?

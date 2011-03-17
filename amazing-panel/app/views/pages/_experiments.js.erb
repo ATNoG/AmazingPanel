@@ -1,6 +1,6 @@
 <% params.merge!(Rails.application.routes.recognize_path(params[:p])) %>
 
-<% if (@a == "new") or (@a == "create")%>
+<% if (@a == "new") or (@a == "create") or (@a == "show")%>
 $(".field > #experiment_submit").hover(function() {
   var _toggle = 'arrow-active-toggle'
   var _selector = $('.arrow-active')
@@ -88,19 +88,6 @@ if (url.match('#')) {
     var elem = $('.tabs > li > a[href="'+anchor+'"] ');
     elem.parent().click();
 }
-
-$(".more-ed-anchor[ed]").live("click", function(evt){
-  $("#modal-dialog > .title-box").html("Experiment Definition");
-  $("#modal-dialog > .modal-container").html("<div id=\"ed-<%= +experiment.ed.id %>\"></div>");
-  var tmp = $("#modal-dialog, .modal-container")
-  tmp.css("width","500px"); 
-  $("#modal-dialog").css("height","500px").css("top","20%").css("left", "30%");
-  $(".modal-container").css("height","465px"); 
-  $.getScript("<%= ed_path(experiment.ed, :format=>"js")  %>");
-	$("#modal-dialog").fadeIn();
-  $("#modal-dialog").toggleClass("dialog-active");
-
-});
 
 $(".show-dump-anchor").live("click", function(evt){
   $("#modal-dialog > .title-box").html("Results SQlite3 Database Dump");
