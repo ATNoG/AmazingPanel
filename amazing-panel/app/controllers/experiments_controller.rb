@@ -42,14 +42,16 @@ class ExperimentsController < ApplicationController
 
   def show
     @experiment.set_user_repository(current_user)
-  	@status = @experiment.status
+    change_branch()  	
+
+    @status = @experiment.status
     @code = @experiment.ed.code
     @resources = Hash.new()
     @experiment.resources_map.each do |rm|
       @resources[rm.node_id] = rm.sys_image_id
     end    
     
-    change_branch()
+
     set_resources_instance_variables()    
     results_for_run if @experiment.finished?
 
@@ -140,7 +142,7 @@ class ExperimentsController < ApplicationController
   
   private    
   def change_branch
-    @experiment.repository.change_branch(params[:branch]) unless params[:branch].blank?
+    @experiment.change(params[:branch]) unless params[:branch].blank?
   end
 
   def reset_stat_session
@@ -165,6 +167,7 @@ class ExperimentsController < ApplicationController
   
   def set_resources_instance_variables(embedded=true)
     @resources = @experiment.resources_map
+    Rails.logger.debug @resources.first.inspect
     @testbed = @resources.first.testbed
     service = OMF::GridServices::TestbedService.new(@testbed.id);
     if embedded

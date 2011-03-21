@@ -13,9 +13,12 @@
 
 <%= render :partial => 'status' %>
 
-<%= form_tag(commit_experiment_branch_path(:experiment_id => @experiment.id, :id => current_branch), :id => 'commit-branch-form') do %>
+<%= form_tag(commit_experiment_branch_path(
+                :experiment_id => @experiment.id, 
+                :id => current_branch), 
+             :id => 'commit-branch-form') do %>
 <div id="ed" class="tab">
-  <%= text_area_tag :code, @experiment.ed.code  %>
+  <%= text_area_tag :code, @experiment.code  %>
 </div>
 <div id="rm" class="tab">
 <%= render :partial => 'e_map' %>

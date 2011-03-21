@@ -137,11 +137,22 @@ module EVC
       return commits
     end
 
+
+    def resource_map(timestamp=latest_commit())
+      rs = YAML.load_file("#{branch_path()}/objects/#{timestamp}/resource_map.yml")
+      return rs
+    end
+    
+    def ed(timestamp=latest_commit())
+      e = File.open("#{branch_path()}/objects/#{latest_commit()}/code.rb")
+      return e.read()
+    end
+
     # Checks if the resource map has changed
     # Parameters: resource_map (YAML)
     # Returns a boolean
     def resource_map_changed?(resource_map)
-      rs = YAML.load_file("#{branch_path()}/objects/#{timestamp}/resource_map.yml")
+      rs = YAML.load_file("#{branch_path()}/objects/#{latest_commit()}/resource_map.yml")
       return !(rs == resource_map)
     end
 

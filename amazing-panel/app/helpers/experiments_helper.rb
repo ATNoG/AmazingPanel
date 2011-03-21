@@ -115,7 +115,7 @@ module ExperimentsHelper
         link_to("#", { "original-title" => "Create a new branch from the selected at the right",
                        :id => "new-branch-action" }) do        
           image_tag('new_branch.png', :width => 16, :height => 16)                  
-        end
+        end + content_tag (:b, "Need to save your changes", :class => "notice", :id => "changes_warning")
       end
   end
   

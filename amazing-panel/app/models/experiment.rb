@@ -19,7 +19,7 @@ class ResourceMapValidator < ActiveModel::Validator
 end
 
 class ResourcesMap < ActiveRecord::Base
-  attr_accessible :progress, :node, :experiment, :sys_image, :testbed_id, :sys_image_id, :node_id
+  attr_accessible :progress, :node, :experiment, :sys_image, :testbed, :testbed_id, :sys_image_id, :node_id
   belongs_to :node
   belongs_to :experiment
   belongs_to :sys_image
@@ -58,24 +58,21 @@ class Experiment < ActiveRecord::Base
   include OMF::Experiments::Controller
   include Delayed::Backend::ActiveRecord
   
-  attr_accessible :description, :status, :created_at, :updated_at, :resources_map, :user, :runs, :failures
-  attr_accessor :job_phase, :job_id, :proxy, :repository
+  attr_accessible :description, :status, :created_at, :updated_at, :user, :runs, :failures
+  attr_accessor :job_phase, :job_id, :proxy, :repository, :code, :resources_map
   
   belongs_to :ed
   belongs_to :phase
   belongs_to :user
-  belongs_to :project
+  belongs_to :project  
   
-  delegate :code, :to => :ed, :prefix => true
-  
-  has_many :resources_map, :dependent => :destroy
-  has_many :nodes, :through => :resources_map
-  has_many :sys_images, :through => :resources_map
-  has_many :testbeds, :through => :resources_map
+  #has_many :resources_map, :dependent => :destroy
+  #has_many :nodes, :through => :resources_map
+  #has_many :sys_images, :through => :resources_map
+  #has_many :testbeds, :through => :resources_map
 
   validates_with ExperimentEdValidator, :fields => [ :nodes ]
   after_initialize :load_proxy
-
 
   scope :finished, where("status = 4 or status = 5") 
   scope :prepared, where("status = 2 or status = 5")
@@ -253,8 +250,39 @@ class Experiment < ActiveRecord::Base
   """
   def set_user_repository(user) 
     self.repository = EVC::Repository.new(self.id, user)
+    refresh_ed_res_map(self)    
   end
-   
+
+  def refresh_ed_res_map(record)    
+    Rails.logger.debug("CODE FROM#{record.repository.current.name}")
+    record.code = record.repository.current.ed
+    rm = Array.new()
+    tmp = record.repository.current.resource_map['resources']
+    tmp.each do |k,v|
+      params = {
+        :experiment => self, 
+        :testbed => Testbed.find(v['testbed']), 
+        :node => Node.find(k), 
+        :sys_image_id => SysImage.find(v['sys_image'])
+      }
+      rm.push(ResourcesMap.new(params))
+    end
+    record.resources_map = rm
+  end
+  
+  def after_clone_branch(record)
+    refresh_ed_res_map(record)
+  end
+
+  def after_commit_branch(record)
+    refresh_ed_res_map(record)
+  end
+
+  def after_change_branch(record)
+    Rails.logger.debug record.repository.current
+    refresh_ed_res_map(record)
+  end
+
   """
     Fetch the list of all branches from EVC
     Parameters: None.
@@ -266,8 +294,12 @@ class Experiment < ActiveRecord::Base
 
   def clone(name, parent="master")
     unless check_repository then return false end
-    return self.repository.clone_branch(name, parent)
+    ret = self.repository.clone_branch(name, parent)
+    ret = self.repository.change_branch(name) if ret
+    after_clone_branch(self)
+    return ret
   end
+  
   """
     Fetch current branch from repository
     Parameters: None.
@@ -282,7 +314,9 @@ class Experiment < ActiveRecord::Base
   """
   def commit(branch, code, rm, message="Empty message")
     unless check_repository then return nil end
-    return self.repository.branches[branch].commit_branch(message, code, rm)
+    ret = self.repository.branches[branch].commit_branch(message, code, rm)
+    after_commit_branch(self)
+    return ret
   end
 
   """
@@ -290,7 +324,9 @@ class Experiment < ActiveRecord::Base
   """
   def change(branch='master')
     unless check_repository then return nil end
-    return self.repository.change_branch(branch)
+    ret = self.repository.change_branch(branch)
+    after_change_branch(self)
+    return ret
   end
 
   """
