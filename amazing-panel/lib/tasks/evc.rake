@@ -81,5 +81,20 @@ namespace :evc do
         end
       }
     end
+
+    task :fallback => :environment do
+      puts "Fetching experiments..."
+      Experiment.all.each do |e|        
+        has_rp = e.has_repository?
+        puts "ID=#{e.id} has_repository=#{has_rp}"        
+        unless has_rp
+          map = Hash.new()
+          ResourcesMap.where(:experiment_id => e.id).collect do |rm| 
+            map[rm.node_id] = rm.sys_image_id
+          end
+          puts "Creating repository...#{e.repository.init(map)}"
+        end
+      end
+    end
   end
 end

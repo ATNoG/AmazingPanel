@@ -106,7 +106,8 @@ module EVC
       save_branch_info(branch_info)
 
       # Copy files
-      FileUtils.cp_r("#{branch_path(name)}/objects/#{latest_commit(name)}", "#{branch_path()}/objects/#{timestamp}")
+      FileUtils.cp_r("#{branch_path(name)}/objects/#{latest_commit(name)}", 
+                     "#{branch_path()}/objects/#{timestamp}")
     end
 
     # Store the results of a given run
@@ -136,7 +137,6 @@ module EVC
       end
       return commits
     end
-
 
     def resource_map(timestamp=latest_commit())
       rs = YAML.load_file("#{branch_path()}/objects/#{timestamp}/resource_map.yml")

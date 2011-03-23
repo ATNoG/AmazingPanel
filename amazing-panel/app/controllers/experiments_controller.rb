@@ -8,6 +8,7 @@ class ExperimentsController < ApplicationController
 
   include Library::SysImagesHelper
   include ProjectsHelper
+  include BranchesHelper
 
   load_and_authorize_resource :experiment
 
@@ -41,16 +42,16 @@ class ExperimentsController < ApplicationController
   end
 
   def show
-    @experiment.set_user_repository(current_user)
+    #@experiment.set_user_repository(current_user)
     change_branch()  	
 
     @status = @experiment.status
     @code = @experiment.ed.code
     @resources = Hash.new()
+    
     @experiment.resources_map.each do |rm|
       @resources[rm.node_id] = rm.sys_image_id
-    end    
-    
+    end        
 
     set_resources_instance_variables()    
     results_for_run if @experiment.finished?
@@ -62,6 +63,11 @@ class ExperimentsController < ApplicationController
       format.html
       format.js
     end 
+  end
+
+  def resources    
+    @ed = Ed.try(:find, params[:ed])
+    @allowed = @ed.allowed
   end
 
   def new
@@ -85,34 +91,23 @@ class ExperimentsController < ApplicationController
     @experiment.project = Project.find(params[:experiment][:project_id])
     @experiment.status = 0
     @experiment.runs = 0
-    @experiment.failures = 0      
-    testbed = params[:experiment][:nodes]["testbed"]
-    if @experiment.save
-      params[:experiment][:nodes].each do |k,v|
-        rm = @experiment.resources_map.create(:node_id => k, 
-                                              :sys_image_id => v[:sys_image], 
-                                              :testbed_id => testbed)
-      end
-    end
-
-    if @experiment.valid?
+    @experiment.failures = 0
+    rms = transform_map(params[:experiment][:nodes])
+    @experiment.set_resources_map(rms)
+    if @experiment.save()
       redirect_to(@experiment)
     else
-      @experiment.destroy
-      @experiment.resources_map.destroy
       default_vars()
       render :actions => 'new'
     end
   end
 
   def destroy
-    #load_experiment
     @experiment.destroy
     redirect_to(project_path(@experiment.project)) 
   end
 
   def prepare    
-    #load_experiment
     reset_stat_session
     @experiment.prepare
     @msg = "Experiment preparation job is added to queue."
@@ -120,7 +115,6 @@ class ExperimentsController < ApplicationController
   end
 
   def start
-    #load_experiment
     reset_stat_session
     @experiment.prepare
     @msg = "Experiment run job added to queue."
@@ -128,7 +122,6 @@ class ExperimentsController < ApplicationController
   end 
 
   def stop
-    #load_experiment
     @experiment.stop
   end
 
@@ -167,7 +160,6 @@ class ExperimentsController < ApplicationController
   
   def set_resources_instance_variables(embedded=true)
     @resources = @experiment.resources_map
-    Rails.logger.debug @resources.first.inspect
     @testbed = @resources.first.testbed
     service = OMF::GridServices::TestbedService.new(@testbed.id);
     if embedded
@@ -199,6 +191,7 @@ class ExperimentsController < ApplicationController
     @nodes = service.mapping();
     @has_map = service.has_map
     @allowed = Ed.first.allowed
+    #@allowed = Node.all.collect{ |n| n.id }
   end
 end
 

@@ -6,11 +6,18 @@ class ResourceMapValidator < ActiveModel::Validator
     allowed = record.experiment.ed.allowed()
     missing = Array.new(allowed).delete_if { |x| !allowed.index(x).nil?  } 
     begin
-      record.errors[:node] << I18n.t("errors.experiment.resources_map.dont_exist") unless Node.find(record.node_id)
-      record.errors[:sys_image] << I18n.t("errors.experiment.resources_map.dont_exist") unless SysImage.find(record.sys_image_id)
-      record.errors[:testbed] << I18n.t("errors.experiment.resources_map.dont_exist") unless Testbed.find(record.testbed_id)
+      unless Node.find(record.node_id)
+        record.errors[:node] << I18n.t("errors.experiment.resources_map.dont_exist") 
+      end
+      unless SysImage.find(record.sys_image_id) 
+        record.errors[:sys_image] << I18n.t("errors.experiment.resources_map.dont_exist")     
+      end
+      unless Testbed.find(record.testbed_id)
+        record.errors[:testbed] << I18n.t("errors.experiment.resources_map.dont_exist")
+      end
       if allowed.index(record.node_id).nil?
-        record.experiment.errors[:nodes] = t("errors.experiment.nodes.allowed", :nodes => allowed.sort.join(","))
+        record.experiment.errors[:nodes] = t("errors.experiment.nodes.allowed", 
+                                             :nodes => allowed.sort.join(","))
       end
     rescue
       record.experiment.errors[:resources_map] = I18n.t("errors.experiment.resources_map.invalid")
@@ -19,7 +26,10 @@ class ResourceMapValidator < ActiveModel::Validator
 end
 
 class ResourcesMap < ActiveRecord::Base
-  attr_accessible :progress, :node, :experiment, :sys_image, :testbed, :testbed_id, :sys_image_id, :node_id
+  self.abstract_class = true
+  attr_accessible :progress, :node, :experiment, :sys_image, 
+    :testbed, :testbed_id, :sys_image_id, :node_id
+  
   belongs_to :node
   belongs_to :experiment
   belongs_to :sys_image
@@ -33,8 +43,14 @@ end
 
 class ExperimentEdValidator < ActiveModel::Validator
   def validate(record)
-    record.errors.add(:ed, I18n.t("errors.experiment.ed.empty")) unless record.ed.code.size > 0
-    record.errors.add(:nodes, I18n.t("errors.experiment.nodes.invalid")) if record.ed.allowed.blank?
+    unless record.ed.code.size > 0
+      record.errors.add(:ed, I18n.t("errors.experiment.ed.empty"))
+    end
+
+    if record.ed.allowed.blank?
+      record.errors.add(:nodes, I18n.t("errors.experiment.nodes.invalid"))
+    end
+    
     unless record.nodes.blank?
       begin
         unless record.errors.has_key?(:nodes)    
@@ -44,7 +60,9 @@ class ExperimentEdValidator < ActiveModel::Validator
             !nodes.index(x).nil?
           } 
           if missing.size > 0
-            record.errors.add(:nodes, I18n.t("errors.experiment.nodes.missing", :nodes => missing.sort.join(",")))
+            record.errors.add(:nodes, 
+                I18n.t("errors.experiment.nodes.missing", 
+                       :nodes => missing.sort.join(",")))
           end
         end
       rescue
@@ -58,8 +76,11 @@ class Experiment < ActiveRecord::Base
   include OMF::Experiments::Controller
   include Delayed::Backend::ActiveRecord
   
-  attr_accessible :description, :status, :created_at, :updated_at, :user, :runs, :failures
-  attr_accessor :job_phase, :job_id, :proxy, :repository, :code, :resources_map
+  attr_accessible :description, :status, :created_at, :updated_at, :user, 
+    :runs, :failures, :project, :ed
+
+  attr_accessor :job_phase, :job_id, :proxy, :repository, :code, :resources_map, 
+    :nodes, :sys_images, :testbeds
   
   belongs_to :ed
   belongs_to :phase
@@ -72,7 +93,8 @@ class Experiment < ActiveRecord::Base
   #has_many :testbeds, :through => :resources_map
 
   validates_with ExperimentEdValidator, :fields => [ :nodes ]
-  after_initialize :load_proxy
+  after_initialize :load_all
+  after_create :create_repository
 
   scope :finished, where("status = 4 or status = 5") 
   scope :prepared, where("status = 2 or status = 5")
@@ -82,18 +104,28 @@ class Experiment < ActiveRecord::Base
 
 
   private    
-  def load_proxy
+  """
+    After initialization it loads a Proxy to the OMF Experiment Controller
+  and initialize the data from EVC
+  """
+  def load_all
     unless self.id.blank?
-      self.proxy = OMF::Experiments::Controller::Proxy.new(id)      
+      self.proxy = OMF::Experiments::Controller::Proxy.new(id)
+      set_user_repository(self.user) unless self.user.nil? or self.id.nil?
     end
   end
 
+  """
+  Check if repository is initialized
+  """
   def check_repository
     if self.repository.blank? then return false end
     return true
   end
 
-  # Fetch all jobs from queue
+  """
+  Fetch all jobs from queue
+  """
   def self.get_jobs(&block)
     ret = Array.new()
     jobs = Job.all.each do |job|
@@ -107,7 +139,9 @@ class Experiment < ActiveRecord::Base
   end
   
 
-  # From YAML File in the job convert to Experiment
+  """
+  From YAML File in the job convert to Experiment
+  """
   def self.from_job(job, object, user)
     exp = find(object.id.to_i)
     exp.job_phase = object.phase
@@ -118,7 +152,10 @@ class Experiment < ActiveRecord::Base
   end
 
   public
-  # All experiment jobs from the queue
+
+  """
+    All experiment jobs from the queue
+  """
   def self.jobs(user, &block)    
     exp_jobs = Array.new()
     get_jobs do |job, object|
@@ -133,7 +170,9 @@ class Experiment < ActiveRecord::Base
     return exp_jobs
   end
  
-  # All experiment failed jobs from the queue
+  """ 
+  All experiment failed jobs from the queue
+  """
   def self.failed_jobs(user)
     exp_jobs = Array.new()
     jobs(user) do |job, object|
@@ -250,37 +289,80 @@ class Experiment < ActiveRecord::Base
   """
   def set_user_repository(user) 
     self.repository = EVC::Repository.new(self.id, user)
-    refresh_ed_res_map(self)    
+    if self.repository.exists?()
+      set_ed_code()
+      set_resources_map()    
+      Rails.logger.debug(self.resources_map)
+    end
+  end  
+
+  """
+    Initializes the code related to the current branch
+  """
+  def set_ed_code()
+    self.code = self.repository.current.ed
   end
 
-  def refresh_ed_res_map(record)    
-    Rails.logger.debug("CODE FROM#{record.repository.current.name}")
-    record.code = record.repository.current.ed
-    rm = Array.new()
-    tmp = record.repository.current.resource_map['resources']
-    tmp.each do |k,v|
-      params = {
-        :experiment => self, 
-        :testbed => Testbed.find(v['testbed']), 
-        :node => Node.find(k), 
-        :sys_image_id => SysImage.find(v['sys_image'])
-      }
-      rm.push(ResourcesMap.new(params))
+  """
+    Initializes the resources map related to the current branch
+  """
+  def set_resources_map(rms=nil)    
+    self.resources_map.clear() unless self.resources_map.nil?
+    if rms.nil?
+      tmp = repository.current.resource_map['resources']
+    elsif rms.has_key?('resources')
+      tmp = rms['resources']
+      @attributes['raw_rms'] = rms
     end
-    record.resources_map = rm
+
+    tmp.each do |k,v|
+      is_hash = (v.class == Hash)
+      t = is_hash ? v['testbed'] : nil
+      sy = is_hash ? v['sys_image'] : v
+      add_resource_map(k,sy,t)
+    end
+
+    self.nodes = self.resources_map.collect{ |rm| rm.node }
+    self.sys_images = self.resources_map.collect{ |rm| rm.sys_image }
+    self.testbeds = self.resources_map.collect{ |rm| rm.testbed }
+  end
+
+  def add_resource_map(node, sysimage, testbed)
+    self.resources_map = Array.new() if self.resources_map.blank?
+    params = {
+      :experiment => self, 
+      :testbed => Testbed.find(testbed), 
+      :node => Node.find(node), 
+      :sys_image => SysImage.find(sysimage)
+    }
+    rm = ResourcesMap.new(params)
+    ret = rm.valid?
+    self.resources_map.push(rm) if ret
+    return ret
   end
   
-  def after_clone_branch(record)
-    refresh_ed_res_map(record)
+  def has_repository?
+    return self.repository.exists?
   end
 
-  def after_commit_branch(record)
-    refresh_ed_res_map(record)
+  def create_repository()
+    if self.valid?      
+      self.repository = EVC::Repository.new(self.id, user)
+      ret = self.repository.init(@attributes['raw_rms'])
+      return ret
+    end
+  end
+  
+  def after_clone_branch()
+    set_resources_map()
   end
 
-  def after_change_branch(record)
-    Rails.logger.debug record.repository.current
-    refresh_ed_res_map(record)
+  def after_commit_branch()
+    set_resources_map()
+  end
+
+  def after_change_branch()
+    set_resources_map()
   end
 
   """
@@ -296,7 +378,7 @@ class Experiment < ActiveRecord::Base
     unless check_repository then return false end
     ret = self.repository.clone_branch(name, parent)
     ret = self.repository.change_branch(name) if ret
-    after_clone_branch(self)
+    after_clone_branch()
     return ret
   end
   
@@ -315,7 +397,7 @@ class Experiment < ActiveRecord::Base
   def commit(branch, code, rm, message="Empty message")
     unless check_repository then return nil end
     ret = self.repository.branches[branch].commit_branch(message, code, rm)
-    after_commit_branch(self)
+    after_commit_branch()
     return ret
   end
 
@@ -325,7 +407,7 @@ class Experiment < ActiveRecord::Base
   def change(branch='master')
     unless check_repository then return nil end
     ret = self.repository.change_branch(branch)
-    after_change_branch(self)
+    after_change_branch()
     return ret
   end
 

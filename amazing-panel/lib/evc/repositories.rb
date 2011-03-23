@@ -17,10 +17,28 @@ module EVC
       return "#{repository_path}/branches"
     end
     
+    def exists?()
+      rp_f = File.directory?(repository_path)
+      b_f = File.directory?(branches_path)
+      return rp_f && b_f
+    end
+
     def init(resource_map)
+      experiment = Experiment.find(@id)
+      
+      # valid resource map data
+      unless resource_map.has_key?('resources')
+        return false
+      end
+
       # checks if branches already exists 
       if File.directory?(branches_path())
         return false
+      end
+
+      # create if repository does not exist
+      unless File.directory?(repository_path())
+        Dir.mkdir(repository_path())
       end
 
       # Create the branches repository
@@ -31,14 +49,10 @@ module EVC
       ret = master_branch.new_branch("Main branch of ##{@id}")
 
       # Fetchs experiment information
-      experiment = Experiment.find(@id)
       code = experiment.ed.code
-      rm = {
-        "resources" => resource_map
-      }
-      
+
       # Commits the master with the necessary information"
-      ret = master_branch.commit_branch("Initial commit", code, rm)
+      ret = master_branch.commit_branch("Initial commit", code, resource_map)
       return ret[0]
     end
 
@@ -53,7 +67,7 @@ module EVC
     def clone_branch(name, parent="master")
       keys = @branches.keys
       return false if (!keys.include?(parent) or keys.include?(name))
-      Rails.logger.debug "#{name}, parent=#{parent}"
+
       branch = EVC::Branch.new(@id, name, @user.username)
       branch.clone_branch(parent, "Branch from #{parent}")      
       refresh_branches
@@ -72,6 +86,7 @@ module EVC
     # List all branches
     # Returns an array of Branches
     def list_branches()
+      unless exists? then return [] end
       set = {}
 
       # Add only directories
@@ -79,7 +94,9 @@ module EVC
       blacklist = [".", ".."]
       Dir.foreach(branches_path()) { |e|
         unless blacklist.include?(e)
-          set[e] = EVC::Branch.new(@id,e,user.username) if File.directory?("#{branches_path()}/#{e}")
+          if File.directory?("#{branches_path()}/#{e}")
+            set[e] = EVC::Branch.new(@id,e,user.username)
+          end
         end
       }
       return set

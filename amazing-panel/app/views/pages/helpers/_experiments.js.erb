@@ -31,14 +31,9 @@ function hideLog(){
 
 <% unless @experiment.blank? %>
   function changeBranchActions(){
-    var current_branch = $("#parent option:selected").text();
-    var commit_link = "<%= escape_javascript(raw(commit_experiment_branch_path(:experiment_id => @experiment.id, :id => "_name_"))) %>",
-        clone_link = "<%= escape_javascript(raw(clone_experiment_branch_path(:experiment_id => @experiment.id, :id => "_name_"))) %>";
-    commit_link.replace(/_name_/, current_branch);
-    clone_link.replace(/_name_/, current_branch);
-    $("#commit-branch-action").attr("href", commit_link);
-    $("#new-branch-action").attr("target", clone_link);
-    $("#commit-branch-form").attr("action", commit_link);
+    var current_branch = $("#parent option:selected").text(),
+        href = "<%= experiment_url(@experiment) %>?branch="+current_branch;
+    window.location = href;
 }
 
 function buttonChange(buttons){

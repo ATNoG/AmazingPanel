@@ -21,10 +21,12 @@ class BranchesController < ApplicationController
     code = params[:code]
     rm = transform_map(params[:experiment][:nodes])
     
-    flash[:error] = t("errors.experiment.evc.branch_commit", :branch => branch.name)
+    flash[:error] = t("errors.experiment.evc.branch_commit", 
+                      :branch => branch.name)
     unless branch.blank?
       branch.commit_branch(params[:message], code, rm)
-      flash[:success] = t("amazing.experiments.evc.branch_commit", :branch => branch.name)
+      flash[:success] = t("amazing.experiments.evc.branch_commit", 
+                          :branch => branch.name)
       flash.delete(:error)
     end  
     redirect_to @experiment
