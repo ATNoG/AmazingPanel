@@ -86,6 +86,10 @@ module ExperimentsHelper
     end
   end
 
+  def rev_pane_link
+    pane_link("revisions", "Revisions", 'commit_branch.png')
+  end
+
   def ed_pane_link
     pane_link("ed", "Definition", 'edit.png')
   end

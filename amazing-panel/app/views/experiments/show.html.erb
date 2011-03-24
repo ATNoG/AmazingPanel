@@ -40,7 +40,7 @@
     }
     
     function onSave(){
-      changeBranchActions();
+      $("#commit-branch-action").trigger('click');
     }
 
     <%= render :partial => 'library/eds/codemirror.js', 
@@ -55,7 +55,13 @@
   <% if @experiment.preparing? or @experiment.started? %>
     experimentStat();  
   <% end %>
-  $("#commit-branch-action").click(function(evt){$("#commit-branch-form").submit();});
+  $("#commit-branch-action").click(function(evt){
+    var message = prompt('Commit Message','Empty Message');
+    if (message) {
+      var message_input_field = "<input id=\"message\" name=\"message\" type=\"hidden\" value=\""+message+"\" />";
+      $("#commit-branch-form").prepend(message_input_field).submit();
+    }
+  });
   $("#new-branch-action").click(function(evt){$("#new-branch-form").submit();});
   $("select#parent").change(function(){      
     changeBranchActions();      

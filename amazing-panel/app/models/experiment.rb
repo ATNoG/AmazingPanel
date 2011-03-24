@@ -27,6 +27,8 @@ end
 
 class ResourcesMap < ActiveRecord::Base
   self.abstract_class = true
+  instance_variable_set :@columns, []
+
   attr_accessible :progress, :node, :experiment, :sys_image, 
     :testbed, :testbed_id, :sys_image_id, :node_id
   
@@ -77,24 +79,38 @@ class Experiment < ActiveRecord::Base
   include Delayed::Backend::ActiveRecord
   
   attr_accessible :description, :status, :created_at, :updated_at, :user, 
-    :runs, :failures, :project, :ed
+    :project, :ed
 
-  attr_accessor :job_phase, :job_id, :proxy, :repository, :code, :resources_map, 
-    :nodes, :sys_images, :testbeds
+  attr_accessor :job_phase, :job_id, :proxy, :repository, :code, :revisions,
+    :resources_map, :nodes, :sys_images, :testbeds, :info
   
   belongs_to :ed
   belongs_to :phase
   belongs_to :user
   belongs_to :project  
-  
-  #has_many :resources_map, :dependent => :destroy
-  #has_many :nodes, :through => :resources_map
-  #has_many :sys_images, :through => :resources_map
-  #has_many :testbeds, :through => :resources_map
 
   validates_with ExperimentEdValidator, :fields => [ :nodes ]
   after_initialize :load_all
   after_create :create_repository
+ 
+  """
+  Custom Callbacks 
+  """
+
+  def after_clone_branch()
+    set_resources_map()
+  end
+
+  def after_commit_branch()
+    set_resources_map()
+  end
+
+  def after_change_branch()
+    set_ed_code()
+    set_resources_map()
+    set_branch_info()
+    @attributes.delete('revision')
+  end
 
   scope :finished, where("status = 4 or status = 5") 
   scope :prepared, where("status = 2 or status = 5")
@@ -292,24 +308,34 @@ class Experiment < ActiveRecord::Base
     if self.repository.exists?()
       set_ed_code()
       set_resources_map()    
+      set_branch_info()    
       Rails.logger.debug(self.resources_map)
     end
   end  
+  
+  """
+    Initializes current experiment info
+  """
+  def set_branch_info
+    self.info = self.repository.current.load_branch_info()[current()]
+  end
 
   """
     Initializes the code related to the current branch
   """
   def set_ed_code()
-    self.code = self.repository.current.ed
+    revision = @attributes.has_key?('revision') ? @attributes['revision'] : nil
+    self.code = self.repository.current.ed(revision)
   end
 
   """
     Initializes the resources map related to the current branch
   """
   def set_resources_map(rms=nil)    
+    revision = @attributes.has_key?('revision') ? @attributes['revision'] : nil
     self.resources_map.clear() unless self.resources_map.nil?
     if rms.nil?
-      tmp = repository.current.resource_map['resources']
+      tmp = repository.current.resource_map(revision)['resources']
     elsif rms.has_key?('resources')
       tmp = rms['resources']
       @attributes['raw_rms'] = rms
@@ -329,6 +355,7 @@ class Experiment < ActiveRecord::Base
 
   def add_resource_map(node, sysimage, testbed)
     self.resources_map = Array.new() if self.resources_map.blank?
+    testbed = Testbed.first.id if testbed.blank?
     params = {
       :experiment => self, 
       :testbed => Testbed.find(testbed), 
@@ -352,19 +379,7 @@ class Experiment < ActiveRecord::Base
       return ret
     end
   end
-  
-  def after_clone_branch()
-    set_resources_map()
-  end
-
-  def after_commit_branch()
-    set_resources_map()
-  end
-
-  def after_change_branch()
-    set_resources_map()
-  end
-
+    
   """
     Fetch the list of all branches from EVC
     Parameters: None.
@@ -391,6 +406,26 @@ class Experiment < ActiveRecord::Base
     return self.repository.current.name
   end
 
+
+  """
+  Fetch runs from the current branch
+  """
+  def runs    
+    return self.info['runs']
+  end
+
+  def failures
+    return self.info['failures']
+  end
+
+  """
+    Get revisions from author
+  """
+  def revisions(author=:all)
+    unless check_repository then return nil end
+    return self.repository.current.commits(author)
+  end
+
   """
     Commit the changes on current working branch
   """
@@ -404,9 +439,10 @@ class Experiment < ActiveRecord::Base
   """
     Change the current working branch on experiment
   """
-  def change(branch='master')
+  def change(branch='master', revision=nil)
     unless check_repository then return nil end
     ret = self.repository.change_branch(branch)
+    @attributes['revision'] = revision unless revision.nil?
     after_change_branch()
     return ret
   end

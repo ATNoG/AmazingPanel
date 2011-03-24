@@ -138,13 +138,15 @@ module EVC
       return commits
     end
 
-    def resource_map(timestamp=latest_commit())
+    def resource_map(timestamp=nil)
+      timestamp = latest_commit() if timestamp.blank?
       rs = YAML.load_file("#{branch_path()}/objects/#{timestamp}/resource_map.yml")
       return rs
     end
     
-    def ed(timestamp=latest_commit())
-      e = File.open("#{branch_path()}/objects/#{latest_commit()}/code.rb")
+    def ed(timestamp=nil)
+      timestamp = latest_commit() if timestamp.blank?
+      e = File.open("#{branch_path()}/objects/#{timestamp}/code.rb")
       return e.read()
     end
 

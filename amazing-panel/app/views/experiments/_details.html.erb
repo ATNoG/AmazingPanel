@@ -21,11 +21,6 @@
   <%= add_image_action(project_path(project), project_logo_path(project), project.name, { :link => true } ) %>
 </p>
 
-<p>
-  <b>Duration:</b>
-  <%= @experiment.duration %>
-</p>
-
 <p class="ed-description">
   <b>Description:</b>
   <%= @experiment.ed.description %>
@@ -34,4 +29,8 @@
 <p>
   <b>Runs:</b>
   <%= @experiment.runs %>
+</p>
+<p>
+  <b>Failures:</b>
+  <%= @experiment.failures %>
 </p>

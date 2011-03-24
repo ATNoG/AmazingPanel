@@ -44,6 +44,7 @@ class ExperimentsController < ApplicationController
   def show
     #@experiment.set_user_repository(current_user)
     change_branch()  	
+    sort_revisions()
 
     @status = @experiment.status
     @code = @experiment.ed.code
@@ -135,7 +136,17 @@ class ExperimentsController < ApplicationController
   
   private    
   def change_branch
-    @experiment.change(params[:branch]) unless params[:branch].blank?
+    unless params[:branch].blank?
+      @experiment.change(params[:branch], params[:revision])
+    end
+  end
+
+  def sort_revisions
+    @revisions = @experiment.revisions.to_a.collect{ |r| 
+      { 'timestamp' => r[0], 'message' => r[1]['message'], 
+        'author' => r[1]['author'] }
+    }.sort!{|x,y| x['timestamp'] <=> y['timestamp']}
+    @revision = params[:revision] || @experiment.repository.current.latest_commit
   end
 
   def reset_stat_session

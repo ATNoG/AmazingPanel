@@ -29,7 +29,7 @@ class BranchesController < ApplicationController
                           :branch => branch.name)
       flash.delete(:error)
     end  
-    redirect_to @experiment
+    redirect_to experiment_path(@experiment) + "#revisions"
   end
 
   def clone
