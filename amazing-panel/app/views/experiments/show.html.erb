@@ -26,7 +26,7 @@
 
 <% content_for :bottom_scripts do %>
   <%= render :partial => 'env_templates' %>
-  <script>    
+  <script>
     var code = "<%= raw escape_javascript(@experiment.code) %>";
     function onChange(){
       var sizeo = this.historySize();
@@ -38,22 +38,22 @@
         $("#changes_warning").hide();
       }
     }
-    
+
     function onSave(){
       $("#commit-branch-action").trigger('click');
     }
 
-    <%= render :partial => 'library/eds/codemirror.js', 
-               :locals => { 
-                :target => 'code', 
-                :readonly => false, 
-                :change => "onChange", 
+    <%= render :partial => 'library/eds/codemirror.js',
+               :locals => {
+                :target => 'code',
+                :readonly => false,
+                :change => "onChange",
                 :save => "onSave",
-                :syntax => 'ruby' 
+                :syntax => 'ruby'
                } %>
   <%= render :partial => 'resources_map.js' %>
   <% if @experiment.preparing? or @experiment.started? %>
-    experimentStat();  
+    experimentStat();
   <% end %>
   $("#commit-branch-action").click(function(evt){
     var message = prompt('Commit Message','Empty Message');
@@ -63,8 +63,8 @@
     }
   });
   $("#new-branch-action").click(function(evt){$("#new-branch-form").submit();});
-  $("select#parent").change(function(){      
-    changeBranchActions();      
+  $("select#parent").change(function(){
+    changeBranchActions();
   });
   </script>
 <% end %>

@@ -29,8 +29,8 @@ class ResourcesMap < ActiveRecord::Base
   self.abstract_class = true
   instance_variable_set :@columns, []
 
-  attr_accessible :progress, :node, :experiment, :sys_image, 
-    :testbed, :testbed_id, :sys_image_id, :node_id
+  attr_accessible :experiment, :testbed_id, :sys_image_id, :node_id
+  attr_accessor :testbed_id, :sys_image_id, :node_id
   
   belongs_to :node
   belongs_to :experiment
@@ -41,6 +41,18 @@ class ResourcesMap < ActiveRecord::Base
   validates :sys_image_id, :presence => true
   validates :testbed_id, :presence => true
   validates_with ResourceMapValidator
+
+  def node
+    Node.find(self.node_id)
+  end
+
+  def testbed
+    Testbed.find(self.testbed_id)
+  end
+
+  def sys_image
+    SysImage.find(self.sys_image_id)
+  end
 end
 
 class ExperimentEdValidator < ActiveModel::Validator
@@ -309,7 +321,6 @@ class Experiment < ActiveRecord::Base
       set_ed_code()
       set_resources_map()    
       set_branch_info()    
-      Rails.logger.debug(self.resources_map)
     end
   end  
   
@@ -334,38 +345,41 @@ class Experiment < ActiveRecord::Base
   def set_resources_map(rms=nil)    
     revision = @attributes.has_key?('revision') ? @attributes['revision'] : nil
     self.resources_map.clear() unless self.resources_map.nil?
+    valid = false
     if rms.nil?
       tmp = repository.current.resource_map(revision)['resources']
     elsif rms.has_key?('resources')
       tmp = rms['resources']
       @attributes['raw_rms'] = rms
+      valid = true
     end
 
     tmp.each do |k,v|
       is_hash = (v.class == Hash)
       t = is_hash ? v['testbed'] : nil
       sy = is_hash ? v['sys_image'] : v
-      add_resource_map(k,sy,t)
+      add_resource_map(k,sy,t,valid)
     end
 
-    self.nodes = self.resources_map.collect{ |rm| rm.node }
-    self.sys_images = self.resources_map.collect{ |rm| rm.sys_image }
-    self.testbeds = self.resources_map.collect{ |rm| rm.testbed }
+    self.nodes = self.resources_map.collect{ |rm| rm.node_id }
+    self.sys_images = self.resources_map.collect{ |rm| rm.sys_image_id }
+    self.testbeds = self.resources_map.collect{ |rm| rm.testbed_id }
   end
 
-  def add_resource_map(node, sysimage, testbed)
+  def add_resource_map(node, sysimage, testbed, valid=false)
     self.resources_map = Array.new() if self.resources_map.blank?
     testbed = Testbed.first.id if testbed.blank?
     params = {
       :experiment => self, 
-      :testbed => Testbed.find(testbed), 
-      :node => Node.find(node), 
-      :sys_image => SysImage.find(sysimage)
+      :testbed_id => testbed, 
+      :node_id => node, 
+      :sys_image_id => sysimage
     }
     rm = ResourcesMap.new(params)
-    ret = rm.valid?
-    self.resources_map.push(rm) if ret
-    return ret
+    is_valid = !valid
+    is_valid = rm.valid? if valid
+    self.resources_map.push(rm) if is_valid
+    return is_valid
   end
   
   def has_repository?

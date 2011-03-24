@@ -74,6 +74,8 @@ GEM
     prawn_rails (0.0.4)
       prawn (>= 0.8.4)
       rails (>= 3.0.0)
+    query_trace (0.1.1)
+      activerecord
     rack (1.2.1)
     rack-mount (0.6.13)
       rack (>= 1.0.0)
@@ -146,6 +148,7 @@ DEPENDENCIES
   mysql (= 2.8.1)
   prawn
   prawn_rails
+  query_trace
   rack-raw-upload
   rails (= 3.0.0)
   rspec (= 2.2.0)
