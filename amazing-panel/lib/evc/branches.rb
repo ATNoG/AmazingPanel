@@ -110,6 +110,15 @@ module EVC
                      "#{branch_path()}/objects/#{timestamp}")
     end
 
+    def runs
+    end
+
+    def run(run_id=last_run())
+    end
+
+    def last_run()
+    end
+
     # Store the results of a given run
     # Note: this method will NOT remove any file passed..
     # Parameters: run_id (Integer), files (Array of strings (file paths))
