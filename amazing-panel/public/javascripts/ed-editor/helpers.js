@@ -1,4 +1,3 @@
-
 /**
   * Helper method for creating and showing a dialog
   */
@@ -19,3 +18,4 @@ function hideDialog(){
   modal.hide();  
 }
 
+$.extend({ keys: function(obj){ var a=[]; $.each(obj, function(i){a.push(i)});return a; } });

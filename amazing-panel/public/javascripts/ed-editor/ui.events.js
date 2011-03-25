@@ -1,4 +1,27 @@
 /**
+  * Event triggered when selecting on of the displayed tables (Groups|Applications)
+  */
+EdEditor.prototype.selectTableItems = function(table, selected, cb) { 
+  var all_sel = $(".grid-view-row-selected", table);
+  all_sel.toggleClass("grid-view-row-selected")
+  if (cb) {
+    cb();
+  }
+
+  if (all_sel.length == 1) {
+    var id = $("div:eq(1)", all_sel).html(),
+        gname = $("div:eq(0) > input", all_sel).val(),
+       _id = $("div:eq(1)", $(selected)).html(),
+        _gname = $("div:eq(0) > input", $(selected)).val();
+    if (id == _id && gname == _gname) {
+      return false;
+    }
+  }
+  $(selected).toggleClass("grid-view-row-selected");
+  return true;
+}
+
+/**
   * Event triggered when selecting an item from Groups Table
   */
 EdEditor.prototype.onGroupsTableClick = function(evt){
@@ -34,10 +57,7 @@ EdEditor.prototype.onApplicationsTableClick = function(evt){
   var n = $(evt.target).parent();
   var same = this.selectTableItems($(n).parent(), n, null);  
   var gname = $("#table-applications > .grid-view-row-selected > .group-color > input ").attr("value");
-  if (same) { 
-    $("#table-applications-actions").show();
-    return false; 
-  }
+  if (same) { $("#table-applications-actions").show();return false; }
   var nsel = $(".grid-view-row-selected", $(n).parent()).length;  
   if (nsel>0) { $("#table-groups-actions").show(); } 
   else { $("#table-applications-actions").hide(); }
@@ -223,7 +243,7 @@ EdEditor.prototype.onApplicationAddEvent = function(evt) {
 }
 
 /**
-  * Event triggered when it clicked remove application near table
+  * Event triggered when it clicked remove application from table actions
   */
 EdEditor.prototype.onApplicationRemove = function(evt) {  
   var groups = $("#table-applications > .grid-view-row-selected > .group-color > input"),
@@ -231,9 +251,11 @@ EdEditor.prototype.onApplicationRemove = function(evt) {
   for(i=0;i<groups.length;++i){
     var g = $(groups[0]).attr("value");
     this.engine.groups[g].removeApplication(uri);
+    this.engine.timeline.removeEvent(g);
   }
   $(".sidetable-app-select").click();
   this.generateApplicationsTable(this.engine.groups);
+  this.generateTimeline();
   return false;
 }
 
@@ -285,30 +307,70 @@ EdEditor.prototype.onApplicationChange = function(evt) {
  */
 EdEditor.prototype.onTimelineSelector = function(evt) {
   if (evt.layerX != 0){
+    var width = evt.layerX - 16;
+    $(".oedl-timeline-selector > span").html(this.engine.timeline.fromWidth(width));
     $(".oedl-timeline-selector").css("visibility", "visible").css("left", (evt.layerX - 16).toString() + "px");
   }
 }
 
 /**
-  * Event triggered when selecting on of the displayed tables (Groups|Applications)
+ * Event triggered when it clicks on the timeline selector
+ */
+EdEditor.prototype.onTimelineSelectorClick = function(evt) {
+  var width = $(".oedl-timeline-selector").css("left");
+  width = width.replace(/px/g, "");
+  var gname = $("#table-applications > .grid-view-row-selected > .group-color > input ").attr("value");
+  var p = {
+    start : this.engine.timeline.fromWidth(width),
+    duration : 0,
+    group : gname
+  }
+  if (p.group && p.start > 0 && (p.duration = parseInt(prompt("Duration?", 0))) > 0)  {
+    e = this.engine.timeline.addEvent(p.group, p.start, p.duration);
+    this.generateTimeline();
+  }
+}
+
+EdEditor.prototype.onEventDurationChange = function(evt){
+  var gname = $(".event-selected").attr("id"),
+      timeline = this.engine.timeline,
+      current_duration = timeline.events[gname].duration,
+      duration = prompt("New Duration:", current_duration);
+  if (duration = parseInt(duration)){
+    timeline.changeDuration(gname, duration);
+    this.generateTimeline();
+    this.generateEventActions(true);
+  }
+}
+
+EdEditor.prototype.onEventRemove = function(evt){
+  var tm_event = $(".event-selected"),
+    gname = tm_event.attr("id"),
+    timeline = this.engine.timeline;
+  if (timeline.removeEvent(gname)) {    
+    this.generateTimeline();
+    this.generateEventActions(true);
+  }
+}
+
+/**
+  * Event triggered when leaving timeline scale area
   */
-EdEditor.prototype.selectTableItems = function(table, selected, cb) { 
-  var all_sel = $(".grid-view-row-selected", table);
-  all_sel.toggleClass("grid-view-row-selected")
-  if (cb) {
-    cb();
-  }
+EdEditor.prototype.hideTimelineSelector = function() {
+  $(".oedl-timeline-selector").css("visibility", "hidden").css("left", "0px");
+}
 
-  if (all_sel.length == 1) {
-    var id = $("div:eq(1)", all_sel).html(),
-       _id = $("div:eq(1)", $(selected)).html();
-    if (id == _id) {
-      return false;
-    }
-  }
-  $(selected).toggleClass("grid-view-row-selected");
+/**
+  * Event triggered when event is clicked
+  */
+EdEditor.prototype.toggleEventSelection = function(evt) { 
+  var target = $(evt.target),
+      events = $(".event-selected:not(#"+target.attr("id")+")");
+  events.removeClass("event-selected");
+  target.toggleClass("event-selected");
 
-  return true;
+  var del = !$(evt.target).hasClass("event-selected");
+  this.generateEventActions(del);
 }
 
 EdEditor.prototype.bindEvents = function() {
@@ -317,11 +379,15 @@ EdEditor.prototype.bindEvents = function() {
   // Node events click and context menu
   $(".node").live("click",this.onNodeClick.bind(editor));
 
-  // Timeline selector
-  $(".oedl-timeline").live("mouseover", this.onTimelineSelector.bind(editor));
-  $(".oedl-timeline").live("mouseleave", function(evt){ 
-      $(".oedl-timeline-selector").css("visibility", "hidden").css("left", "0px");
-  });
+  // Timeline
+  $(".oedl-timeline-selector").live("click", this.onTimelineSelectorClick.bind(editor));
+  $(".oedl-timeline-scale").live("mouseover", this.onTimelineSelector.bind(editor));
+  $(".oedl-timeline-scale").live("mouseleave", function(evt){ this.hideTimelineSelector(); }.bind(editor));
+  $("ul.events li").live("click", this.toggleEventSelection.bind(editor));
+
+  // Timeline actions
+  $(".cduration-timeline-item").live("click", this.onEventDurationChange.bind(editor));
+  $(".removeevent-timeline-item").live("click", this.onEventRemove.bind(editor));
 
   // Table actions
   $(".sidetable-app-select").live('click', this.onApplicationsTableClick.bind(editor));

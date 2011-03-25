@@ -118,11 +118,12 @@ EdEditor.prototype.generateTimeline = function(min, max, scale) {
 
   // Generate intervals
   for(var i=0; i<timeline.intervals; ++i){
-    $(".intervals").append("<li>"+timeline.labelize(i*timeline.raw_interval, scale)+"</li>");  
+    $(".intervals").append("<li><span>"+timeline.labelize(i*timeline.raw_interval, scale)+"</span></li>");
   }
   $(".intervals > li").css("width", timeline.width+"%");
 
   // Generate events
+  // 'XXX' add support when it only has duration, with no events
   $(".events").empty();
   for (var g in timeline.events){
     var group = this.engine.groups[g]
@@ -130,8 +131,17 @@ EdEditor.prototype.generateTimeline = function(min, max, scale) {
     var left = timeline.width * ( evt.start / timeline.interval );
     var width = timeline.width * ( evt.duration / timeline.interval );
 
-
-    $(".events").append("<li id="+g+"></li>");
+    $(".events").append("<li id="+g+"><span>"+evt.duration+"</span></li>");
     $(".events > #"+g).css("left", left+"%").css("width", width+"%").css("background-color", group.color);
+  }
+}
+
+/**
+  * Generates the Timeline Event Actions
+  */
+EdEditor.prototype.generateEventActions = function(del) {
+  if (del){ $(".oedl-timeline-actions").empty(); } 
+  else {
+    $(".oedl-timeline-actions").html("<a href=\"#\" class=\"cduration-timeline-item\">Change Duration</a><a href=\"#\" class=\"removeevent-timeline-item\">Remove Event</a>");
   }
 }

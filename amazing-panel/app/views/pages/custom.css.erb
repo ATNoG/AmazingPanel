@@ -808,6 +808,12 @@ ul#action-list > li {
   height: 60px; 
 }
 
+.oedl-timeline-actions > a {
+  font-size: 9px;
+  text-decoration: underline;
+  margin-right: 5px;
+}
+
 ul.events {
   list-style-type: none;
   margin: 0;
@@ -829,6 +835,29 @@ ul.events li {
   text-align: center;
 }
 
+ul.events li.event-selected {
+  border: 1px solid #cc1100;
+}
+
+ul.events li:hover {
+  border: 1px solid #1e1e1e;
+  cursor: pointer;
+}
+
+ul.events li:hover span {
+  display: inline-block;
+}
+
+ul.events li span {
+  display: none;
+  text-align: center;
+  font-size: 9px;
+  float: left;
+  margin-top: -15px;
+}
+
+
+
 ul.events li em {
   color: #aaa;
   font-weight: normal;
@@ -849,10 +878,15 @@ ul.intervals li {
   color: #999;
   float: left;
   font-size: 10px;
-  margin: 0;
-  padding: 5px 0;
-  text-align: center;
+  padding-left: 4px;
+  margin-right: -4px;
   width: 14.17%;
+}
+
+ul.intervals li span {
+  margin-left: -6px;
+  display:inline;
+  border-left: 1px solid #ccc;
 }
 
 ul.intervals li.first {
@@ -871,6 +905,11 @@ ul.intervals li.first {
 .oedl-timeline-selector:hover {
   background-color: rgba(255, 0, 0);  
   cursor:pointer;
+}
+.oedl-timeline-selector > span {
+  margin-left:  5px;
+  font-size: 10px;
+  color: #999;
 }
 
 .input-applications {

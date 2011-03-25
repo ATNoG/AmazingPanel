@@ -4,6 +4,7 @@ class Library::EdsController < Library::ResourceController
   include OMF::GridServices
   include OMF::Experiments
   include OMF::Experiments::OEDL
+  include Library::EdsHelper
   
   respond_to :json, :html, :only => [:doc, :code]
 
@@ -144,23 +145,10 @@ class Library::EdsController < Library::ResourceController
   
   # POST /eds/code.js
   def code
-    puts params
-    timeline = Array.new()
-    param_timeline = params[:timeline]
-
-    unless param_timeline.nil?
-      param_timeline.each do |k,v|
-        v[:start] = v[:start].to_i
-        v[:stop] = v[:stop].to_i
-        timeline.push(v)      
-      end
-      params[:timeline] = timeline
-    end
-
+    params[:timeline] = timeline(params[:timeline])
     params[:meta][:groups].each do |index, group|
       if group.has_key?(:nodes)
         nodes_hrn = Array.new()
-        #logger.debug group.inspect
         group[:nodes].each do |n|
           nodes_hrn.push(Node.find(n).hrn)
         end
@@ -181,14 +169,23 @@ class Library::EdsController < Library::ResourceController
   def doc
     type = params[:type]
     app = params[:name]
-    if type == "all"
-      @apps = ScriptHandler.scanRepositories()
-    elsif !app.nil?
-      @apps = ScriptHandler.getDefinition(app)
-      unless @apps.nil?
-        @apps = @apps.properties[:repository][:apps]
-      end
-    end
+    scan if type == "all"
+    definition(app) if !app.nil?
     respond_with(@apps.to_json)
   end
+
+  private
+  def scan
+    @apps = ScriptHandler.scanRepositories()
+  end
+
+  def definition(app)
+    @apps = ScriptHandler.getDefinition(app)
+    unless @apps.nil?
+      @apps = @apps.properties[:repository][:apps]
+    end
+  end
+
+
+
 end
