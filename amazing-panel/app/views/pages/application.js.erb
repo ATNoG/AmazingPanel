@@ -29,9 +29,6 @@ $(document).ready(function(){
   <% end %>
 
   <% if (@c == "library/eds") %>
-    <% if (@a == "new") %>
-      <%= render :partial => 'ed_editor' %>
-    <% end %>
     <% if (@a == "show" or @a =="edit") %>
       <%= render :partial => 'library' %>
     <% end %>

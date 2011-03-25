@@ -183,10 +183,71 @@ Group.prototype.isEqual = function(nodes) {
 /**
  * @constructor
  */
-function Timeline(){
-  this.interval  = 20 // seconds
+function Timeline(width){
+  this.interval  = 20 
+  this.raw_interval  = 20 // always in seconds
   this.width = 14.17;
-  this.events = {}
+  this.intervals = 7;
+  this.events = {};
+  this.unit = "s";
+  this.size = width;
+  this.max = 120;
+}
+
+Timeline.prototype.getIntervalNumber = function(size){
+  if (size && !intervals) { 
+    return size/this.width 
+  } else {
+    return this.invertals
+  }
+}
+
+Timeline.prototype.setIntervalNumber = function(size, intervals){
+  if (size && intervals) {
+    this.width = size/intervals;
+  }
+}
+
+Timeline.prototype.scale = function(min, max, unit) {
+  this.findMax();
+  if (!min && !max){ min = 0; max = this.convertToSeconds("seconds", this.max); }
+  if (!unit){ unit = "seconds" }
+  this.raw_interval = Math.round( max/(this.intervals - 1) );
+  this.interval = this.convertSecondsToUnit(unit, this.raw_interval);
+}
+
+Timeline.prototype.labelize = function(value, unit) {
+  var d = new Date(value*1000);
+  if (unit == "hours" || unit == "h"){ return d.getHours()+"h"+d.getMinutes()+"m"; }
+  if (unit == "minutes" || unit == "m"){ return d.getMinutes()+"m"+d.getSeconds(); }
+  return d.getMinutes()*60 + d.getSeconds() + "s";
+}
+
+Timeline.prototype.convertSecondsToUnit = function(unit, value) {
+  if (unit == "minutes" || unit == "m"){ return value / 60; } 
+  if (unit == "hours" || unit == "h"){ return value / 3600; } 
+  if (unit == "seconds") { return value; }
+}
+
+Timeline.prototype.convertToSeconds = function(unit, value) {
+  if (unit == "minutes" || unit == "m"){ return value * 60; } 
+  if (unit == "hours" || unit == "h"){ return value * 3600; } 
+  if (unit == "seconds") { return value; }
+}
+
+Timeline.prototype.findMax = function(){
+  var current = this.max, events = this.events;
+  for (g in events){
+    var evt = events[g];
+    if (evt.stop > current){ current = evt.stop }
+  }
+  
+  if (current != this.max){
+    return false;
+  } else {
+    this.max = current;
+    return true;
+  }
 }
 
 Timeline.prototype.addEvent = function(group, start, duration){
@@ -202,7 +263,7 @@ Timeline.prototype.addEvent = function(group, start, duration){
 /**
  * @constructor
  */
-function Engine() {
+function Engine(tm_size) {
   var color = "rgb(255,0,0)"
   this.groups = { "default" : new Group("default", color) }
   this.group_keys = ["default"];
@@ -223,7 +284,7 @@ function Engine() {
     }
   }
   this.properties = { duration : 30 }
-  this.timeline = new Timeline()
+  this.timeline = new Timeline(tm_size)
 
 
   $.getJSON("/eds/doc.json?type=all", function(data){

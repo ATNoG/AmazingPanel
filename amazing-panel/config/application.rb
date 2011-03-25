@@ -32,7 +32,15 @@ module AmazingPanel
 
     # JavaScript files you want as :defaults (application.js is always included).
     config.action_view.javascript_expansions[:defaults] = %w(jquery rails jquery-ui jquery-tipsy)
-    config.action_view.javascript_expansions[:ed_editor] = ["jquery.tmpl.min", "jquery.datalink", "inflection", "ed-editor/jquery.formparams.min", "ed-editor/jquery.dform.min", "ed-editor/jquery.ctxmenu.packed.js", "ed-editor/engine", "ed-editor/ui" ] 
+    config.action_view.javascript_expansions[:ed_editor] = [
+      "jquery.tmpl.min", "jquery.datalink", "inflection", "jquery.formparams.min", "jquery.dform.min", # Dependencies 
+      "ed-editor/engine",        # the engine responsible for the data layer
+      "ed-editor/ui",            # ui controller
+      "ed-editor/helpers",       # helper functions
+      "ed-editor/ui.forms",      # JSON form objects
+      "ed-editor/ui.generators", # HTML Generators
+      "ed-editor/ui.templates",  # Jquery templates used
+      "ed-editor/ui.events" ]    # Events handlers
 
     # Configure the default encoding used in templates for Ruby 1.9.
     config.encoding = "utf-8"

@@ -23,7 +23,9 @@ AmazingPanel::Application.configure do
   # Only use best-standards-support built into browsers
   config.action_dispatch.best_standards_support = :builtin
   config.action_mailer.default_url_options = { :host => 'jimbo.av.it.pt:8000' }
-  
+
+  config.log_level = :debug
+
   # Use sendmail for action_mailer
   ActionMailer::Base.delivery_method = :sendmail
 end

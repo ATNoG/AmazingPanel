@@ -19,8 +19,10 @@
 <% end %>
 
 <% content_for :footer do %>
-<div class="debug">
+<!--
+  <div class="debug">
 </div>
+
  <div class="contextMenu" id="nodeCtxMenu">
   <ul>
     <li id="application">Add Application</li>
@@ -28,5 +30,7 @@
     <li id="properties">Properties</li>
   </ul>
 </div>
+-->
 <%= modal_dialog("", "modal-dialog", { :confirm => true }) %>
+<script><%= render :partial => 'ed_editor.js' %></script>
 <% end %>
