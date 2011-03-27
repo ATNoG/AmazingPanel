@@ -31,7 +31,7 @@ module AmazingPanel
     # config.i18n.default_locale = :de
 
     # JavaScript files you want as :defaults (application.js is always included).
-    config.action_view.javascript_expansions[:defaults] = %w(jquery rails jquery-ui jquery-tipsy jquery-uniform)
+    config.action_view.javascript_expansions[:defaults] = %w(jquery rails jquery-ui jquery-tipsy)
     config.action_view.javascript_expansions[:ed_editor] = [
       "jquery.tmpl.min", "jquery.datalink", "inflection", "jquery.formparams.min", "jquery.dform.min", # Dependencies 
       "ed-editor/engine",        # the engine responsible for the data layer

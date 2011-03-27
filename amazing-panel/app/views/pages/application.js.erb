@@ -9,9 +9,10 @@ $.extend({
   init: function(){
     $("a, .action").tipsy({ live: true });  
     $(".flash-msg-integrated").slideDown(500).delay(5000).slideUp(200);    
-    this.uniformize();
+    //this.uniformize();
   }
-});
+  });
+
 <% if user_signed_in? %>
 $(document).ready(function(){
   $.init();
@@ -199,27 +200,5 @@ function updateStatus() {
   setTimeout(updateStatus, 60000);  
 }
   <% end %>
-  
-<% else %>
-  
-$(document).ready(function(evt){
-  $.uniformize();
-});
 
 <% end %>                           
-
-$.extend({
-  uniformize: function(p){
-      if (p){
-        $("select, textarea, input:password, input:text, input:checkbox, input:radio, input:file", $(p)).uniform(); 
-      } else {
-        $("select, textarea, input:password, input:text, input:checkbox, input:radio, input:file").uniform(); 
-      }
-  },
-  init: function(){
-    $("a, .action").tipsy({ live: true });  
-    $(".flash-msg-integrated").slideDown(500).delay(5000).slideUp(200);    
-    this.uniformize();
-  }
-});
-

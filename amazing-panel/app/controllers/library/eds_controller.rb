@@ -156,7 +156,8 @@ class Library::EdsController < Library::ResourceController
       end
     end
 
-    scriptgen = Script.new(params)
+    repo = OMF::Experiments::ScriptHandler.scanRepositories()
+    scriptgen = Script.new({:meta => params[:meta], :repository => repo})
     @code = scriptgen.to_s();
     @apps = Hash.new();
     params[:apps][:applications].each do |uri, app|

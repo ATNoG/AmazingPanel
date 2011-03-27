@@ -74,7 +74,7 @@ EdEditor.prototype.onInetChange = function(evt) {
       form = this.generateResourceProperties(node, v);
   $("#res-properties").empty();
   $("#res-properties").buildForm(form);
-  $.uniformize("#res-properties");
+  //$.uniformize("#res-properties");
 }
 
 /**
@@ -271,7 +271,7 @@ EdEditor.prototype.onApplicationPropertyAdd = function(evt) {
   var item = $.tmpl("inserted_property", display),
       context = $("#select-properties");
   $(".grid-view > .grid-view-row:last", context).before(item);  
-  $.uniformize($(".grid-view > .grid-view-row:last", context).prev());
+  //$.uniformize($(".grid-view > .grid-view-row:last", context).prev());
   $("input[name=property_name]", context).val("");
   $("input[name=property_description]", context).val("");
   $("input[name=property_value]", context).val("");
@@ -289,7 +289,7 @@ EdEditor.prototype.onApplicationCreate = function(evt) {
     this.fillApplicationForms(defs,pp,ms, "insert");
     $("a[href=#content-measures]").parent().addClass("hidden");
     $("#add-application-property-button").unbind('click').click(this.onApplicationPropertyAdd.bind(this));
-    $.uniformize("#select-application");
+    //$.uniformize("#select-application");
 }
 
 /**
@@ -303,7 +303,7 @@ EdEditor.prototype.onApplicationChange = function(evt) {
         ms = this.engine.reference.measures[v];
     this.fillApplicationForms(defs,pp,ms,null);
     $("a[href=#content-measures]").parent().removeClass("hidden");
-    $.uniformize("#select-application");
+    //$.uniformize("#select-application");
 }
 
 /**
@@ -410,7 +410,8 @@ EdEditor.prototype.bindEvents = function() {
   $("#groups > li.group").live("click", {editor : this}, this.onGroupSelection.bind(editor))
   $(".group-add-action").live("click", {editor : this}, this.onGroupAdd)
   $(".prop-check").live("change", function(evt){
-      var p = $(evt.target).parent().parent().parent();
+      //var p = $(evt.target).parent().parent().parent();
+      var p = $(evt.target).parent();
       $(p).children("input[type='text']").toggleClass("hidden");
   });
   

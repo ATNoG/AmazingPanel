@@ -147,7 +147,7 @@ EdEditor.prototype.selectProperties = function(t) {
   modal.addClass('dialog-active');
   modal.show();
   
-  $.uniformize("#res-properties");
+  //$.uniformize("#res-properties");
 };
 
 /**
@@ -158,7 +158,7 @@ EdEditor.prototype.loadPreferences = function(t) {
 
   var container = $('.modal-container', modal).html('<form id=\"exp-properties\" class=\"attr-choose\"></form>');
   $('#exp-properties').buildForm(this.forms.select_exp_properties);
-  $.uniformize("#exp-properties");
+  //$.uniformize("#exp-properties");
   modal.addClass('dialog-active');
   $('.modal > .check-button').unbind('click').click(function(evt) {
     var params = $('#exp-properties').formParams();
@@ -189,7 +189,7 @@ EdEditor.prototype.showAddEvent = function(evt) {
   $('#application-add-event').buildForm(this.forms._event);
   $('.modal > .check-button').unbind('click').click(this.onApplicationAddEvent.bind(this));
   modal.show();
-  $.uniformize("#application-add-event");
+  //$.uniformize("#application-add-event");
 };
 
 EdEditor.prototype.fillApplicationForms = function(defs,pp,ms,mode) {
@@ -232,7 +232,7 @@ EdEditor.prototype.fillApplicationForms = function(defs,pp,ms,mode) {
       $.tmpl('insert_property', [{}]).appendTo('#select-properties');
     }
     pp_ct.html('<div class=\"grid-view\">'+ pp_ct.html() + '</div>');
-    $.uniformize("#content-application");
-    $.uniformize("#select-properties");
-    $.uniformize("#select-measures");
+    //$.uniformize("#content-application");
+    //$.uniformize("#select-properties");
+    //$.uniformize("#select-measures");
 };
