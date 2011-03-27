@@ -11,7 +11,9 @@ module OMF
         
         def initialize(args = {})
           @params = args
-          @meta = args[:meta] 
+          @meta = args[:meta]
+          @repository = args[:repository] unless args[:repository].nil?
+          
           unless @meta.nil? 
             duration = @meta[:properties][:duration]
             @testbed = @meta[:properties][:testbed]
@@ -23,9 +25,11 @@ module OMF
           end
         end
 
+        # Generates an application definition
         def createApplicationDefinition(args)
-          uri = args[0]
-          name = args[1]
+          app_uri = args[0]
+          app_name = args[1]
+
           properties = args[2]
           blockApp = s(:block, nil)
           block_index = 1
@@ -35,19 +39,9 @@ module OMF
               # attributes
               if k == "version"
                 v_values = v.split(".")
-                sexp = s(:call, 
-                    s(:lvar, :app), 
-                    :version, 
-                    s(:arglist, 
-                      s(:lit, v_values[0].to_i), 
-                      s(:lit, v_values[1].to_i),
-                      s(:lit, v_values[2].to_i)))
+                sexp = version(v_values)
               else
-                sexp = s(:attrasgn, 
-                    s(:lvar, :app), 
-                    "#{k}=".to_sym, 
-                    s(:arglist, 
-                      s(:str, v)))
+                sexp = attr_assgn(k, v)
               end
               blockApp[block_index] = sexp
               block_index += 1
@@ -57,17 +51,28 @@ module OMF
                 options = s(:hash, nil)
                 h_i = 1
                 prop_v[:options].each do |opt,opt_v|
-                  options[h_i] = s(:lit, opt)
-                  options[h_i + 1] = s(:str, opt_v)
+                  options[h_i] = s(:lit, opt.to_sym)
+                  v = nil
+                  is_sym_value = (opt == "dynamic" or opt == "type")
+                  is_int_value = (opt == "order")
+                  need_bool_sexp = (opt == "dynamic")
+                  need_lit_sexp = (opt == "type" or opt == "order")
+                  v = opt_v.to_sym if is_sym_value
+                  v = opt_v.to_i if is_int_value
+                  options[h_i + 1] = s(v) if need_bool_sexp
+                  options[h_i + 1] = s(:lit, v) if need_lit_sexp
                   h_i += 2
                 end
+                #options = s(:block, options)
+                mnemonic = str(prop_v[:mnemonic])
+                description = str(prop_v[:description].to_s)
                 sexp = s(:call,               
                   s(:lvar, :app),
                   :defProperty,
                   s(:arglist, 
-                    s(:str, k), 
-                    s(:str, prop_v[:description].to_s), 
-                    s(:str, prop_v[:mnemonic]), 
+                    s(:str, prop), 
+                    description,
+                    mnemonic, 
                     options))
                 blockApp[block_index] = sexp
                 block_index += 1
@@ -108,14 +113,14 @@ module OMF
               nil,
               :defApplication, 
               s(:arglist, 
-                s(:str, uri.to_s), 
-                s(:str, name.to_s))),
+                s(:str, app_uri.to_s), 
+                s(:str, app_name.to_s))),
             iterApp, blockApp)
           return defApplication
         end
 
         # Generates --
-        # defGroup(name)        
+        # defGroup(name) { <> }      
         def createGroup(name, props, auto=false)
           applications = props[:applications].blank? ? nil : props[:applications]
           nodes = props[:nodes]
@@ -125,19 +130,21 @@ module OMF
           iterApp = s(:lasgn, :app)
           group_block = s(:block, nil)
           group_block_index = 1
-          i = 1
+
           unless applications.nil?
-            blockApp = s(:block, nil)                      
-            applications.each do |index,application|
+            applications.each do |index,application|              
+              blockApp = s(:block, nil)                      
+              i = 1
               unless application[:options].nil?
+                  definition = @repository[application[:uri]]
                   application[:options][:properties].each do |k,v|
                     app_setProp = s(:call, 
                       s(:lvar, :app), 
                       :setProperty, 
                       s(:arglist, 
                         s(:str, k), 
-                        s(:lit, v)))
-                    blockApp[i] = app_setProp
+                        get_property_value(v, k, definition)))
+                    blockApp[i] = app_setProp.deep_clone
                     i += 1
                   end
               end
@@ -153,7 +160,7 @@ module OMF
                         s(:lit, :samples), 
                         s(:lit, 1))))
     
-                  blockApp[i] = app_setProp
+                  blockApp[i] = app_setProp.deep_clone
                   i += 1
                 end
               end
@@ -260,6 +267,61 @@ module OMF
         end
 
         protected
+
+        # Helper method to generate: "some_string" or nil (symbol)
+        def str(value=nil)
+          if value.nil?
+            return s(:nil)
+          else
+            return s(:str, value.to_s)
+          end
+        end
+        
+        # Helper method to generate: version(x, y, z)
+        def version(v_values)
+          return s(:call, 
+                    s(:lvar, :app), 
+                    :version, 
+                    s(:arglist, 
+                      s(:lit, v_values[0].to_i), 
+                      s(:lit, v_values[1].to_i),
+                      s(:lit, v_values[2].to_i)))
+        end
+
+        # Helper method to generate the attributes assignment in a Application Definition
+        def attr_assgn(attribute, value)
+          return s(:attrasgn, 
+                    s(:lvar, :app), 
+                    "#{attribute}=".to_sym, 
+                    s(:arglist, 
+                      s(:str, value)))
+        end
+
+        # Helper to generate the value from its definition type
+        def get_property_value(value, property, definition)
+          default = s(:str, value)
+          if definition.nil? then return default end
+          
+          property = definition[:properties][property]
+          options = property[:options]
+          
+          if options.nil? then return default end
+          
+          type = options[:type]
+          if type.nil? then return default end
+          
+          case
+          when type == :integer
+            return s(:lit, value.to_i)
+          when type == :boolean
+            return s(value.to_sym)
+          when type == :string
+            return s(:str, value.to_s)
+          end
+          return default          
+        end
+
+        # Helper method to generate: Experiment.done
         def experimentDone()
           expDone = s(:call, 
             s(:const, :Experiment), 
@@ -267,6 +329,9 @@ module OMF
             s(:arglist))
           return expDone
         end
+
+        # Helper method to generate a sequence of wait's
+        #   representing the Timeline
         def timeline()
           timeline = @params[:timeline]
           blockTimeline = s(:block, nil)
@@ -308,6 +373,7 @@ module OMF
           return blockTimeline
         end
 
+        # Comparing two timestamps, returns the early one
         def timeline_get_tm(tm, to_start, to_stop)
           start = to_start[0]; stop = to_stop[0]
           if !start.nil? and start[:start] <= stop[:stop]
@@ -319,7 +385,8 @@ module OMF
           end
           return tm
         end
-        
+       
+        # Generate the auto configuring network properties
         def autoNetworkProperties()
           return s(:iter, 
             s(:call, 
@@ -358,7 +425,10 @@ module OMF
                 s(:arglist, 
                   s(:str, "192.168.0.%index")))))
         end
-        
+       
+        # Giving a sblock, an index and some properties, generates
+        # the network properties. e.g:
+        # net.w0.ip = "192.168.2.1"
         def groupProperties(sblock, index, properties)
           if properties[:net].nil?
             return sblock;
@@ -381,6 +451,18 @@ module OMF
             end
           end
           return sblock;
+        end
+        
+        private        
+        TRUE_VALUES = [true, 1, '1', 't', 'T', 'true', 'TRUE'].to_set
+        FALSE_VALUES = [false, 0, '0', 'f', 'F', 'false', 'FALSE'].to_set        
+
+        def to_bool(value)
+          if value.is_a?(String) && value.blank?
+            nil
+          else
+            TRUE_VALUES.include?(value)
+          end
         end
       end      
 

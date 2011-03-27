@@ -1,7 +1,20 @@
+$.extend({
+  uniformize: function(p){
+      if (p){
+        $("select, textarea, input:password, input:text, input:checkbox, input:radio, input:file", $(p)).uniform(); 
+      } else {
+        $("select, textarea, input:password, input:text, input:checkbox, input:radio, input:file").uniform(); 
+      }
+  },
+  init: function(){
+    $("a, .action").tipsy({ live: true });  
+    $(".flash-msg-integrated").slideDown(500).delay(5000).slideUp(200);    
+    this.uniformize();
+  }
+});
 <% if user_signed_in? %>
 $(document).ready(function(){
-  $("a, .action").tipsy({ live: true });
-  $(".flash-msg-integrated").slideDown(500).delay(5000).slideUp(200);
+  $.init();
   var descs = $("div.description"), sep = 50;
   for (i=0;i<descs.length; ++i){
     var text = $(descs[i]).html();
@@ -132,6 +145,7 @@ function filter_path(path, field, cmp, value){
   return path+"?filter=field&field="+field+"&op="+cmp+"&value="+value;
 }
 
+
   <% if (@c == "library/sys_images") and (@a == "edit" or @a == "new")%>
 function AJAXUploadSupport(){
     return supportFileAPI() && supportAjaxUploadProgressEvents();
@@ -185,6 +199,27 @@ function updateStatus() {
   setTimeout(updateStatus, 60000);  
 }
   <% end %>
+  
+<% else %>
+  
+$(document).ready(function(evt){
+  $.uniformize();
+});
 
 <% end %>                           
+
+$.extend({
+  uniformize: function(p){
+      if (p){
+        $("select, textarea, input:password, input:text, input:checkbox, input:radio, input:file", $(p)).uniform(); 
+      } else {
+        $("select, textarea, input:password, input:text, input:checkbox, input:radio, input:file").uniform(); 
+      }
+  },
+  init: function(){
+    $("a, .action").tipsy({ live: true });  
+    $(".flash-msg-integrated").slideDown(500).delay(5000).slideUp(200);    
+    this.uniformize();
+  }
+});
 

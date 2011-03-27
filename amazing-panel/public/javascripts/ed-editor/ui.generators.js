@@ -112,19 +112,26 @@ EdEditor.prototype.generateGroupsTable = function(groups) {
   * Generates the Timeline
   */
 EdEditor.prototype.generateTimeline = function(min, max, scale) {  
-  var timeline = this.engine.timeline;
+  var timeline = this.engine.timeline,
+      nevt = $.keys(timeline.events).length,
+      duration = this.engine.properties.duration;
+  if (nevt == 0 && duration) {
+    timeline.addEvent("all", 0, duration);
+  }
   timeline.scale(min, max, scale);
+  
+  
   $(".intervals").empty();
-
   // Generate intervals
-  for(var i=0; i<timeline.intervals; ++i){
+  for(var i=0; i<timeline.intervals - 1; ++i){
     $(".intervals").append("<li><span>"+timeline.labelize(i*timeline.raw_interval, scale)+"</span></li>");
   }
   $(".intervals > li").css("width", timeline.width+"%");
 
   // Generate events
-  // 'XXX' add support when it only has duration, with no events
-  $(".events").empty();
+
+  $(".events").empty();  
+
   for (var g in timeline.events){
     var group = this.engine.groups[g]
     var evt = timeline.events[g]
@@ -132,8 +139,12 @@ EdEditor.prototype.generateTimeline = function(min, max, scale) {
     var width = timeline.width * ( evt.duration / timeline.interval );
 
     $(".events").append("<li id="+g+"><span>"+evt.duration+"</span></li>");
-    $(".events > #"+g).css("left", left+"%").css("width", width+"%").css("background-color", group.color);
+    var jevt = $(".events > #"+g).css("left", left+"%").css("width", width+"%")
+    if (group) {
+      jevt.css("background-color", group.color);
+    }
   }
+  timeline.removeEvent("all");
 }
 
 /**

@@ -50,14 +50,18 @@ module OMF
         return c 
       end
 
-      def self.getDefinition(uri_or_path)
-        r_path = uri_or_path
-        if uri_or_path.index(':')
-          r_path = "#{APP_CONFIG['oedl_repository']}/#{uri_or_path.gsub(/[:]/,'/')}.rb"
-        end
-        code = IO::read(r_path)
+      def self.getDefinition(uri_or_path, code=nil)
         c = Context.new(-1)
-        eval(code, c.getBinding(), r_path)
+        if code.nil?
+          r_path = uri_or_path
+          if uri_or_path.index(':')
+            r_path = "#{APP_CONFIG['oedl_repository']}/#{uri_or_path.gsub(/[:]/,'/')}.rb"
+          end
+          code = IO::read(r_path)
+          eval(code, c.getBinding(), r_path)
+        else
+          eval(code, c.getBinding())
+        end
         return c
       end
 

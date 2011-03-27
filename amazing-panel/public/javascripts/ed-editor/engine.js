@@ -301,7 +301,7 @@ function Engine(tm_size) {
       measures: {}
     }
   };
-  this.properties = { duration: 30 };
+  this.properties = { duration: 120 };
   this.timeline = new Timeline(tm_size);
 
 

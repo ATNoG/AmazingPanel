@@ -18,4 +18,13 @@ function hideDialog(){
   modal.hide();  
 }
 
-$.extend({ keys: function(obj){ var a=[]; $.each(obj, function(i){a.push(i)});return a; } });
+$.extend({ 
+  keys: function(obj){ 
+    var a = []; 
+    $.each(obj, function(i){ 
+      a.push(i)
+    });
+    return a; 
+    } 
+  }
+);

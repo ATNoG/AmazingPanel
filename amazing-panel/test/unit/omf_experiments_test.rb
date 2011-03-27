@@ -18,6 +18,52 @@ class OMFExperimentsTest < ActiveSupport::TestCase
     object = OMF::Experiments::ScriptHandler.exec(14, exp.ed) 
   end
 
+  test "oedl_scan_repo" do 
+    @apps = OMF::Experiments::ScriptHandler.scanRepositories()
+    pp @apps
+  end
+  
+  test "oedl_scan_app" do 
+    #@apps = OMF::Experiments::ScriptHandler.getDefinition("test:app:otg2")
+    #pp @apps
+    @app = OMF::Experiments::ScriptHandler.getDefinition("test:app:otr2")
+    assert @app.properties[:repository][:apps].has_key?("test:app:otr2")
+    
+    params = HashWithIndifferentAccess.new({
+      "applications" => {
+         "my:sample" =>{
+           "name" => "sample",
+           "measures" => { "general" => { "throughtput" => :long, "rssi" => :long } }, 
+           "options" =>{
+             "path" => "/usr/bin/sample",
+             "version" => "0.0.1",
+             "appPackage" => "/home/jon/Programs/share/sample.tar.gz",
+             "shortDescription" => "Sample Application",
+             "description" => "Sample Application",
+             "properties" => {
+                "receivers" => {
+                  "description" => "Number of Receivers",
+                  "mnemonic" => "-r",
+                  "options" => {  "dynamic" => "false", "type" => "integer", "order" => "0"  }
+                },                 
+                "senders" => {
+                  "description" => "Number of Senders",
+                  "mnemonic" => "-s",
+                  "options" => {  "dynamic" => "false", "type" => "integer", "order" => "1"  }
+                }, 
+             }
+           }
+         }
+      }
+    })    
+    app = OMF::Experiments::OEDL::Script.new();    
+    p = params[:applications]["my:sample"]
+    args = ["my:sample", p["name"], p]
+    code = app.from_sexp(:createApplicationDefinition, args)
+    @app = OMF::Experiments::ScriptHandler.getDefinition(nil, code)
+    assert @app.properties[:repository][:apps].has_key?("my:sample")
+  end
+
   test "oedl_gen" do
       params = HashWithIndifferentAccess.new({ 
         "meta" => {
@@ -38,6 +84,14 @@ class OMFExperimentsTest < ActiveSupport::TestCase
                 }
               }, "applications" => {
                 "0" =>{
+                  "uri" => "test:app:otr3",
+                  "measures" => { "selected" => "udp_in"}, 
+                  "options" =>{
+                    "selected" => ["udp:local_host", "udp:local_port"], 
+                    "properties" => {"udp:local_host"=>"192.168.0.1", "udp:local_port"=>"4000"}
+                  }
+                },
+                "1" =>{
                   "uri" => "test:app:otr2",
                   "measures" => { "selected" => "udp_in"}, 
                   "options" =>{
@@ -45,14 +99,6 @@ class OMFExperimentsTest < ActiveSupport::TestCase
                     "properties" => {"udp:local_host"=>"192.168.0.2", "udp:local_port"=>"3000"}
                   }
                 }, 
-                "1" =>{
-                  "uri" => "test:app:otr3",
-                  "measures" => { "selected" => "udp_in"}, 
-                  "options" =>{
-                    "selected" => ["udp:local_host", "udp:local_port"], 
-                    "properties" => {"udp:local_host"=>"192.168.0.2", "udp:local_port"=>"3000"}
-                  }
-                }
               }
             }
         }, "properties" => { 
@@ -64,7 +110,8 @@ class OMFExperimentsTest < ActiveSupport::TestCase
           }
         }
       }})
-      script = OMF::Experiments::OEDL::Script.new(params)
+      repos = OMF::Experiments::ScriptHandler.scanRepositories()
+      script = OMF::Experiments::OEDL::Script.new({ :meta => params[:meta], :repository => repos })
       code = script.to_s();
       puts code
   end
