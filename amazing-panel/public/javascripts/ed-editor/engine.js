@@ -278,10 +278,13 @@ Timeline.prototype.removeEvent = function(group) {
   if (group == "_all_") {
     delete this.events[group]
     return true
-  }
-  var tks = group.split("-"),
+  }  
+  var tks = group.split("-"),   
       g = tks[0], evt_id = tks[1],
       evt = {};
+  if (!this.events[g]) {
+    return false;
+  }
   if (evt_id == "default"){
     delete this.events[g].applications; 
     ret = true;
@@ -292,6 +295,10 @@ Timeline.prototype.removeEvent = function(group) {
   this.removeEventGroup(g);
   return ret;
 };
+
+Timeline.prototype.removeApplicationEvent = function(group) {
+  return this.removeEvent(group+"-default");
+}
 
 Timeline.prototype.removeEventGroup = function(group){
   var n_exec_evts = $.keys(this.events[g].exec).length,
@@ -501,7 +508,9 @@ Engine.prototype.getGeneratedCode = function() {
   // generate data to get timeline from server
   for (var g in events) {
     var default_evt = events[g].applications;
-    group_events.push({ group: g, start: default_evt.start, stop: default_evt.stop, command: default_evt.command });  
+    if (default_evt.id){
+      group_events.push({ group: g, start: default_evt.start, stop: default_evt.stop, command: default_evt.command });  
+    }
     for (var eevt in events[g].exec){
       var evt = events[g].exec[eevt];
       group_events.push({ group: g, start: evt.start, stop: evt.stop, command: evt.command });  

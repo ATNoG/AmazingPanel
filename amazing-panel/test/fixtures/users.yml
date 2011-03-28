@@ -1,31 +1,37 @@
 --- 
 users_004: 
+  pftpd_passwd: 
+  pftpd_dir: 
   name: "Jo\xC3\xA3o Paulo Barraca"
   encrypted_password: $2a$10$4KhW5dq3exVqD6axyLxei.1yWciq/hCJtdRzaNlBhY5R4Xjlnw3hC
   created_at: 2011-01-27 17:37:43
   institution: IT
-  updated_at: 2011-02-08 16:33:38
-  last_sign_in_ip: 193.136.93.244
+  pftpd_uid: 
+  updated_at: 2011-03-16 16:49:42
+  last_sign_in_ip: 193.136.92.181
   username: jpbarraca
   admin: "0"
-  last_sign_in_at: 2011-02-07 17:58:08
+  last_sign_in_at: 2011-03-16 12:26:08
   intention: ""
-  sign_in_count: "3"
+  sign_in_count: "7"
   id: "5"
   password_salt: $2a$10$4KhW5dq3exVqD6axyLxei.
   roles_mask: "2"
-  current_sign_in_ip: 193.136.92.181
-  remember_token: 90Wz7ytIrpfIe8mYF0S-
+  current_sign_in_ip: 193.136.92.123
+  remember_token: omqgrzdAapp241P9HfDk
   reset_password_token: 
   activated: "1"
-  current_sign_in_at: 2011-02-08 16:33:38
-  remember_created_at: 2011-01-27 17:39:27
+  current_sign_in_at: 2011-03-16 16:49:42
+  remember_created_at: 2011-03-16 16:49:42
   email: jpbarraca@av.it.pt
 users_005: 
+  pftpd_passwd: 
+  pftpd_dir: 
   name: Rui Ferreira
   encrypted_password: $2a$10$lX7vJBQkv09aXDu7EnQ46Oy97ry.vEGYT7m1/B/vTqfKqzX37ePUG
   created_at: 2011-01-28 11:10:12
   institution: IT
+  pftpd_uid: 
   updated_at: 2011-02-03 20:23:32
   last_sign_in_ip: 193.136.92.86
   username: raf
@@ -44,11 +50,14 @@ users_005:
   remember_created_at: 
   email: rferreira@av.it.pt
 users_006: 
+  pftpd_passwd: 
+  pftpd_dir: 
   name: Diogo
   encrypted_password: $2a$10$ZNG9zcVPeWt2zLeODrcs8.vQFTJdcg/xAduDErBqn1VBhxBWG0JiW
   created_at: 2011-02-10 11:59:02
   institution: Univ. Aveiro
-  updated_at: 2011-02-10 11:59:02
+  pftpd_uid: 
+  updated_at: 2011-02-11 14:37:55
   last_sign_in_ip: 
   username: dgomes
   admin: "0"
@@ -61,44 +70,100 @@ users_006:
   current_sign_in_ip: 
   remember_token: 
   reset_password_token: 
-  activated: "0"
+  activated: "1"
   current_sign_in_at: 
   remember_created_at: 
   email: dgomes@av.it.pt
+users_007: 
+  pftpd_passwd: "123456"
+  pftpd_dir: /var/www/amazing/inventory/users/juandelortega
+  name: Test
+  encrypted_password: $2a$10$O4SwjAUb9NFjdwD3FMlIDO/TTjDBN670cwnW6HTAqkhkI0HSfeFYG
+  created_at: 2011-03-11 20:18:15
+  institution: SAM
+  pftpd_uid: 
+  updated_at: 2011-03-11 20:52:24
+  last_sign_in_ip: 
+  username: juandelortega
+  admin: "0"
+  last_sign_in_at: 
+  intention: SAM
+  sign_in_count: "0"
+  id: "12"
+  password_salt: $2a$10$O4SwjAUb9NFjdwD3FMlIDO
+  roles_mask: 
+  current_sign_in_ip: 
+  remember_token: 
+  reset_password_token: 
+  activated: "0"
+  current_sign_in_at: 
+  remember_created_at: 
+  email: jmartins@av.it.pt
+users_008: 
+  pftpd_passwd: 
+  pftpd_dir: 
+  name: "Andr\xC3\xA9 Rainho"
+  encrypted_password: $2a$10$b8oovSCt/gu52Obb/qNGq.OFN40hYw92H.vvPYk/adqDHNoaqPK8W
+  created_at: 2011-03-15 14:06:08
+  institution: "Instituto de Telecomunica\xC3\xA7\xC3\xB5es"
+  pftpd_uid: 
+  updated_at: 2011-03-16 03:27:41
+  last_sign_in_ip: 
+  username: arainho
+  admin: "0"
+  last_sign_in_at: 
+  intention: Testbed Maintainer
+  sign_in_count: "0"
+  id: "13"
+  password_salt: $2a$10$b8oovSCt/gu52Obb/qNGq.
+  roles_mask: "9"
+  current_sign_in_ip: 
+  remember_token: 
+  reset_password_token: 
+  activated: "1"
+  current_sign_in_at: 
+  remember_created_at: 
+  email: arainho@av.it.pt
 users_001: 
+  pftpd_passwd: 
+  pftpd_dir: 
   name: "Jo\xC3\xA3o Martins"
   encrypted_password: $2a$10$r1qZVMCNUQECPJV9iSZCVuAoaEabKcq94D/lEmGokbEwUEi79wDOe
   created_at: 2010-12-15 10:47:10
   institution: Universidade de Aveiro
-  updated_at: 2011-02-10 11:36:57
-  last_sign_in_ip: 193.136.93.102
+  pftpd_uid: 
+  updated_at: 2011-03-28 14:53:34
+  last_sign_in_ip: 193.136.92.123
   username: jmartins
   admin: "1"
-  last_sign_in_at: 2011-02-09 12:13:32
+  last_sign_in_at: 2011-03-27 15:04:42
   intention: Testing purporses on Amazing Panel.
-  sign_in_count: "123"
+  sign_in_count: "187"
   id: "1"
   password_salt: $2a$10$r1qZVMCNUQECPJV9iSZCVu
   roles_mask: "3"
-  current_sign_in_ip: 193.136.93.174
+  current_sign_in_ip: 193.136.93.223
   remember_token: 
   reset_password_token: 
   activated: "1"
-  current_sign_in_at: 2011-02-10 11:36:57
+  current_sign_in_at: 2011-03-28 14:53:34
   remember_created_at: 
   email: joaolemos@ua.pt
 users_002: 
+  pftpd_passwd: "123456"
+  pftpd_dir: /var/www/amazing/inventory/users/testftp
   name: "Gon\xC3\xA7alo Morais"
   encrypted_password: $2a$10$C1zNOu5gpqdUSHYRw4Jpteky3YfWkOrCG1y5QbrcZlIIWJoXFR4OS
   created_at: 2010-12-20 20:07:17
   institution: Universidade de Aveiro
-  updated_at: 2011-02-09 02:32:17
-  last_sign_in_ip: 193.136.93.173
-  username: gmorais
+  pftpd_uid: "1071"
+  updated_at: 2011-03-12 02:53:19
+  last_sign_in_ip: 193.136.92.123
+  username: testftp
   admin: "0"
-  last_sign_in_at: 2011-02-03 20:24:20
+  last_sign_in_at: 2011-03-12 02:51:10
   intention: Test
-  sign_in_count: "10"
+  sign_in_count: "18"
   id: "3"
   password_salt: $2a$10$C1zNOu5gpqdUSHYRw4Jpte
   roles_mask: "2"
@@ -106,28 +171,31 @@ users_002:
   remember_token: 
   reset_password_token: BhrYwEk6P2xzBL17PfIp
   activated: "1"
-  current_sign_in_at: 2011-02-09 02:32:17
+  current_sign_in_at: 2011-03-12 02:53:19
   remember_created_at: 
-  email: goncalomorais@ua.pt
+  email: madjackoo@gmail.com
 users_003: 
+  pftpd_passwd: 
+  pftpd_dir: 
   name: "Carlos Gon\xC3\xA7alves"
   encrypted_password: $2a$10$CSUKrW.9HyxlcNyQhKKqeuxsBzpccxdWcukiQqQwimXMfUjRrFotu
   created_at: 2011-01-24 17:16:01
   institution: IT
-  updated_at: 2011-02-09 11:14:11
-  last_sign_in_ip: 193.136.93.144
+  pftpd_uid: 
+  updated_at: 2011-02-23 14:58:24
+  last_sign_in_ip: 193.136.93.158
   username: cgoncalves
   admin: "0"
-  last_sign_in_at: 2011-02-08 18:24:33
+  last_sign_in_at: 2011-02-17 15:16:41
   intention: Make a bomb and explode it somewhere, somehow, someday just for fun!
-  sign_in_count: "28"
+  sign_in_count: "38"
   id: "4"
   password_salt: $2a$10$CSUKrW.9HyxlcNyQhKKqeu
   roles_mask: "2"
-  current_sign_in_ip: 193.136.93.144
+  current_sign_in_ip: 193.136.93.65
   remember_token: 
   reset_password_token: 
   activated: "1"
-  current_sign_in_at: 2011-02-09 11:14:11
+  current_sign_in_at: 2011-02-23 14:58:24
   remember_created_at: 
   email: cgoncalves@av.it.pt

@@ -156,15 +156,15 @@ class Library::EdsController < Library::ResourceController
       end
     end
 
-    repo = OMF::Experiments::ScriptHandler.scanRepositories()
+    repo = ScriptHandler.scanRepositories()
     @apps = Hash.new();
     params[:apps][:applications].each do |uri, app|
       args = [uri, app[:name], app]
-      @apps[uri] = Script.new().from_sexp(:createApplicationDefinition, args)      
-      definition = OMF::Experiments::ScriptHandler.getDefinition(nil, @apps[uri])
+      @apps[uri] = Generator.new().from_sexp(:createApplicationDefinition, args)      
+      definition = ScriptHandler.getDefinition(nil, @apps[uri])
       repo[uri] = definition.properties[:repository][:apps][uri]
     end
-    scriptgen = Script.new({:meta => params, :repository => repo})    
+    scriptgen = Generator.new({:meta => params, :repository => repo})    
     @code = scriptgen.to_s();
   end
 

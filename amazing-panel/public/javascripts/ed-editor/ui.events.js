@@ -59,8 +59,12 @@ EdEditor.prototype.onApplicationsTableClick = function(evt){
   var gname = $("#table-applications > .grid-view-row-selected > .group-color > input ").attr("value");
   if (same) { $("#table-applications-actions").show();return false; }
   var nsel = $(".grid-view-row-selected", $(n).parent()).length;  
-  if (nsel>0) { $("#table-groups-actions").show(); } 
-  else { $("#table-applications-actions").hide(); }
+  if (nsel>0) { 
+    $("#table-applications-actions").show(); 
+  } 
+  else { 
+    $("#table-applications-actions").hide(); 
+  }
   return false;
 }
 
@@ -168,14 +172,16 @@ EdEditor.prototype.onGroupAdd = function(evt) {
   */
 EdEditor.prototype.onGroupRemove = function(evt) {
   var groups = $("#table-groups > .grid-view-row-selected > .group-color > input ");
+  $(".node-highlight").css("background-color", "");
+  $(".sidetable-group-select").click();
   for(i=0;i<groups.length;++i){
     var g = $(groups[0]).attr("value");
     this.engine.removeGroup(g);
+    this.engine.timeline.removeEventGroup(g);
   }
-  $(".node-highlight").css("background-color", "");
-  $(".sidetable-group-select").click();
   this.generateApplicationsTable(this.engine.groups);
   this.generateGroupsTable(this.engine.groups);
+  this.generateTimeline()
   //evt.preventDefault();
   return false;
 }
@@ -252,7 +258,7 @@ EdEditor.prototype.onApplicationRemove = function(evt) {
   for(i=0;i<groups.length;++i){
     var g = $(groups[0]).attr("value");
     this.engine.groups[g].removeApplication(uri);
-    this.engine.timeline.removeEvent(g);
+    this.engine.timeline.removeApplicationEvent(g);
   }
   $(".sidetable-app-select").click();
   this.generateApplicationsTable(this.engine.groups);
@@ -339,14 +345,16 @@ EdEditor.prototype.onTimelineSelectorClick = function(evt) {
   var p = {
     start : this.engine.timeline.fromWidth(width),
     duration : 0,
-    group : gname
+    group : ""
   }
   if (app_gname) {
+    p.group = app_gname
     if (p.group && p.start > 0 && (p.duration = parseInt(prompt("Duration?", 0))) > 0)  {
       e = this.engine.timeline.addEvent(p.group, p.start, p.duration, null);
       this.generateTimeline();
     }
   } else if (group_gname) {
+    p.group = group_gname
     if (p.group && p.start > 0 && (p.command = prompt("Command to execute on group?", "")))  {
       e = this.engine.timeline.addEvent(p.group, p.start, -1, p.command);
       this.generateTimeline();

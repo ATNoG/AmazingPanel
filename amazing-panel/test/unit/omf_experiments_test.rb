@@ -3,24 +3,28 @@ require 'omf'
 
 class OMFExperimentsTest < ActiveSupport::TestCase
   # Replace this with your real tests.
-  test "oedl parser" do
-    exp = Experiment.find(14)
-    script = OMF::Workspace::open_ed(exp.ed.user, exp.ed.name)
-    parser = OMF::Experiments::OEDLParser.new(script)
-    app_metrics = parser.getApplicationMetrics()
-    data = OMF::Experiments::GenericResults.new(exp)
-    data.select_model_by_metric(app_metrics[0][:app], app_metrics[0][:metrics])
-  end
-
   test "oedl_env" do
-    exp = Experiment.find(14)
-    script = OMF::Workspace::open_ed(exp.ed.user, exp.ed.name)
-    object = OMF::Experiments::ScriptHandler.exec(14, exp.ed) 
+    id = 35
+    exp = Experiment.find(id)
+    object = OMF::Experiments::ScriptHandler.exec(exp.id, exp.ed) 
+    assert_not_nil object
   end
+  
+  test "oedl_reference" do
+    reference = OMF::Experiments::ScriptHandler.scanRepositories()
+    #pp reference.keys()
+    assert !reference.blank?
+    
+    app = OMF::Experiments::ScriptHandler.getDefinition("test:app:otr2")
+    assert !app.blank?
+    assert !app.properties.empty?
+    pp app.properties.keys()
+  end  
 
   test "oedl_scan_repo" do 
-    @apps = OMF::Experiments::ScriptHandler.scanRepositories()
-    pp @apps
+    apps = OMF::Experiments::ScriptHandler.scanRepositories()
+    assert !apps.keys().empty?()
+    pp apps.keys()
   end
   
   test "oedl_scan_app" do 
@@ -56,12 +60,13 @@ class OMFExperimentsTest < ActiveSupport::TestCase
          }
       }
     })    
-    app = OMF::Experiments::OEDL::Script.new();    
+    app = OMF::Experiments::OEDL::Generator.new();    
     p = params[:applications]["my:sample"]
     args = ["my:sample", p["name"], p]
     code = app.from_sexp(:createApplicationDefinition, args)
     @app = OMF::Experiments::ScriptHandler.getDefinition(nil, code)
     assert @app.properties[:repository][:apps].has_key?("my:sample")
+    pp @app
   end
 
   test "oedl_gen" do
@@ -111,8 +116,9 @@ class OMFExperimentsTest < ActiveSupport::TestCase
         }
       }})
       repos = OMF::Experiments::ScriptHandler.scanRepositories()
-      script = OMF::Experiments::OEDL::Script.new({ :meta => params, :repository => repos })
+      script = OMF::Experiments::OEDL::Generator.new({ :meta => params, :repository => repos })
       code = script.to_s();
+      assert_not_nil code
       puts code
   end
 
@@ -144,10 +150,12 @@ class OMFExperimentsTest < ActiveSupport::TestCase
          }
       }
     })
-    app = OMF::Experiments::OEDL::Script.new();    
+    app = OMF::Experiments::OEDL::Generator.new();    
     params[:applications].each do |uri, p|
       args = [uri, p[:name], p]
-      puts app.from_sexp(:createApplicationDefinition, args)
+      appdef = app.from_sexp(:createApplicationDefinition, args)
+      assert_not_nil appdef
+      puts appdef
     end
   end
 
@@ -159,19 +167,40 @@ class OMFExperimentsTest < ActiveSupport::TestCase
         {:group => "otg2", :start => 22, :stop => -1, :command => "echo done" },
         {:group => "iperf", :start => 27, :stop => 31 }
       ]})
-    app = OMF::Experiments::OEDL::Script.new(:meta => params);
-    puts Ruby2Ruby.new().process(app.all_up())
+    app = OMF::Experiments::OEDL::Generator.new(:meta => params);
+    assert_not_nil code = Ruby2Ruby.new().process(app.all_up())
+    puts code
+
+    params = HashWithIndifferentAccess.new({
+      "meta" => { 
+        "properties" => { 
+            "duration" => 30, 
+            "network" => "on",
+            "testbed" => { 
+              "id" => 0, 
+              "name" => 'amazing' 
+            }
+        }
+      }, :timeline => [
+        {:group => "otg2", :start => 20, :stop => -1, :command => "echo otr2" },
+        {:group => "otg2", :start => 22, :stop => -1, :command => "echo otg3" },
+        {:group => "iperf", :start => 27, :stop => -1, :command => "echo iperf" }
+      ]})
+    app = OMF::Experiments::OEDL::Generator.new(:meta => params);
+    assert_not_nil code = Ruby2Ruby.new().process(app.all_up())
+
+    puts code
   end
-  
+
   # CANNOT BE TESTED, only in Development environment 'XXX'
   ## mysql doesn't support
   #   rolling back statements that change the schema (adding tables, columns
   #   etc...), executing any such statement implicitly commits the current
   #   transaction
-  test "expctl-proxy" do
-    expctlp = OMF::Experiments::ExperimentControllerProxy.new(15)    
-    assert expctlp.prepare()
-    assert expctlp.start()
-    assert expctlp.stop()
-  end
+  #test "expctl-proxy" do
+  #  expctlp = OMF::Experiments::ExperimentControllerProxy.new(15)    
+  #  assert expctlp.prepare()
+  #  assert expctlp.start()
+  #  assert expctlp.stop()
+  #end
 end

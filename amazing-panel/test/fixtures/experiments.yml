@@ -1,37 +1,22 @@
 --- 
 experiments_011: 
-  failures: "0"
-  duration: 
   created_at: 2011-01-13 17:56:28
-  runs: "1"
-  phase_id: "1"
-  resources_map_id: 
-  updated_at: 2011-01-13 17:56:29
-  project_id: "12"
-  ed_id: "1"
-  id: "37"
-  user_id: "4"
-  status: "4"
-experiments_012: 
-  failures: "0"
-  duration: 
-  created_at: 2011-01-13 17:56:28
-  runs: "12"
-  phase_id: "1"
-  resources_map_id: 
-  updated_at: 2011-01-13 17:56:29
+  updated_at: 2011-03-15 15:30:42
   project_id: "12"
   ed_id: "1"
   id: "38"
   user_id: "1"
-  status: "4"
+  status: "0"
+experiments_012: 
+  created_at: 2011-02-07 18:02:27
+  updated_at: 2011-02-07 18:02:27
+  project_id: "12"
+  ed_id: "1"
+  id: "39"
+  user_id: "5"
+  status: "0"
 experiments_001: 
-  failures: "0"
-  duration: 
   created_at: 2011-01-13 17:56:28
-  runs: "1"
-  phase_id: "1"
-  resources_map_id: 
   updated_at: 2011-01-13 17:56:29
   project_id: "1"
   ed_id: "1"
@@ -39,25 +24,15 @@ experiments_001:
   user_id: "1"
   status: "4"
 experiments_013: 
-  failures: 
-  duration: 
-  created_at: 2011-02-07 18:02:27
-  runs: "0"
-  phase_id: "1"
-  resources_map_id: 
-  updated_at: 2011-02-07 18:02:27
-  project_id: "12"
+  created_at: 2011-02-15 18:12:35
+  updated_at: 2011-02-17 15:42:56
+  project_id: "31"
   ed_id: "1"
-  id: "39"
-  user_id: "5"
+  id: "44"
+  user_id: "4"
   status: "0"
 experiments_002: 
-  failures: "0"
-  duration: 
   created_at: 2011-01-13 17:56:28
-  runs: "1"
-  phase_id: "1"
-  resources_map_id: 
   updated_at: 2011-01-13 17:56:29
   project_id: "1"
   ed_id: "1"
@@ -65,25 +40,15 @@ experiments_002:
   user_id: "1"
   status: "4"
 experiments_014: 
-  failures: 
-  duration: 
-  created_at: 2011-02-08 20:22:12
-  runs: "3"
-  phase_id: "1"
-  resources_map_id: 
-  updated_at: 2011-02-09 12:17:40
-  project_id: "31"
+  created_at: 2011-03-09 04:16:42
+  updated_at: 2011-03-09 04:16:42
+  project_id: "12"
   ed_id: "1"
-  id: "41"
-  user_id: "4"
-  status: "4"
+  id: "54"
+  user_id: "1"
+  status: "0"
 experiments_003: 
-  failures: "0"
-  duration: 
   created_at: 2011-01-13 17:56:28
-  runs: "1"
-  phase_id: "1"
-  resources_map_id: 
   updated_at: 2011-01-13 17:56:29
   project_id: "2"
   ed_id: "1"
@@ -91,25 +56,15 @@ experiments_003:
   user_id: "1"
   status: "4"
 experiments_015: 
-  failures: "0"
-  duration: 
-  created_at: 2011-02-09 14:50:57
-  runs: "1"
-  phase_id: "1"
-  resources_map_id: 
-  updated_at: 2011-02-09 15:00:14
-  project_id: "31"
+  created_at: 2011-03-23 19:26:24
+  updated_at: 2011-03-23 19:26:24
+  project_id: "12"
   ed_id: "1"
-  id: "42"
-  user_id: "4"
-  status: "-1"
+  id: "72"
+  user_id: "1"
+  status: "0"
 experiments_004: 
-  failures: "0"
-  duration: 
   created_at: 2011-01-13 17:56:28
-  runs: "13"
-  phase_id: "1"
-  resources_map_id: 
   updated_at: 2011-01-13 17:56:29
   project_id: "2"
   ed_id: "1"
@@ -117,12 +72,7 @@ experiments_004:
   user_id: "1"
   status: "4"
 experiments_005: 
-  failures: "0"
-  duration: 
   created_at: 2011-01-13 17:56:28
-  runs: "4"
-  phase_id: "1"
-  resources_map_id: 
   updated_at: 2011-02-07 18:13:35
   project_id: "12"
   ed_id: "2"
@@ -130,12 +80,7 @@ experiments_005:
   user_id: "4"
   status: "0"
 experiments_006: 
-  failures: "0"
-  duration: 
   created_at: 2011-01-13 17:56:28
-  runs: "0"
-  phase_id: "1"
-  resources_map_id: 
   updated_at: 2011-01-13 17:56:29
   project_id: "30"
   ed_id: "1"
@@ -143,12 +88,7 @@ experiments_006:
   user_id: "6"
   status: "0"
 experiments_007: 
-  failures: "0"
-  duration: 
   created_at: 2011-01-13 17:56:28
-  runs: "1"
-  phase_id: "1"
-  resources_map_id: 
   updated_at: 2011-01-13 17:56:29
   project_id: "12"
   ed_id: "3"
@@ -156,41 +96,26 @@ experiments_007:
   user_id: "4"
   status: "4"
 experiments_008: 
-  failures: "0"
-  duration: 
   created_at: 2011-01-13 17:56:28
-  runs: "7"
-  phase_id: "1"
-  resources_map_id: 
-  updated_at: 2011-02-08 19:35:16
+  updated_at: 2011-03-07 03:57:36
   project_id: "12"
   ed_id: "1"
   id: "31"
   user_id: "4"
   status: "4"
 experiments_009: 
-  failures: "0"
-  duration: 
   created_at: 2011-01-13 17:56:28
-  runs: "0"
-  phase_id: "1"
-  resources_map_id: 
-  updated_at: 2011-01-13 17:56:29
-  project_id: "12"
-  ed_id: "1"
-  id: "32"
-  user_id: "4"
-  status: "0"
-experiments_010: 
-  failures: "0"
-  duration: 
-  created_at: 2011-01-13 17:56:28
-  runs: "10"
-  phase_id: "1"
-  resources_map_id: 
   updated_at: 2011-01-13 17:56:29
   project_id: "3"
   ed_id: "1"
   id: "35"
   user_id: "1"
   status: "4"
+experiments_010: 
+  created_at: 2011-01-13 17:56:28
+  updated_at: 2011-03-08 17:00:47
+  project_id: "12"
+  ed_id: "1"
+  id: "37"
+  user_id: "4"
+  status: "-1"

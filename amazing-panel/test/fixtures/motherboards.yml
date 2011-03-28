@@ -4,9 +4,9 @@ motherboards_020:
   hd_status: "1"
   hd_sn: "0"
   memory: "1024"
-  mfr_sn: "19"
+  mfr_sn: "11"
   cpu_n: "1"
-  id: "19"
+  id: "11"
   hd_size: "4096"
   cpu_type: Via Eden
   inventory_id: "1"
@@ -15,57 +15,13 @@ motherboards_019:
   hd_status: "1"
   hd_sn: "0"
   memory: "1024"
-  mfr_sn: "18"
+  mfr_sn: "14"
   cpu_n: "1"
-  id: "18"
+  id: "14"
   hd_size: "4096"
   cpu_type: Via Eden
   inventory_id: "1"
 motherboards_008: 
-  cpu_hz: 1e+06
-  hd_status: "1"
-  hd_sn: "0"
-  memory: "1024"
-  mfr_sn: "3"
-  cpu_n: "1"
-  id: "3"
-  hd_size: "4096"
-  cpu_type: Via Eden
-  inventory_id: "1"
-motherboards_009: 
-  cpu_hz: 1e+06
-  hd_status: "1"
-  hd_sn: "0"
-  memory: "1024"
-  mfr_sn: "2"
-  cpu_n: "1"
-  id: "2"
-  hd_size: "4096"
-  cpu_type: Via Eden
-  inventory_id: "1"
-motherboards_021: 
-  cpu_hz: 1e+06
-  hd_status: "1"
-  hd_sn: "0"
-  memory: "1024"
-  mfr_sn: "20"
-  cpu_n: "1"
-  id: "20"
-  hd_size: "4096"
-  cpu_type: Via Eden
-  inventory_id: "1"
-motherboards_010: 
-  cpu_hz: 1e+06
-  hd_status: "1"
-  hd_sn: "0"
-  memory: "1024"
-  mfr_sn: "25"
-  cpu_n: "1"
-  id: "25"
-  hd_size: "4096"
-  cpu_type: Via Eden
-  inventory_id: "1"
-motherboards_022: 
   cpu_hz: 1e+06
   hd_status: "1"
   hd_sn: "0"
@@ -76,40 +32,7 @@ motherboards_022:
   hd_size: "4096"
   cpu_type: Via Eden
   inventory_id: "1"
-motherboards_011: 
-  cpu_hz: 1e+06
-  hd_status: "1"
-  hd_sn: "0"
-  memory: "1024"
-  mfr_sn: "8"
-  cpu_n: "1"
-  id: "8"
-  hd_size: "4096"
-  cpu_type: Via Eden
-  inventory_id: "1"
-motherboards_023: 
-  cpu_hz: 1e+06
-  hd_status: "1"
-  hd_sn: "0"
-  memory: "1024"
-  mfr_sn: "22"
-  cpu_n: "1"
-  id: "22"
-  hd_size: "4096"
-  cpu_type: Via Eden
-  inventory_id: "1"
-motherboards_012: 
-  cpu_hz: 1e+06
-  hd_status: "1"
-  hd_sn: "0"
-  memory: "1024"
-  mfr_sn: "9"
-  cpu_n: "1"
-  id: "9"
-  hd_size: "4096"
-  cpu_type: Via Eden
-  inventory_id: "1"
-motherboards_001: 
+motherboards_009: 
   cpu_hz: 1e+06
   hd_status: "1"
   hd_sn: "0"
@@ -120,14 +43,91 @@ motherboards_001:
   hd_size: "4096"
   cpu_type: Via Eden
   inventory_id: "1"
+motherboards_021: 
+  cpu_hz: 1e+06
+  hd_status: "1"
+  hd_sn: "0"
+  memory: "1024"
+  mfr_sn: "15"
+  cpu_n: "1"
+  id: "15"
+  hd_size: "4096"
+  cpu_type: Via Eden
+  inventory_id: "1"
+motherboards_010: 
+  cpu_hz: 1e+06
+  hd_status: "1"
+  hd_sn: "0"
+  memory: "1024"
+  mfr_sn: "9"
+  cpu_n: "1"
+  id: "9"
+  hd_size: "4096"
+  cpu_type: Via Eden
+  inventory_id: "1"
+motherboards_022: 
+  cpu_hz: 1e+06
+  hd_status: "1"
+  hd_sn: "0"
+  memory: "1024"
+  mfr_sn: "7"
+  cpu_n: "1"
+  id: "7"
+  hd_size: "4096"
+  cpu_type: Via Eden
+  inventory_id: "1"
+motherboards_011: 
+  cpu_hz: 1e+06
+  hd_status: "1"
+  hd_sn: "0"
+  memory: "1024"
+  mfr_sn: "22"
+  cpu_n: "1"
+  id: "22"
+  hd_size: "4096"
+  cpu_type: Via Eden
+  inventory_id: "1"
+motherboards_023: 
+  cpu_hz: 1e+06
+  hd_status: "1"
+  hd_sn: "0"
+  memory: "1024"
+  mfr_sn: "16"
+  cpu_n: "1"
+  id: "16"
+  hd_size: "4096"
+  cpu_type: Via Eden
+  inventory_id: "1"
+motherboards_012: 
+  cpu_hz: 1e+06
+  hd_status: "1"
+  hd_sn: "0"
+  memory: "1024"
+  mfr_sn: "1"
+  cpu_n: "1"
+  id: "1"
+  hd_size: "4096"
+  cpu_type: Via Eden
+  inventory_id: "1"
+motherboards_001: 
+  cpu_hz: 1e+06
+  hd_status: "1"
+  hd_sn: "0"
+  memory: "1024"
+  mfr_sn: "3"
+  cpu_n: "1"
+  id: "3"
+  hd_size: "4096"
+  cpu_type: Via Eden
+  inventory_id: "1"
 motherboards_024: 
   cpu_hz: 1e+06
   hd_status: "1"
   hd_sn: "0"
   memory: "1024"
-  mfr_sn: "23"
+  mfr_sn: "6"
   cpu_n: "1"
-  id: "23"
+  id: "6"
   hd_size: "4096"
   cpu_type: Via Eden
   inventory_id: "1"
@@ -147,112 +147,13 @@ motherboards_002:
   hd_status: "1"
   hd_sn: "0"
   memory: "1024"
-  mfr_sn: "1"
+  mfr_sn: "18"
   cpu_n: "1"
-  id: "1"
+  id: "18"
   hd_size: "4096"
   cpu_type: Via Eden
   inventory_id: "1"
 motherboards_025: 
-  cpu_hz: 1e+06
-  hd_status: "1"
-  hd_sn: "0"
-  memory: "1024"
-  mfr_sn: "24"
-  cpu_n: "1"
-  id: "24"
-  hd_size: "4096"
-  cpu_type: Via Eden
-  inventory_id: "1"
-motherboards_014: 
-  cpu_hz: 1e+06
-  hd_status: "1"
-  hd_sn: "0"
-  memory: "1024"
-  mfr_sn: "13"
-  cpu_n: "1"
-  id: "13"
-  hd_size: "4096"
-  cpu_type: Via Eden
-  inventory_id: "1"
-motherboards_003: 
-  cpu_hz: 1e+06
-  hd_status: "1"
-  hd_sn: "0"
-  memory: "1024"
-  mfr_sn: "4"
-  cpu_n: "1"
-  id: "4"
-  hd_size: "4096"
-  cpu_type: Via Eden
-  inventory_id: "1"
-motherboards_015: 
-  cpu_hz: 1e+06
-  hd_status: "1"
-  hd_sn: "0"
-  memory: "1024"
-  mfr_sn: "14"
-  cpu_n: "1"
-  id: "14"
-  hd_size: "4096"
-  cpu_type: Via Eden
-  inventory_id: "1"
-motherboards_004: 
-  cpu_hz: 1e+06
-  hd_status: "1"
-  hd_sn: "0"
-  memory: "1024"
-  mfr_sn: "12"
-  cpu_n: "1"
-  id: "12"
-  hd_size: "4096"
-  cpu_type: Via Eden
-  inventory_id: "1"
-motherboards_016: 
-  cpu_hz: 1e+06
-  hd_status: "1"
-  hd_sn: "0"
-  memory: "1024"
-  mfr_sn: "15"
-  cpu_n: "1"
-  id: "15"
-  hd_size: "4096"
-  cpu_type: Via Eden
-  inventory_id: "1"
-motherboards_005: 
-  cpu_hz: 1e+06
-  hd_status: "1"
-  hd_sn: "0"
-  memory: "1024"
-  mfr_sn: "11"
-  cpu_n: "1"
-  id: "11"
-  hd_size: "4096"
-  cpu_type: Via Eden
-  inventory_id: "1"
-motherboards_017: 
-  cpu_hz: 1e+06
-  hd_status: "1"
-  hd_sn: "0"
-  memory: "1024"
-  mfr_sn: "16"
-  cpu_n: "1"
-  id: "16"
-  hd_size: "4096"
-  cpu_type: Via Eden
-  inventory_id: "1"
-motherboards_006: 
-  cpu_hz: 1e+06
-  hd_status: "1"
-  hd_sn: "0"
-  memory: "1024"
-  mfr_sn: "7"
-  cpu_n: "1"
-  id: "7"
-  hd_size: "4096"
-  cpu_type: Via Eden
-  inventory_id: "1"
-motherboards_018: 
   cpu_hz: 1e+06
   hd_status: "1"
   hd_sn: "0"
@@ -263,14 +164,113 @@ motherboards_018:
   hd_size: "4096"
   cpu_type: Via Eden
   inventory_id: "1"
+motherboards_014: 
+  cpu_hz: 1e+06
+  hd_status: "1"
+  hd_sn: "0"
+  memory: "1024"
+  mfr_sn: "23"
+  cpu_n: "1"
+  id: "23"
+  hd_size: "4096"
+  cpu_type: Via Eden
+  inventory_id: "1"
+motherboards_003: 
+  cpu_hz: 1e+06
+  hd_status: "1"
+  hd_sn: "0"
+  memory: "1024"
+  mfr_sn: "19"
+  cpu_n: "1"
+  id: "19"
+  hd_size: "4096"
+  cpu_type: Via Eden
+  inventory_id: "1"
+motherboards_015: 
+  cpu_hz: 1e+06
+  hd_status: "1"
+  hd_sn: "0"
+  memory: "1024"
+  mfr_sn: "4"
+  cpu_n: "1"
+  id: "4"
+  hd_size: "4096"
+  cpu_type: Via Eden
+  inventory_id: "1"
+motherboards_004: 
+  cpu_hz: 1e+06
+  hd_status: "1"
+  hd_sn: "0"
+  memory: "1024"
+  mfr_sn: "2"
+  cpu_n: "1"
+  id: "2"
+  hd_size: "4096"
+  cpu_type: Via Eden
+  inventory_id: "1"
+motherboards_016: 
+  cpu_hz: 1e+06
+  hd_status: "1"
+  hd_sn: "0"
+  memory: "1024"
+  mfr_sn: "13"
+  cpu_n: "1"
+  id: "13"
+  hd_size: "4096"
+  cpu_type: Via Eden
+  inventory_id: "1"
+motherboards_005: 
+  cpu_hz: 1e+06
+  hd_status: "1"
+  hd_sn: "0"
+  memory: "1024"
+  mfr_sn: "25"
+  cpu_n: "1"
+  id: "25"
+  hd_size: "4096"
+  cpu_type: Via Eden
+  inventory_id: "1"
+motherboards_017: 
+  cpu_hz: 1e+06
+  hd_status: "1"
+  hd_sn: "0"
+  memory: "1024"
+  mfr_sn: "24"
+  cpu_n: "1"
+  id: "24"
+  hd_size: "4096"
+  cpu_type: Via Eden
+  inventory_id: "1"
+motherboards_006: 
+  cpu_hz: 1e+06
+  hd_status: "1"
+  hd_sn: "0"
+  memory: "1024"
+  mfr_sn: "20"
+  cpu_n: "1"
+  id: "20"
+  hd_size: "4096"
+  cpu_type: Via Eden
+  inventory_id: "1"
+motherboards_018: 
+  cpu_hz: 1e+06
+  hd_status: "1"
+  hd_sn: "0"
+  memory: "1024"
+  mfr_sn: "12"
+  cpu_n: "1"
+  id: "12"
+  hd_size: "4096"
+  cpu_type: Via Eden
+  inventory_id: "1"
 motherboards_007: 
   cpu_hz: 1e+06
   hd_status: "1"
   hd_sn: "0"
   memory: "1024"
-  mfr_sn: "6"
+  mfr_sn: "8"
   cpu_n: "1"
-  id: "6"
+  id: "8"
   hd_size: "4096"
   cpu_type: Via Eden
   inventory_id: "1"

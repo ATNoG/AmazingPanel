@@ -1,11 +1,16 @@
 require 'ruby_parser'
 require 'pp'
-require 'omf/experiments/oedl'
 
 module OMF
-  module Experiments  
+  module Experiments
+  end
+end
+
+require 'omf/experiments/oedl'
+
+module OMF::Experiments
     class Context      
-      include OMF::Experiments::OEDL
+      include OMF::Experiments::OEDL::Environment
       attr_accessor :id, :properties
       def initialize(id)
         @id = id
@@ -33,14 +38,14 @@ module OMF
         "nop.rb", 
         "wlanconfig_oml2.rb",
         "echo.rb"
-      ]
+      ].to_set
 
       WHITELIST = [
         "iperf", 
         "otg2", 
         "otr2", 
         "trace_oml2"
-      ]
+      ].to_set
 
       def self.exec(exp_id, ed)
         script = OMF::Workspace.open_ed(ed.user, "#{ed.id.to_s}.rb")
@@ -99,7 +104,6 @@ module OMF
       data = OMF::Experiments::GenericResults.new(experiment, args)
       return { :metrics => app_metrics, :results => data }
     end
-  end
 end
 
 require 'omf/experiments/results'

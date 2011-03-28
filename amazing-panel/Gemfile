@@ -10,6 +10,9 @@ gem 'sqlite3-ruby', :require => 'sqlite3'
 gem 'jquery-rails', "~>0.2"
 gem 'gravatar_image_tag', '0.1.0'
 
+# tests without db
+gem 'activerecord-nulldb-adapter'
+
 gem 'devise'
 gem 'cancan'
 
@@ -30,15 +33,16 @@ gem 'rack-raw-upload'
 # To use debugger
 gem 'ruby-debug'
 #gem 'autotest'
-#gem 'autotest-rails-pure'
 #gem 'autotest-notification'
+#gem 'autotest-rails-pure'
+
 
 
 group :test do
   gem 'single_test'
   gem 'rspec', '2.2.0'
   #gem 'rspec-rails'
-  gem 'webrat'
+  gem 'webrat' 
 end
 # Bundle the extra gems:
 # gem 'bj'
