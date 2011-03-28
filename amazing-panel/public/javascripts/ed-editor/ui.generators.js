@@ -116,35 +116,50 @@ EdEditor.prototype.generateTimeline = function(min, max, scale) {
       nevt = $.keys(timeline.events).length,
       duration = this.engine.properties.duration;
   if (nevt == 0 && duration) {
-    timeline.addEvent("all", 0, duration);
+    timeline.addEvent("_all_", 0, duration, null);
   }
   timeline.scale(min, max, scale);
   
-  
-  $(".intervals").empty();
   // Generate intervals
+  $(".intervals").empty();
   for(var i=0; i<timeline.intervals - 1; ++i){
     $(".intervals").append("<li><span>"+timeline.labelize(i*timeline.raw_interval, scale)+"</span></li>");
   }
   $(".intervals > li").css("width", timeline.width+"%");
 
+
   // Generate events
-
   $(".events").empty();  
-
   for (var g in timeline.events){
-    var group = this.engine.groups[g]
-    var evt = timeline.events[g]
-    var left = timeline.width * ( evt.start / timeline.interval );
-    var width = timeline.width * ( evt.duration / timeline.interval );
+    var group = this.engine.groups[g],
+        evts = timeline.events[g],    
+        exec_evts = timeline.events[g].exec,
+        app_evt = timeline.events[g].applications;
+    
+    if (app_evt && app_evt.id) {
+      this.addTimelineEvent.bind({timeline : timeline})(g, evts.applications, group);
+    }
 
-    $(".events").append("<li id="+g+"><span>"+evt.duration+"</span></li>");
-    var jevt = $(".events > #"+g).css("left", left+"%").css("width", width+"%")
-    if (group) {
-      jevt.css("background-color", group.color);
+    for (var eevt in exec_evts){
+      this.addTimelineEvent.bind({timeline : timeline})(g, exec_evts[eevt], group);
     }
   }
-  timeline.removeEvent("all");
+  timeline.removeEvent("_all_");
+}
+
+EdEditor.prototype.addTimelineEvent = function(g, evt, group) {  
+  var timeline = this.timeline,
+      has_command = (evt.duration == -1),
+      duration = (has_command ? 1 : evt.duration),
+      left = timeline.width * ( evt.start / timeline.interval ),
+      width = timeline.width * ( duration / timeline.interval ),
+      id = g + "-" +evt.id;
+
+  $(".events").append("<li class=\"" + (has_command ? "oedl-command-event" : "") + "\"" +
+        " id=\""+id+"\"><span>"+duration+"</span></li>");
+  
+  var jevt = $(".events > #"+id).css("left", left+"%").css("width", width+"%")
+  if (group) { jevt.css("background-color", group.color); }
 }
 
 /**
@@ -156,3 +171,48 @@ EdEditor.prototype.generateEventActions = function(del) {
     $(".oedl-timeline-actions").html("<a href=\"#\" class=\"cduration-timeline-item\">Change Duration</a><a href=\"#\" class=\"removeevent-timeline-item\">Remove Event</a>");
   }
 }
+
+EdEditor.prototype.fillApplicationForms = function(defs,pp,ms,mode) {
+    var defs_ct = $('#content-application').empty(),
+        pp_ct = $('#select-properties').empty(),
+        ms_ct = $('#select-measures').empty(),
+        defs_data = [], pp_data = [], ms_data = [];
+    if (mode == undefined) {
+      pp_ct.append('<div class=\"grid-view-row grid-view-header\">'+
+        '<div>Name</div>'+
+        '<div>Description</div>'+
+        '<div>Value</div>'+
+      '</div>');
+    } else if (mode == 'insert') {
+      pp_ct.append('<div class=\"grid-view-row grid-view-header\"><div>Type</div><div>Name</div><div>Description</div><div style=\"min-width:80px;max-width:250px\">Value</div></div>');
+    }
+
+    for (d in defs) { defs_data.push({ key: d, value: defs[d]}); }
+    for (d in pp) { pp_data.push({ key: d, value: pp[d].description }); }
+    for (d in ms) {
+      ms_data.push({
+        key: d,
+        metrics: (function() {
+            var values = [];
+            var measurement = ms[d];
+            for (m in measurement) {
+              values.push({ name: m, type: measurement[m]['type'] });
+            }
+            return values;
+          })()
+      });
+    }
+    if (!mode) {
+      $.tmpl('display_info', defs_data).appendTo('#content-application');
+      $.tmpl('display_property', pp_data).appendTo('#select-properties');
+      $.tmpl('display_measures', ms_data).appendTo('#select-measures');
+    } else if (mode == 'insert') {
+      $('#content-application').html('<form id=\"select-info\"></form>');
+      $.tmpl('insert_info', defs_data).appendTo('#select-info');
+      $.tmpl('insert_property', [{}]).appendTo('#select-properties');
+    }
+    pp_ct.html('<div class=\"grid-view\">'+ pp_ct.html() + '</div>');
+    //$.uniformize("#content-application");
+    //$.uniformize("#select-properties");
+    //$.uniformize("#select-measures");
+};

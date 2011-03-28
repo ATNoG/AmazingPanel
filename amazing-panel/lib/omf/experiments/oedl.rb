@@ -10,8 +10,8 @@ module OMF
         attr_accessor :meta
         
         def initialize(args = {})
-          @params = args
-          @meta = args[:meta]
+          @params = args[:meta]
+          @meta = @params[:meta]
           @repository = args[:repository] unless args[:repository].nil?
           
           unless @meta.nil? 
@@ -338,10 +338,20 @@ module OMF
           n = timeline.size
           to_start = timeline.sort { |x,y| x[:start] <=> y[:start]  }
           to_stop = timeline.sort { |x,y| x[:stop] <=> y[:stop]  }
+          to_stop.delete_if { |x| x[:stop] == -1 }
           tm = { :group => "", :tm => 0, :action => "start" }
           timeline_tm = 0
           i = 1
           waitStatement = Proc.new {|t| s(:call, nil, :wait, s(:arglist, s(:lit, t))) }
+          groupExec = Proc.new { |g|
+            s(:call, 
+              s(:call, nil, :group, 
+                s(:arglist, 
+                  s(:str, g[:group]))), 
+              :exec, 
+              s(:arglist, 
+                s(:str, g[:command]))) 
+          }
           groupStart = Proc.new { |g| 
             s(:call, 
               s(:call, nil, :group, 
@@ -366,6 +376,8 @@ module OMF
               blockTimeline[i+1] = groupStart.call(tm[:group])
             elsif tm[:action] == "stop"
               blockTimeline[i+1] = groupStop.call(tm[:group])
+            elsif tm[:action] == "command"
+              blockTimeline[i+1] = groupExec.call({:group => tm[:group], :command => tm[:command]})
             end           
             i += 2
           end
@@ -376,10 +388,22 @@ module OMF
         # Comparing two timestamps, returns the early one
         def timeline_get_tm(tm, to_start, to_stop)
           start = to_start[0]; stop = to_stop[0]
-          if !start.nil? and start[:start] <= stop[:stop]
-            tm = { :action => "start", :tm => start[:start], :group => start[:group] }
+          if stop.nil?
+            stop = to_start[0]
+            stop[:stop] = start[:start] + 1
+          end
+
+          is_start = (!start.nil? and start[:start] <= stop[:stop])
+          is_stop = (!stop.nil?)
+
+          if is_start # is start
+            tm = { :action => "start", :tm => start[:start], :group => start[:group] } 
+            if start[:command]
+              tm[:command] = start[:command]
+              tm[:action] = "command"
+            end
             to_start.delete_at(0)
-          elsif !stop.nil?
+          elsif is_stop # is stop
             tm = { :action => "stop", :tm => stop[:stop], :group => stop[:group] }
             to_stop.delete_at(0)
           end

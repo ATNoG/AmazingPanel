@@ -141,11 +141,11 @@ EdEditor.prototype.onApplicationAdd = function(evt){
   // modify groups
   this.engine.addApplication(gname, app);
 
-  //modify tables
+  // modify tables
   this.generateGroupsTable(this.engine.groups);
   this.generateApplicationsTable(this.engine.groups);
 
-  // testbed group styling
+  // group styling
   nodes.css("background-color", color);
   closeDialog("#modal-dialog");
   nodes.trigger("click");
@@ -262,8 +262,17 @@ EdEditor.prototype.onApplicationRemove = function(evt) {
 
 EdEditor.prototype.onApplicationPropertyAdd = function(evt) {
   var params = $("#select-properties").formParams(),
-      property = { key : params.property_name, value : params.property_value, description: params.property_description },
-      display = { key:property.key, value:property.description };
+      property = { 
+        type: params.property_type,
+        key : params.property_name, 
+        value : params.property_value, 
+        description: params.property_description 
+      },
+      display = { 
+        type: property.type, 
+        key: property.key, 
+        value: property.description 
+      };
   if (params.has_value=="on") {
     property['has_value'] = true;
     display['v'] = property.value;
@@ -287,6 +296,7 @@ EdEditor.prototype.onApplicationCreate = function(evt) {
         pp = this.engine.reference.d.properties,
         ms = this.engine.reference.d.measures;
     this.fillApplicationForms(defs,pp,ms, "insert");
+    $(".dialog-active").css("width", "730px");
     $("a[href=#content-measures]").parent().addClass("hidden");
     $("#add-application-property-button").unbind('click').click(this.onApplicationPropertyAdd.bind(this));
     //$.uniformize("#select-application");
@@ -323,15 +333,24 @@ EdEditor.prototype.onTimelineSelector = function(evt) {
 EdEditor.prototype.onTimelineSelectorClick = function(evt) {
   var width = $(".oedl-timeline-selector").css("left");
   width = width.replace(/px/g, "");
-  var gname = $("#table-applications > .grid-view-row-selected > .group-color > input ").attr("value");
+  var app_gname = $("#table-applications > .grid-view-row-selected > .group-color > input ").attr("value");
+      group_gname = $("#table-groups > .grid-view-row-selected > .group-color > input ").attr("value");
+
   var p = {
     start : this.engine.timeline.fromWidth(width),
     duration : 0,
     group : gname
   }
-  if (p.group && p.start > 0 && (p.duration = parseInt(prompt("Duration?", 0))) > 0)  {
-    e = this.engine.timeline.addEvent(p.group, p.start, p.duration);
-    this.generateTimeline();
+  if (app_gname) {
+    if (p.group && p.start > 0 && (p.duration = parseInt(prompt("Duration?", 0))) > 0)  {
+      e = this.engine.timeline.addEvent(p.group, p.start, p.duration, null);
+      this.generateTimeline();
+    }
+  } else if (group_gname) {
+    if (p.group && p.start > 0 && (p.command = prompt("Command to execute on group?", "")))  {
+      e = this.engine.timeline.addEvent(p.group, p.start, -1, p.command);
+      this.generateTimeline();
+    }
   }
 }
 

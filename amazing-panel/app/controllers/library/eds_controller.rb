@@ -164,7 +164,7 @@ class Library::EdsController < Library::ResourceController
       definition = OMF::Experiments::ScriptHandler.getDefinition(nil, @apps[uri])
       repo[uri] = definition.properties[:repository][:apps][uri]
     end
-    scriptgen = Script.new({:meta => params[:meta], :repository => repo})    
+    scriptgen = Script.new({:meta => params, :repository => repo})    
     @code = scriptgen.to_s();
   end
 

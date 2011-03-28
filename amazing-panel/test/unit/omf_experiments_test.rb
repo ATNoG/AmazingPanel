@@ -111,7 +111,7 @@ class OMFExperimentsTest < ActiveSupport::TestCase
         }
       }})
       repos = OMF::Experiments::ScriptHandler.scanRepositories()
-      script = OMF::Experiments::OEDL::Script.new({ :meta => params[:meta], :repository => repos })
+      script = OMF::Experiments::OEDL::Script.new({ :meta => params, :repository => repos })
       code = script.to_s();
       puts code
   end
@@ -156,9 +156,10 @@ class OMFExperimentsTest < ActiveSupport::TestCase
       :timeline => [
         {:group => "sample", :start => 10, :stop => 24 },
         {:group => "otg2", :start => 20, :stop => 25 },
+        {:group => "otg2", :start => 22, :stop => -1, :command => "echo done" },
         {:group => "iperf", :start => 27, :stop => 31 }
       ]})
-    app = OMF::Experiments::OEDL::Script.new(params);
+    app = OMF::Experiments::OEDL::Script.new(:meta => params);
     puts Ruby2Ruby.new().process(app.all_up())
   end
   

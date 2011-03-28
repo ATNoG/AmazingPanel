@@ -262,19 +262,62 @@ Timeline.prototype.changeDuration = function(group, duration) {
   this.events[group] = evt;
 };
 
+Timeline.prototype.createEvent = function(start, duration) {
+  var stop = (duration > 0 ? start + duration : -1),
+      evt = {
+        id : "default",
+        start: start,
+        stop: stop,
+        duration: duration,
+      };
+  return evt
+}
+
 Timeline.prototype.removeEvent = function(group) {
-  var _evt = this.events[group];
-  if (_evt){ delete this.events[group]; return true; }
-  return false;
+  var ret = false;
+  if (group == "_all_") {
+    delete this.events[group]
+    return true
+  }
+  var tks = group.split("-"),
+      g = tks[0], evt_id = tks[1],
+      evt = {};
+  if (evt_id == "default"){
+    delete this.events[g].applications; 
+    ret = true;
+  } else {
+    delete this.events[g].exec[evt_id]; 
+    ret = true;
+  }
+  this.removeEventGroup(g);
+  return ret;
 };
 
-Timeline.prototype.addEvent = function(group, start, duration) {
+Timeline.prototype.removeEventGroup = function(group){
+  var n_exec_evts = $.keys(this.events[g].exec).length,
+      app_event = this.events[g].applications;
+  if (n_exec_evts == 0 && (!app_event || app_event != {})){
+    delete this.events[g];
+    return true
+  }
+  return false
+}
+
+Timeline.prototype.addEvent = function(group, start, duration, command) {
   // Accept UTC dates and convert them to seconds
-  this.events[group] = {
-    start: start,
-    stop: start + duration,
-    duration: duration
-  };
+  var evt = this.createEvent(start, duration);
+
+  if (!this.events[group]){
+    this.events[group] = { exec : {}, applications : {} }
+  }
+
+  if (command) {
+    evt.command = command;
+    evt.id = $.keys(this.events[group].exec).length + "";
+    this.events[group].exec[evt.id] = evt;
+  } else {
+    this.events[group].applications = evt;
+  }
   return this.events[group];
 };
 
@@ -411,9 +454,9 @@ Engine.prototype.saveApplication = function(info, properties) {
     app.options.properties[p] = {
       description: prop.description,
       mnemonic: '',
-      options: {
+      options: $.extend(prop.options, {
         dynamic: 'false'
-      }
+      })
     };
   }
   this.reference.my.applications[info.uri] = app;
@@ -454,9 +497,17 @@ Engine.prototype.getGeneratedCode = function() {
     }
     groups_data.push({ name: g, nodes: _nodes, applications: group.applications, properties: group.properties });
   }
+
+  // generate data to get timeline from server
   for (var g in events) {
-    group_events.push({ group: g, start: events[g].start, stop: events[g].stop });
+    var default_evt = events[g].applications;
+    group_events.push({ group: g, start: default_evt.start, stop: default_evt.stop, command: default_evt.command });  
+    for (var eevt in events[g].exec){
+      var evt = events[g].exec[eevt];
+      group_events.push({ group: g, start: evt.start, stop: evt.stop, command: evt.command });  
+    }
   }
+
   var data = {
     apps: this.reference.my,
     meta: {
