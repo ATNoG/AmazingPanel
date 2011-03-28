@@ -64,8 +64,8 @@ module OMF
                   h_i += 2
                 end
                 #options = s(:block, options)
-                mnemonic = str(prop_v[:mnemonic])
-                description = str(prop_v[:description].to_s)
+                mnemonic = s_str(prop_v[:mnemonic])
+                description = s_str(prop_v[:description].to_s)
                 sexp = s(:call,               
                   s(:lvar, :app),
                   :defProperty,
@@ -269,8 +269,8 @@ module OMF
         protected
 
         # Helper method to generate: "some_string" or nil (symbol)
-        def str(value=nil)
-          if value.nil?
+        def s_str(value=nil)
+          if value.nil? or value.size == 0
             return s(:nil)
           else
             return s(:str, value.to_s)
