@@ -28,3 +28,11 @@ $.extend({
     } 
   }
 );
+
+$.fn.disappear = function(){
+  this.addClass("invisible");
+}
+
+$.fn.appear = function(){
+  this.removeClass("invisible");
+}

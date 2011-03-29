@@ -2,25 +2,58 @@
   <li class="tab-active"><a href="#design">Design</a></li>
   <li><a id="oedl-source" href="#source">Source</a></li>
 </ul>
-<div id="design" class="oedl-tab tab">
+<div id="design" class="oedl-tab tab">  
   <div class="oedl-timeline timeline">
-      <ul class="events"></ul>
-      <div class="oedl-timeline-scale">
-        <div class="oedl-timeline-selector"><span></span></div>
-        <ul class="intervals">
-          <li class="first"><span>0s</span></li>
-          <li><span>20s</span></li>
-          <li><span>40s</span></li>
-          <li><span>60s</span></li>
-          <li><span>80s</span></li>
-          <li><span>100s</span></li>
-          <li class="last"><span>120s</span></li>
-        </ul>
-      </div>
-      <div class="oedl-timeline-actions">
-      </div>
+    <div class="oedl-timeline-title">Timeline (<a href="#" onclick="editor.generateTimeline()">Reload</a>)</div>
+    <ul class="events"></ul>
+    <div class="oedl-timeline-scale">        
+      <div class="oedl-timeline-selector"><span></span></div>
+      <ul class="intervals">
+      </ul>
+    </div>
+    <div class="oedl-timeline-actions">
+    </div>
   </div>
   <div class="clear"></div>
+  <div class="topbar"> 
+    <div class="topbar-switch">
+      <div class="topbar-switch-button">Show</div>
+    </div>
+    <div class="topbar-content">
+      <p id="no-apps-warning" class="notice hidden"> No applications in any of groups. </p>
+      <p id="no-groups-warning" class="notice hidden"> No groups defined. </p>
+      <div class="topbar-item">
+       <div id="table-groups" class="hidden grid-view-new">
+         <div class="grid-view-row grid-view-header">
+           <div class="group-color">Group</div>
+           <div>Nodes</div>
+         </div>
+         <div class="grid-view-row">
+         </div>      
+       </div>
+       <div id="table-groups-actions" class="invisible grid-view-actions">
+         <a href="#" class="remove-group-item">Remove Selected</a>
+       </div>
+     </div>
+     <div class="topbar-item">
+       <div id="table-applications" class="hidden grid-view-new">
+         <div class="grid-view-row grid-view-header">
+           <div class="group-color">Group</div>
+           <div>Application</div>
+         </div>
+         <div class="grid-view-row">
+         </div>
+       </div>
+       <div id="table-applications-actions" class="invisible grid-view-actions">
+         <a href="#" class="remove-application-item">Remove Application</a>
+         <a href="#" class="addevent-application-item">Add Event</a>
+       </div>
+     </div>
+   </div>
+  </div>
+
+  <div class="clear"></div>
+
   <div class="preferences-view-action preferences-button"><span>Preferences</span></div>
   <div class="oedl-actions sidebar"></div>
   <div id="testbed-view">
@@ -28,32 +61,7 @@
     <%= hidden_field_tag :testbed_id, @testbed.id %>
     <%= render :partial => 'testbeds/map' %>
   </div>
-  <div class="right-sidebar"> 
-    <div id="table-groups" class="hidden grid-view-new">
-      <div class="grid-view-row grid-view-header">
-        <div class="group-color"></div>
-        <div>Nodes</div>
-      </div>
-      <div class="grid-view-row">
-      </div>      
-    </div>
-    <div id="table-groups-actions" class="grid-view-actions">
-      <a href="#" class="remove-group-item">Remove Group</a>
-    </div>
 
-    <div id="table-applications" class=" hidden grid-view-new">
-      <div class="grid-view-row grid-view-header">
-        <div class="group-color"></div>
-        <div>Application</div>
-      </div>
-      <div class="grid-view-row">
-      </div>
-    </div>
-    <div id="table-applications-actions" class="grid-view-actions">
-      <a href="#" class="remove-application-item">Remove Application</a>
-      <a href="#" class="addevent-application-item">Add Event</a>
-    </div>
-  </div>
 </div>
 <div id="source" class="oedl-tab tab">
   <div class="sidetabs-container">

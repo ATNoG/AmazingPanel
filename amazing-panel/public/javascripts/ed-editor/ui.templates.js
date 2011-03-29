@@ -63,13 +63,13 @@ EdEditor.prototype.templates = {
         "<input name=\"selected\" class=\"prop-check\" type=\"checkbox\" {{if v}}checked=\"true\"{{/if}} value=\"${key}\"/>"+
       "</div>"+
     "</div>"),
-  groups: $.template("tmpl_groups", "<div class=\"grid-view-row\">"+
+  groups: $.template("tmpl_groups", "<div class=\"grid-view-row has-tooltip\" title=\"Selecting a timestamp on the timeline, will let execute a command on this group\">"+
         "<div class=\"sidetable-group-select group-color\" style=\"background-color: ${color}\">"+
           "<input value=\"${name}\" type=\"hidden\"/>"+
         "</div>"+
         "<div>${nodes}</div>"+
       "</div>"),
-  apps: $.template("tmpl_apps", "<div class=\"grid-view-row\">"+
+  apps: $.template("tmpl_apps", "<div class=\"grid-view-row has-tooltip\" title=\"Selecting a timestamp on the timeline, will let execute all applications on this group\">"+
         "<div class=\"sidetable-app-select group-color\" style=\"background-color: ${color}\">"+
           "<input value=\"${group}\" type=\"hidden\"/>"+
         "</div>"+

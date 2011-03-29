@@ -7,7 +7,7 @@ $.extend({
       }
   },
   init: function(){
-    $("a, .action").tipsy({ live: true });  
+    $("a, .action, .has-tooltip").tipsy({ live: true, fade:true });
     $(".flash-msg-integrated").slideDown(500).delay(5000).slideUp(200);    
     //this.uniformize();
   }

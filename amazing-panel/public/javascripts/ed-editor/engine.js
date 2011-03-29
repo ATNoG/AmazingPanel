@@ -191,7 +191,7 @@ function Timeline(width) {
   this.events = {};
   this.unit = 's';
   this.size = width;
-  this.max = 120;
+  this.max = 140;
 }
 
 Timeline.prototype.getIntervalNumber = function(size) {
@@ -212,21 +212,22 @@ Timeline.prototype.scale = function(min, max, unit) {
   this.findMax();
   if (!min && !max) { min = 0; max = this.convertToSeconds('seconds', this.max); }
   if (!unit) { unit = 'seconds' }
-  this.raw_interval = Math.round(max / (this.intervals - 1));
+  this.raw_interval = Math.round(max / (this.intervals));
   this.interval = this.convertSecondsToUnit(unit, this.raw_interval);
 };
 
 Timeline.prototype.labelize = function(value, unit) {
-  var d = new Date(value * 1000);
-  if (unit == 'hours' || unit == 'h') { return d.getHours() + 'h'+ d.getMinutes() + 'm'; }
-  if (unit == 'minutes' || unit == 'm') { return d.getMinutes() + 'm'+ d.getSeconds(); }
-  return d.getMinutes() * 60 + d.getSeconds() + 's';
+  var d = new Date(value * 1000), 
+      h = d.getHours(), m = d.getMinutes(), s = d.getSeconds();
+  if (unit == 'hours' || unit == 'h') { return h + 'h' + m + 'm'; }
+  if (unit == 'minutes' || unit == 'm') { return m + 'm' + s; }
+  return (m * 60 + s) + 's';
 };
 
 Timeline.prototype.convertSecondsToUnit = function(unit, value) {
   if (unit == 'minutes' || unit == 'm') { return value / 60; }
   if (unit == 'hours' || unit == 'h') { return value / 3600; }
-  if (unit == 'seconds') { return value; }
+  if (unit == 'seconds' || unit == 's') { return value; }
 };
 
 Timeline.prototype.convertToSeconds = function(unit, value) {
@@ -243,8 +244,16 @@ Timeline.prototype.fromWidth = function(width, unit) {
 Timeline.prototype.findMax = function() {
   var current = this.max, events = this.events;
   for (g in events) {
-    var evt = events[g];
-    if (evt.stop > current) { current = evt.stop }
+    if (!events[g]){ continue; }
+    var evts = events[g].exec, evts_a = events[g].applications, evt = null;
+    if (evts){
+      for(e in evts){ 
+        if (e.stop > current) { current = e.stop } 
+      }
+    }
+    if (evt = evts_a) {
+      if (evt.stop > current) { current = evt.stop }     
+    }
   }
 
   if (current > this.max) {

@@ -30,20 +30,20 @@ EdEditor.prototype.generateResourceProperties = function(node,inet) {
         value = data.properties.net[inet][f]
       }
       var e =  {
-        "type" : "p", 
+        "type" : "p",
         "elements" : [{
-          "id": "resource-"+f, 
-          "name" : "net["+inet+"]["+f+"]", 
-          "caption" : v.caption, 
+          "id": "resource-"+f,
+          "name" : "net["+inet+"]["+f+"]",
+          "caption" : v.caption,
           "type": type,
           "value": value
-        }] 
+        }]
       }
-    
+
       if (type == "select") {
         e.elements[0].options = {"" : "Nothing" };
         // since options comes in an array change for key-value to create selection
-        for(j=0;j<validations[f].options.length; ++j){    
+        for(j=0;j<validations[f].options.length; ++j){
           var _opt = validations[f].options[j];
           e.elements[0].options[_opt] = _opt;
         }
@@ -73,10 +73,12 @@ EdEditor.prototype.generateApplicationsTable = function(groups) {
   }
   // insert to tables
   $.tmpl("tmpl_apps", data).appendTo("#table-applications");
-  if (has_apps) {  
+  if (has_apps) {
     $("#table-applications").removeClass("hidden");
+    $("#no-apps-warning").hide();
   } else {
-    $("#table-applications").addClass("hidden");
+    $("#table-applications").addClass("hidden");    
+    $("#no-apps-warning").show();
   }
 }
 
@@ -87,31 +89,33 @@ EdEditor.prototype.generateGroupsTable = function(groups) {
   // empty table
   $("#table-groups > .grid-view-row:not(.grid-view-header)").remove();
   $(".node-highlight").removeClass("node-highlight");
-  
+
   var data = new Array(), has_groups = false;
   // generate data set
   for (gname in groups){
     var group = groups[gname];
     if (group.ids.length > 0) {
       has_groups = true;
-      var nodes_str = group.ids.join(",").replace(/node-/gi, "");  
+      var nodes_str = group.ids.join(",").replace(/node-/gi, "");
       data.push({color: group.color, name : group.name, nodes:nodes_str});
     }
   }
   // insert to tables
   $.tmpl("tmpl_groups", data).appendTo("#table-groups");
 
-  if (has_groups) {  
+  if (has_groups) {
     $("#table-groups").removeClass("hidden");
+    $("#no-groups-warning").hide();
   } else {
     $("#table-groups").addClass("hidden");
-  }  
+    $("#no-groups-warning").show();
+  }
 }
 
 /**
   * Generates the Timeline
   */
-EdEditor.prototype.generateTimeline = function(min, max, scale) {  
+EdEditor.prototype.generateTimeline = function(min, max, scale) {
   var timeline = this.engine.timeline,
       nevt = $.keys(timeline.events).length,
       duration = this.engine.properties.duration;
@@ -119,7 +123,7 @@ EdEditor.prototype.generateTimeline = function(min, max, scale) {
     timeline.addEvent("_all_", 0, duration, null);
   }
   timeline.scale(min, max, scale);
-  
+
   // Generate intervals
   $(".intervals").empty();
   for(var i=0; i<timeline.intervals; ++i){
@@ -147,17 +151,22 @@ EdEditor.prototype.generateTimeline = function(min, max, scale) {
   timeline.removeEvent("_all_");
 }
 
-EdEditor.prototype.addTimelineEvent = function(g, evt, group) {  
+EdEditor.prototype.addTimelineEvent = function(g, evt, group) {
   var timeline = this.timeline,
       has_command = (evt.duration == -1),
       duration = (has_command ? 1 : evt.duration),
       left = timeline.width * ( evt.start / timeline.interval ),
       width = timeline.width * ( duration / timeline.interval ),
       id = g + "-" +evt.id;
-
-  $(".events").append("<li class=\"" + (has_command ? "oedl-command-event" : "") + "\"" +
-        " id=\""+id+"\"><span>"+duration+"</span></li>");
-  
+  var li = $("<li><span></span></li>").attr("id", id).html('<span>'+duration+timeline.unit+'</span>');
+  if (has_command) {
+    li.addClass("oedl-command-event").addClass("has-tooltip");
+    li.attr("title", "@"+evt.start+timeline.unit+" : "+evt.command);
+    $("span", li).html("");
+  }
+  $(".events").append(li);
+  //$(".events").append("<li class=\"" + (has_command ? "oedl-command-event" : "") +  + "\"" +
+  //      " id=\""+id+"\"><span>"+(has_command ? "": duration)+"</span></li>");
   var jevt = $(".events > #"+id).css("left", left+"%").css("width", width+"%")
   if (group) { jevt.css("background-color", group.color); }
 }

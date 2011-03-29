@@ -25,25 +25,26 @@ EdEditor.prototype.selectTableItems = function(table, selected, cb) {
   * Event triggered when selecting an item from Groups Table
   */
 EdEditor.prototype.onGroupsTableClick = function(evt){
-  var n = $(evt.target).parent();
-  var same = this.selectTableItems($(n).parent(), n, function(){ 
-    $(".node-highlight").toggleClass("node-highlight");
-  });  
+  var n = $(evt.target).parent(),
+      same = this.selectTableItems($(n).parent(), n, function(){ 
+        $(".node-highlight").toggleClass("node-highlight");
+      });  
   var gname = $("#table-groups > .grid-view-row-selected > .group-color > input ").attr("value");
   if (gname != undefined){
     var ids = $(this.engine.groups[gname].ids).map(function(index, elem){ return "#"+elem }).get().join(",");
   }
   if (same) { 
-    $("#table-groups-actions").show();
+    $("#table-groups-actions").appear();
     $(ids).toggleClass("node-highlight")
     return false; 
   }
-  var nsel = $(".grid-view-row-selected", $(n).parent()).length;  
-  if (nsel>0) {
-    $("#table-groups-actions").show();
-    $(ids).toggleClass("node-highlight");
+  var selected = $(".grid-view-row-selected", $(n).parent()),
+      nsel = selected.length;
+  if (nsel>0) {    
+    $("#table-groups-actions").appear();
+    $(ids).toggleClass("node-highlight");    
   } else {
-    $("#table-groups-actions").hide();
+    $("#table-groups-actions").disappear();
     $(".node-highlight").toggleClass("node-highlight");
   }
   return false;
@@ -57,13 +58,13 @@ EdEditor.prototype.onApplicationsTableClick = function(evt){
   var n = $(evt.target).parent();
   var same = this.selectTableItems($(n).parent(), n, null);  
   var gname = $("#table-applications > .grid-view-row-selected > .group-color > input ").attr("value");
-  if (same) { $("#table-applications-actions").show();return false; }
+  if (same) { $("#table-applications-actions").appear();return false; }
   var nsel = $(".grid-view-row-selected", $(n).parent()).length;  
   if (nsel>0) { 
-    $("#table-applications-actions").show(); 
+    $("#table-applications-actions").appear(); 
   } 
   else { 
-    $("#table-applications-actions").hide(); 
+    $("#table-applications-actions").disappear(); 
   }
   return false;
 }
@@ -217,6 +218,7 @@ EdEditor.prototype.onNodeClick = function(e) {
     $(e.target).toggleClass("node-selected");
     var nodes = $(".node-selected");
     var n_nodes = nodes.length;
+    $("#design > .sidebar").html("");
     $(".oedl-action-button").remove();
     if (n_nodes >= 1) {
       var check_all_group = false;
@@ -234,6 +236,9 @@ EdEditor.prototype.onNodeClick = function(e) {
       } else if (n_nodes > 1 && groups.length == 0) {
         $(".oedl-actions").prepend(this.nodes_selected.multiple)
       }
+    }
+    if (n_nodes == 0) {
+        $(".oedl-actions").prepend(this.nodes_selected.none)
     }
 }
 
@@ -326,8 +331,8 @@ EdEditor.prototype.onApplicationChange = function(evt) {
  * Event triggered when hovering on the timeline
  */
 EdEditor.prototype.onTimelineSelector = function(evt) {
-  if (evt.layerX != 0){
-    var width = evt.layerX - 16;
+  var width = evt.layerX - 16;
+  if (width >= 0) {
     $(".oedl-timeline-selector > span").html(this.engine.timeline.fromWidth(width));
     $(".oedl-timeline-selector").css("visibility", "visible").css("left", (evt.layerX - 16).toString() + "px");
   }
@@ -393,7 +398,7 @@ EdEditor.prototype.onEventRemove = function(evt){
   * Event triggered when leaving timeline scale area
   */
 EdEditor.prototype.hideTimelineSelector = function() {
-  $(".oedl-timeline-selector").css("visibility", "hidden").css("left", "0px");
+  $(".oedl-timeline-selector").css("visibility", "hidden");
 }
 
 /**
@@ -407,6 +412,18 @@ EdEditor.prototype.toggleEventSelection = function(evt) {
 
   var del = !$(evt.target).hasClass("event-selected");
   this.generateEventActions(del);
+}
+
+EdEditor.prototype.onTopbarSwitch = function(evt) { 
+  var btn = $(".topbar-switch-button"), 
+    active = $(".topbar-switch").toggleClass("topbar-switch-active").hasClass("topbar-switch-active");
+  btn.html( active ? "Hide" : "Show");
+  if (active){
+    var t_info = $("#design .sidebar > #topbar-info");
+    if (!t_info.length){
+      $("#design > .sidebar").append(this.messages.topbar_info);
+    }
+  }
 }
 
 EdEditor.prototype.bindEvents = function() {
@@ -426,6 +443,8 @@ EdEditor.prototype.bindEvents = function() {
   $(".removeevent-timeline-item").live("click", this.onEventRemove.bind(editor));
 
   // Table actions
+  $(".topbar-switch").live("click", this.onTopbarSwitch.bind(editor)); 
+  
   $(".sidetable-app-select").live('click', this.onApplicationsTableClick.bind(editor));
   $(".sidetable-group-select").live('click', this.onGroupsTableClick.bind(editor)); 
   $(".remove-group-item").live('click', this.onGroupRemove.bind(editor));
@@ -490,5 +509,9 @@ EdEditor.prototype.bindEvents = function() {
 
   // Init
   this.generateTimeline();
+  this.generateGroupsTable();
+  this.generateApplicationsTable();
+  
+  $("#design > .sidebar").html(this.nodes_selected.none);
 }
 

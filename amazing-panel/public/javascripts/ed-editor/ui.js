@@ -31,6 +31,12 @@ EdEditor.prototype.html = {
   }
 };
 
+EdEditor.prototype.messages = {
+  topbar_info: "<p id=\"topbar-info\" class=\"info no-icon\">Click on the colors to select the group/application</p>",
+  toppar_show_info: "<p id=\"show-info\" class=\"info no-icon\">Click on \"Show\" to see your groups/applications</p>",
+  nodes_info: "<p id=\"nodes-info\" class=\"info no-icon\">Click on the nodes to see the available options </p>"
+}
+
 /**
   * Options to show, in according to the various Node click conditions.
    -> When nodes selected are a group, when multiple nodes without group,
@@ -47,7 +53,10 @@ EdEditor.prototype.nodes_selected = {
 //    "",
   group:
     '<div id=\"btn_properties\" class=\"oedl-action-button button\">Properties</div>'+
-    '<div id=\"btn_application\" class=\"oedl-action-button button\">Application</div>'
+    '<div id=\"btn_application\" class=\"oedl-action-button button\">Application</div>',
+  none:
+    '<p id=\"topbar-show-info\" class=\"info no-icon\"> Click on \"Show\" to see your groups/applications</p>'+
+    '<p id=\"show-info\" class=\"info no-icon\"> Click on the nodes to see the available options</p>',
 };
 
 /**

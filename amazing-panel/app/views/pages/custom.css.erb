@@ -153,6 +153,9 @@ a:link {
   -webkit-border-radius: 5px;
   border-radius: 5px;  
 }
+.no-icon {
+  background-image: none;
+}
 
 #top-border {
   background-color: #F0F0F0;
@@ -395,9 +398,10 @@ a:link {
   background-color: #ffdead;
 }
 
+/*
 .grid-view-actions {
   display: none;
-}
+}*/
 
 .grid-view-actions > a {
   font-size: 9px;
@@ -818,6 +822,16 @@ ul#action-list > li {
   margin-right: 5px;
 }
 
+.oedl-timeline > .oedl-timeline-title {
+  font-size: 12px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  /*border: 1px solid #a4a5a5;
+  border-radius: 10px;*/
+  opacity: 0.9;
+  padding:4px;
+}
+
 ul.events {
   list-style-type: none;
   margin: 0;
@@ -858,6 +872,15 @@ ul.events li span {
   font-size: 9px;
   float: left;
   margin-top: -15px;
+}
+
+ul.events li.oedl-command-event span {
+  display: none;
+  text-align: center;
+  font-size: 9px;
+  float: left;
+  margin-top: -15px;
+  width: 100%;
 }
 
 
@@ -928,17 +951,24 @@ ul.intervals li.first {
 }
 
 #design > .sidebar {
-  width: 90px;
+  width: 120px;
   height: 200px;
   border: 1px solid #A4A4A4;
   padding: 5px 5px 5px 0px;
   float: left;
-  background: #f0f0f0;
+  background: #ffffff;
   margin-top: 25px;
+  font-size: 10px;
 }
 
+.sidebar p {
+  padding-bottom: 10px;
+  padding-left: 5px;
+}
+
+
 #design > #testbed-view {
-  margin-left: 0px;
+  margin-left: 100px;
   float:left;
 }
 
@@ -946,6 +976,45 @@ ul.intervals li.first {
   float:right;
   margin-right: 40px;
   width: 150px;
+}
+
+.topbar .topbar-switch {
+  border-top: 6px solid #99CCCC;
+  margin-top: 4px;
+  width: 100%;
+  cursor: pointer;
+  text-align: center;
+}
+
+.topbar .topbar-switch > div.topbar-switch-button {
+  background-color: #99CCCC;
+  margin-top: -1px;
+  color: white;
+  padding: 0px 3px 0px 3px;
+  display: inline-block;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.topbar .topbar-switch:hover > div.topbar-switch-button {
+  background-color: #1e1e1e;
+}
+
+.topbar .topbar-switch:hover {
+  border-top: 6px solid #1e1e1e;
+}
+
+.topbar .topbar-switch + .topbar-content {
+  display: none;
+}
+
+.topbar .topbar-switch-active + .topbar-content {
+  display: block;
+}
+
+.topbar .topbar-content > .topbar-item {
+  float: left;
+  margin-right: 10px;
 }
 
 .ed-editor-button {
@@ -969,10 +1038,10 @@ ul.intervals li.first {
 
 #design > .sidebar > .oedl-action-button {
   float: left;
-  width:78px;
+  width:108px;
   margin-bottom: 5px;
   margin-left: 5px;
-  font-size: 9pt;
+  font-size: 12px;
 }
 
 #add-group {
@@ -1039,12 +1108,12 @@ ul.intervals li.first {
   border-radius: 0px;
   -moz-border-radius: 0px;
   -webkit-border-radius: 0px;
-  width: 95px;
+  width: 125px;
   margin-left: 0px;
   top: 28px;
   height: 20px;
   font-family: sans;
-  font-size: 10px;
+  font-size: 11px;
   cursor: pointer;
   border: 1px solid #7f7f7f;
   margin-bottom: 2px;
@@ -1053,12 +1122,14 @@ ul.intervals li.first {
   color: white;
   line-height: 20px;
   height: 20px;
+  font-weight: bold;
 }
 
 .preferences-button > span {
   margin-top: -439px;
 }
 
+/*
 #design > .sidebar > .ed-editor-context-menu-node {
   position : fixed;
   border : 1px solid gray;
@@ -1069,6 +1140,7 @@ ul.intervals li.first {
   font-size: 10px;
   display: none;
 }
+*/
 
 #design > .canvas {
   margin-left: 5px;
