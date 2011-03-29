@@ -363,14 +363,19 @@ EdEditor.prototype.onTimelineSelectorClick = function(evt) {
 }
 
 EdEditor.prototype.onEventDurationChange = function(evt){
-  var gname = $(".event-selected").attr("id"),
+  var evt = $(".event-selected"),
+      not_command = !evt.hasClass("oedl-command-event"),
       timeline = this.engine.timeline,
-      current_duration = timeline.events[gname].duration,
-      duration = prompt("New Duration:", current_duration);
-  if (duration = parseInt(duration)){
-    timeline.changeDuration(gname, duration);
-    this.generateTimeline();
-    this.generateEventActions(true);
+      tks = evt.attr("id").split("-"), gname = tks[0], id = tks[1];
+  if (not_command){
+    var current_duration = timeline.events[gname].applications.duration,
+        duration = prompt("New Duration:", current_duration);
+
+    if (duration = parseInt(duration)){
+      timeline.changeDuration(gname, duration);
+      this.generateTimeline();
+      this.generateEventActions(true);
+    }
   }
 }
 

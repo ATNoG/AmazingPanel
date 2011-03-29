@@ -4,6 +4,7 @@ module OMF::Experiments::OEDL
      
     class Generator
         include GeneratorHelpers
+        include GeneratorValidations
         attr_accessor :meta
 
         def initialize(args = {})
@@ -11,7 +12,7 @@ module OMF::Experiments::OEDL
             @params = args[:meta]
             @meta = @params[:meta]
             @repository = args[:repository] unless args[:repository].nil?
-  
+            @groups = []
             unless @meta.nil?
               @duration = @meta[:properties][:duration] || 30
               @testbed = @meta[:properties][:testbed]
@@ -31,15 +32,19 @@ module OMF::Experiments::OEDL
 
           properties[:options].each do |k,v|
             if k != "properties"
-              # attributes
-              if k == "version"
-                v_values = v.split(".")
-                sexp = version(v_values)
-              else
-                sexp = attr_assgn(k, v)
+              begin
+                # attributes
+                if k == "version"
+                  v_values = v.split(".")
+                  sexp = version(v_values)
+                else
+                  sexp = attr_assgn(k, v)
+                end
+                blockApp[block_index] = sexp
+                block_index += 1
+              rescue
+                next
               end
-              blockApp[block_index] = sexp
-              block_index += 1
             else
               # properties
               v.each do |prop,prop_v|
@@ -61,15 +66,7 @@ module OMF::Experiments::OEDL
                 #options = s(:block, options)
                 mnemonic = s_str(prop_v[:mnemonic])
                 description = s_str(prop_v[:description].to_s)
-                sexp = s(:call,               
-                  s(:lvar, :app),
-                  :defProperty,
-                  s(:arglist, 
-                    s(:str, prop), 
-                    description,
-                    mnemonic, 
-                    options))
-                blockApp[block_index] = sexp
+                blockApp[block_index] = defProperty(prop, description, mnemonic, options)
                 block_index += 1
               end
             end
@@ -81,37 +78,15 @@ module OMF::Experiments::OEDL
               blockMetrics = s(:block, nil)
               bMetrics_index = 1
               fields.each do |name, type|
-                blockMetrics[bMetrics_index] = s(:call, 
-                    s(:lvar, :mp), 
-                    :defMetric, 
-                    s(:arglist, 
-                      s(:str, name.to_s), 
-                      s(:lit, type.to_sym)))
+                blockMetrics[bMetrics_index] = defMetric(name, type)             
                 bMetrics_index += 1
               end
-              blockMeasurements = s(:iter, 
-                  s(:call, 
-                    s(:lvar, :app), 
-                    :defMeasurement, 
-                    s(:arglist, 
-                      s(:str,  ms))), 
-                    s(:lasgn, :mp), blockMetrics)
-              blockApp[block_index] = blockMeasurements
+              blockApp[block_index] = defMeasurement(ms, blockMetrics)
               block_index += 1
             end
           end
           
-          iterApp = s(:lasgn, :app)
-          iterVar = s(:lvar, :app)
-          defApplication = s(:iter, 
-            s(:call,               
-              nil,
-              :defApplication, 
-              s(:arglist, 
-                s(:str, app_uri.to_s), 
-                s(:str, app_name.to_s))),
-            iterApp, blockApp)
-          return defApplication
+          return defApplication(app_uri, app_name, blockApp)
         end
 
         # Generates --
@@ -121,16 +96,22 @@ module OMF::Experiments::OEDL
           nodes = props[:nodes]
           properties = props[:properties]          
 
-          iterNode = s(:lasgn, :node)
-          iterApp = s(:lasgn, :app)
           group_block = s(:block, nil)
           group_block_index = 1
 
-          unless applications.nil?
-            applications.each do |index,application|
-              #next if applications[:options].blank? and applications[:measures].blank?                
+          if (auto or properties.blank?) and applications.blank?            
+            return defGroup(name, nodes)
+          end
+
+          unless applications.blank?
+            applications.each do |index,application|              
+              if application[:options].blank? and application[:measures].blank?
+                next
+              end
+              
               blockApp = s(:block, nil)                      
               i = 1
+              
               unless application[:options].nil?
                   definition = @repository[application[:uri]]
                   application[:options][:properties].each do |k,v|
@@ -139,7 +120,7 @@ module OMF::Experiments::OEDL
                     i += 1
                   end
               end
-  
+    
               unless application[:measures].nil?
                 application[:measures][:selected].each do |m|
                   app_setProp = measure(m) 
@@ -148,25 +129,13 @@ module OMF::Experiments::OEDL
                 end
               end
               
-              group_block[group_block_index] = s(:iter, 
-                s(:call, 
-                  s(:lvar, :node), 
-                  :addApplication, 
-                  s(:arglist, s(:str, application[:uri].to_s))), 
-                s(:lasgn, :app), blockApp.deep_clone)
+              group_block[group_block_index] = addApplication(application[:uri].to_s, blockApp.deep_clone)
               group_block_index += 1
             end
           end
-          unless auto
-            group_block = groupProperties(group_block, group_block_index, properties)
-          end
-          defGroup = s(:call,
-            nil,
-            :defGroup.to_sym,
-            s(:arglist, s(:str, name.to_s), s(:str, nodes.join(","))))
-          defGroup_block = s(:iter, defGroup, s(:lasgn, :node), group_block)
-
-          return defGroup_block
+  
+          group_block = groupProperties(group_block, group_block_index, properties) unless auto
+          return defGroup(name, nodes, group_block)
         end
 
         # Generates --
@@ -181,12 +150,11 @@ module OMF::Experiments::OEDL
         #   Experiment.done
         #  end
         def all_up()                    
-          iterNode = s(:lasgn, :node)
           onEvent_block = @params[:timeline].nil? ? s(:block, startApplications, expDuration(@duration),
                             stopApplications, experimentDone) : timeline()
           all_up_block = s(:iter,
               onEvent,
-              iterNode,
+              s(:lasgn, :node),
               onEvent_block)
           return all_up_block
         end
@@ -206,15 +174,18 @@ module OMF::Experiments::OEDL
             auto = true
           end
 
-          @meta[:groups].each do |index, group|
-            Rails.logger.debug "#{index} => #{group.inspect}"
-            unless group[:applications].blank? and group[:properties].blank?
-              ruby_group = createGroup(group[:name], group, auto)
-              ruby2ruby = Ruby2Ruby.new()
-              code += ruby2ruby.process(ruby_group)+"\n"
-            end
+          @groups = @meta[:groups].values
+          @groups.delete_if {|x| !valid_group(x) }
+
+          pp @groups
+
+          @groups.each do |group|
+            ruby_group = createGroup(group[:name], group, auto)
+            ruby2ruby = Ruby2Ruby.new()
+            code += ruby2ruby.process(ruby_group)+"\n"          
           end
-          # generate ALL_UP event
+          
+            # generate ALL_UP event
           ruby2ruby = Ruby2Ruby.new()
           if auto
             code += ruby2ruby.process(s(:block, autoNetworkProperties, all_up()))

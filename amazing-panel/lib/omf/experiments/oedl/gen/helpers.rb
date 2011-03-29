@@ -41,7 +41,7 @@ module OMF::Experiments::OEDL
        return expDone
      end
 
-     # Generate the auto configuring network properties
+     # generate: <auto configuring network properties>
      def autoNetworkProperties()
        return s(:iter,
          s(:call,
@@ -91,7 +91,71 @@ module OMF::Experiments::OEDL
                    s(:lit, v_values[1].to_i),
                    s(:lit, v_values[2].to_i)))
      end
-     
+
+     # generate: addApplication(<uri>) do |app| <block> end
+     def addApplication(uri, block)
+      return s(:iter, 
+                s(:call, 
+                  s(:lvar, :node), 
+                  :addApplication, 
+                  s(:arglist, s(:str, uri))), 
+                s(:lasgn, :app), block)
+     end
+    
+     def defGroup(name, nodes, block=nil)
+       header = s(:call,
+            nil,
+            :defGroup.to_sym,
+            s(:arglist, s(:str, name.to_s), s(:str, nodes.join(","))))       
+       if block
+         return s(:iter, header, s(:lasgn, :node), block)
+       else
+         return header
+       end
+     end
+
+     def defApplication(uri, name, block)    
+       return s(:iter, 
+         s(:call,               
+           nil,
+           :defApplication, 
+           s(:arglist, 
+             s(:str, uri.to_s), 
+             s(:str, name.to_s))),
+         s(:lasgn, :app), block)
+     end
+
+     def defProperty(name, description, mnemonic, options)
+       return s(:call,               
+                s(:lvar, :app),
+                :defProperty,
+                s(:arglist, 
+                  s(:str, name), 
+                  description,
+                  mnemonic, 
+                  options))
+
+     end
+
+     def defMeasurement(ms, block)
+        return s(:iter, 
+                  s(:call, 
+                    s(:lvar, :app), 
+                    :defMeasurement, 
+                    s(:arglist, 
+                      s(:str,  ms))), 
+                    s(:lasgn, :mp), block)
+     end
+
+     def defMetric(name, type)
+       return s(:call, 
+                s(:lvar, :mp), 
+                :defMetric, 
+                s(:arglist, 
+                  s(:str, name.to_s), 
+                  s(:lit, type.to_sym)))
+     end
+
      # generate: onEvent(:APP_UP_AND_INSTALLED)
      def onEvent
        return s(:call,

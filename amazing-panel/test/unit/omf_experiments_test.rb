@@ -74,7 +74,8 @@ class OMFExperimentsTest < ActiveSupport::TestCase
         "meta" => {
           "groups" => { 
             "0" => {
-              "name" => "default"}, 
+              "name" => "default", 
+              "nodes" => ["omf.amazing.node1","omf.amazing.node2"]},
             "1" => {
               "name" => "__group_n24_", 
               "nodes" => ["omf.amazing.node1","omf.amazing.node2"],
@@ -104,11 +105,16 @@ class OMFExperimentsTest < ActiveSupport::TestCase
                     "properties" => {"udp:local_host"=>"192.168.0.2", "udp:local_port"=>"3000"}
                   }
                 }, 
+                "2" =>{
+                  "uri" => "test:app:echo",
+                  "measures" => "",
+                  "options" => ""
+                }
               }
             }
         }, "properties" => { 
           "duration" => 30, 
-          "network" => "on",
+          "network" => "off",
           "testbed" => { 
             "id" =>Testbed.first.id, 
             "name" => Testbed.first.name 

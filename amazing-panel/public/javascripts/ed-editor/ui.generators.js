@@ -122,20 +122,20 @@ EdEditor.prototype.generateTimeline = function(min, max, scale) {
   
   // Generate intervals
   $(".intervals").empty();
-  for(var i=0; i<timeline.intervals - 1; ++i){
+  for(var i=0; i<timeline.intervals; ++i){
     $(".intervals").append("<li><span>"+timeline.labelize(i*timeline.raw_interval, scale)+"</span></li>");
   }
   $(".intervals > li").css("width", timeline.width+"%");
 
 
   // Generate events
-  $(".events").empty();  
+  $(".events").empty();
   for (var g in timeline.events){
     var group = this.engine.groups[g],
-        evts = timeline.events[g],    
+        evts = timeline.events[g],
         exec_evts = timeline.events[g].exec,
         app_evt = timeline.events[g].applications;
-    
+
     if (app_evt && app_evt.id) {
       this.addTimelineEvent.bind({timeline : timeline})(g, evts.applications, group);
     }

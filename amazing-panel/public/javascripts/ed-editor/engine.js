@@ -256,10 +256,10 @@ Timeline.prototype.findMax = function() {
 };
 
 Timeline.prototype.changeDuration = function(group, duration) {
-  var evt = this.events[group];
+  var evt = this.events[group].applications;
   evt.stop = evt.start + duration;
   evt.duration = duration;
-  this.events[group] = evt;
+  this.events[group].applications = evt;
 };
 
 Timeline.prototype.createEvent = function(start, duration) {
@@ -292,7 +292,7 @@ Timeline.prototype.removeEvent = function(group) {
     delete this.events[g].exec[evt_id]; 
     ret = true;
   }
-  this.removeEventGroup(g);
+  this.removeEmptyEventGroup(g);
   return ret;
 };
 
@@ -301,9 +301,20 @@ Timeline.prototype.removeApplicationEvent = function(group) {
 }
 
 Timeline.prototype.removeEventGroup = function(group){
+  if (!this.events[g]){
+    return false
+  }
+  delete this.events[g];
+  return true
+}
+
+Timeline.prototype.removeEmptyEventGroup = function(group){
+  if (!this.events[g]){
+    return false
+  }
   var n_exec_evts = $.keys(this.events[g].exec).length,
       app_event = this.events[g].applications;
-  if (n_exec_evts == 0 && (!app_event || app_event != {})){
+  if (n_exec_evts == 0 && (!app_event || !app_event.id)){
     delete this.events[g];
     return true
   }
@@ -351,7 +362,7 @@ function Engine(tm_size) {
       measures: {}
     }
   };
-  this.properties = { duration: 120 };
+  this.properties = { duration: 140 };
   this.timeline = new Timeline(tm_size);
 
 
@@ -508,7 +519,7 @@ Engine.prototype.getGeneratedCode = function() {
   // generate data to get timeline from server
   for (var g in events) {
     var default_evt = events[g].applications;
-    if (default_evt.id){
+    if (default_evt && default_evt.id){
       group_events.push({ group: g, start: default_evt.start, stop: default_evt.stop, command: default_evt.command });  
     }
     for (var eevt in events[g].exec){
