@@ -48,15 +48,20 @@ gem 'delayed_job'
 
 # To use debugger
 gem 'ruby-debug'
+
+# tests without db
+gem 'activerecord-nulldb-adapter'
+
 #gem 'autotest'
-#gem 'autotest-rails-pure'
 #gem 'autotest-notification'
+#gem 'autotest-rails-pure'
+
 
 group :test do  
   gem 'single_test'
   gem 'rspec', '2.2.0'
   #gem 'rspec-rails'
-  gem 'webrat'
+  gem 'webrat' 
 end
 # Bundle the extra gems:
 # gem 'bj'

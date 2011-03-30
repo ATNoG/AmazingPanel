@@ -17,24 +17,22 @@
     </div>
   <% end %>
   
-<% if multipart == true %>
+<% if multipart %>
     <div class="field">
       <%= label_tag :file %>
       <%= file_field_tag :file %>
     </div>
 <% end %>
   <br/> 
+
+  <div class="<%= editor ? "ededitor-form" : "" %> actions">
+    <%= f.submit %>
+  </div>
   
-<% if editor == true %>
+<% if editor %>
   <p>   
     <%= render :partial => 'oedl', :locals => { :args => {} } %>
   </p>  
   <br/> 
 <% end %>
-
-
-  <div class="actions">
-    <%= f.submit %>
-  </div>
-
 <% end %>

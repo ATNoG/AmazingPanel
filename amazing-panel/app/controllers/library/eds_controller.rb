@@ -2,8 +2,12 @@ require 'omf.rb'
 
 class Library::EdsController < Library::ResourceController
   include OMF::GridServices
+  include OMF::Experiments
   include OMF::Experiments::OEDL
-  
+  include Library::EdsHelper
+
+  respond_to :json, :html, :only => [:doc, :code]
+
   def resource_group()
     return "eds"
   end
@@ -15,11 +19,11 @@ class Library::EdsController < Library::ResourceController
   def resource_find_all()
     return Ed.all
   end
-  
+
   def resource_find(id)
     return Ed.find(id)
   end
-  
+
   def resource_new(model=nil)
     if model.nil?
       return Ed.new
@@ -27,7 +31,7 @@ class Library::EdsController < Library::ResourceController
       return Ed.new(model)
     end
   end
-  
+
   # GET /eds
   # GET /eds.xml
   #def index
@@ -42,13 +46,13 @@ class Library::EdsController < Library::ResourceController
 
   #  if @error.nil? == false
   #	  @error = "Invalid Filter."
-  #  end    
+  #  end
   #end
 
   # GET /eds/1
   # GET /eds/1.xml
   def show
-    @ed = resource_find(params[:id]);    
+    @ed = resource_find(params[:id]);
     path = get_path(@ed, "rb");
     @content = File.open(path, 'r')
   end
@@ -57,8 +61,12 @@ class Library::EdsController < Library::ResourceController
   # GET /eds/new.xml
   def new
     @ed = Ed.new
-    @testbed = Testbed.first 
-    @nodes = OMF::GridServices::TestbedService.new(@testbed.id).mapping();
+    @testbed = Testbed.first
+    service = OMF::GridServices::TestbedService.new(@testbed.id)
+    @has_map = service.has_map
+    unless ["js", "html"].include?(params[:format])
+      @nodes = service.mapping();
+    end
   end
 
   # GET /eds/1/edit
@@ -74,18 +82,20 @@ class Library::EdsController < Library::ResourceController
     @ed = resource_new(params[:ed])
     @ed.user_id = current_user.id
     uploaded_io = params[:file]
-    if !uploaded_io.nil? and @ed.save
+    code = params[:ed_code]
+    content = code unless code.nil?
+    content = uploaded_io.read unless uploaded_io.nil?
+
+    if !content.nil? and @ed.save
       #path = get_path(@ed, "rb");
       #File.open(path, 'w') do |file|
         #file.write(uploaded_io.read)
       #end
-      write_resource(@ed, uploaded_io.read, "rb")
+      write_resource(@ed, content, "rb")
       flash[:success] = t("amazing.ed.created")
-      redirect_to(eds_path)  
+      redirect_to(eds_path)
     else
-      if uploaded_io.nil? 
-        @ed.errors[:file] = " needed."
-      end
+      @ed.errors[:file] = " or code needed."
 
       #redirect_to(new_ed_path)
       render :action => "new"
@@ -144,7 +154,49 @@ class Library::EdsController < Library::ResourceController
   
   # POST /eds/code.js
   def code
-    scriptgen = OEDLScript.new(params[:meta])
-    @code = scriptgen.toRuby();
-  end  
+    params[:timeline] = timeline(params[:timeline])
+    params[:meta][:groups].each do |index, group|
+      if group.has_key?(:nodes)
+        nodes_hrn = Array.new()
+        group[:nodes].each do |n|
+          nodes_hrn.push(Node.find(n).hrn)
+        end
+        params[:meta][:groups][index][:nodes] = nodes_hrn
+      end
+    end
+
+    repo = ScriptHandler.scanRepositories()
+    @apps = Hash.new();
+    params[:apps][:applications].each do |uri, app|
+      args = [uri, app[:name], app]
+      @apps[uri] = Generator.new().from_sexp(:createApplicationDefinition, args)      
+      definition = ScriptHandler.getDefinition(nil, @apps[uri])
+      repo[uri] = definition.properties[:repository][:apps][uri]
+    end
+    scriptgen = Generator.new({:meta => params, :repository => repo})    
+    @code = scriptgen.to_s();
+  end
+
+  def doc
+    type = params[:type]
+    app = params[:name]
+    scan if type == "all"
+    definition(app) if !app.nil?
+    respond_with(@apps.to_json)
+  end
+
+  private
+  def scan
+    @apps = ScriptHandler.scanRepositories()
+  end
+
+  def definition(app)
+    @apps = ScriptHandler.getDefinition(app)
+    unless @apps.nil?
+      @apps = @apps.properties[:repository][:apps]
+    end
+  end
+
+
+
 end

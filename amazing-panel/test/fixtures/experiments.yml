@@ -1,21 +1,121 @@
 --- 
+experiments_011: 
+  created_at: 2011-01-13 17:56:28
+  updated_at: 2011-03-15 15:30:42
+  project_id: "12"
+  ed_id: "1"
+  id: "38"
+  user_id: "1"
+  status: "0"
+experiments_012: 
+  created_at: 2011-02-07 18:02:27
+  updated_at: 2011-02-07 18:02:27
+  project_id: "12"
+  ed_id: "1"
+  id: "39"
+  user_id: "5"
+  status: "0"
 experiments_001: 
-  duration: 
-  phase_id: "1"
-  resources_map_id: 
-  project_id: "3"
-  start_at: 
+  created_at: 2011-01-13 17:56:28
+  updated_at: 2011-01-13 17:56:29
+  project_id: "1"
   ed_id: "1"
-  id: "14"
+  id: "3"
   user_id: "1"
-  status: "2"
+  status: "4"
+experiments_013: 
+  created_at: 2011-02-15 18:12:35
+  updated_at: 2011-02-17 15:42:56
+  project_id: "31"
+  ed_id: "1"
+  id: "44"
+  user_id: "4"
+  status: "0"
 experiments_002: 
-  duration: 
-  phase_id: "1"
-  resources_map_id: 
-  project_id: "11"
-  start_at: 
+  created_at: 2011-01-13 17:56:28
+  updated_at: 2011-01-13 17:56:29
+  project_id: "1"
   ed_id: "1"
-  id: "15"
+  id: "5"
   user_id: "1"
-  status: "1"
+  status: "4"
+experiments_014: 
+  created_at: 2011-03-09 04:16:42
+  updated_at: 2011-03-09 04:16:42
+  project_id: "12"
+  ed_id: "1"
+  id: "54"
+  user_id: "1"
+  status: "0"
+experiments_003: 
+  created_at: 2011-01-13 17:56:28
+  updated_at: 2011-01-13 17:56:29
+  project_id: "2"
+  ed_id: "1"
+  id: "6"
+  user_id: "1"
+  status: "4"
+experiments_015: 
+  created_at: 2011-03-23 19:26:24
+  updated_at: 2011-03-23 19:26:24
+  project_id: "12"
+  ed_id: "1"
+  id: "72"
+  user_id: "1"
+  status: "0"
+experiments_004: 
+  created_at: 2011-01-13 17:56:28
+  updated_at: 2011-01-13 17:56:29
+  project_id: "2"
+  ed_id: "1"
+  id: "7"
+  user_id: "1"
+  status: "4"
+experiments_005: 
+  created_at: 2011-01-13 17:56:28
+  updated_at: 2011-02-07 18:13:35
+  project_id: "12"
+  ed_id: "2"
+  id: "13"
+  user_id: "4"
+  status: "0"
+experiments_006: 
+  created_at: 2011-01-13 17:56:28
+  updated_at: 2011-01-13 17:56:29
+  project_id: "30"
+  ed_id: "1"
+  id: "29"
+  user_id: "6"
+  status: "0"
+experiments_007: 
+  created_at: 2011-01-13 17:56:28
+  updated_at: 2011-01-13 17:56:29
+  project_id: "12"
+  ed_id: "3"
+  id: "30"
+  user_id: "4"
+  status: "4"
+experiments_008: 
+  created_at: 2011-01-13 17:56:28
+  updated_at: 2011-03-07 03:57:36
+  project_id: "12"
+  ed_id: "1"
+  id: "31"
+  user_id: "4"
+  status: "4"
+experiments_009: 
+  created_at: 2011-01-13 17:56:28
+  updated_at: 2011-01-13 17:56:29
+  project_id: "3"
+  ed_id: "1"
+  id: "35"
+  user_id: "1"
+  status: "4"
+experiments_010: 
+  created_at: 2011-01-13 17:56:28
+  updated_at: 2011-03-08 17:00:47
+  project_id: "12"
+  ed_id: "1"
+  id: "37"
+  user_id: "4"
+  status: "-1"

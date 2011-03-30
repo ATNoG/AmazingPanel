@@ -14,7 +14,7 @@ module AmazingPanel
     # Custom directories with classes and modules you want to be autoloadable.
     # config.autoload_paths += %W(#{config.root}/extras)
     # config.autoload_paths += %W(#{config.root}/lib)
-    config.autoload_paths += Dir["#{config.root}/lib/**/", "#{config.root}/jobs/**/"]
+    config.autoload_paths += Dir["#{config.root}/lib", "#{config.root}/jobs/**/"]
     # Only load the plugins named here, in the order given (default is alphabetical).
     # :all can be used as a placeholder for all plugins not explicitly named.
     # config.plugins = [ :exception_notification, :ssl_requirement, :all ]
@@ -32,7 +32,15 @@ module AmazingPanel
 
     # JavaScript files you want as :defaults (application.js is always included).
     config.action_view.javascript_expansions[:defaults] = %w(jquery rails jquery-ui jquery-tipsy)
-    config.action_view.javascript_expansions[:ed_editor] = ["jquery.datalink", "ed-editor/jquery.event.drag.min", "ed-editor/jquery.formparams.min", "ed-editor/jquery.dform.min", "ed-editor/jquery.svgdom.min", "ed-editor/jquery.svg.min", "ed-editor/jquery.ctxmenu.packed.js", "ed-editor/gen", "ed-editor/engine", "ed-editor/graph", "ed-editor/ui" ] 
+    config.action_view.javascript_expansions[:ed_editor] = [
+      "jquery.tmpl.min", "jquery.datalink", "inflection", "jquery.formparams.min", "jquery.dform.min", # Dependencies 
+      "ed-editor/engine",        # the engine responsible for the data layer
+      "ed-editor/ui",            # ui controller
+      "ed-editor/helpers",       # helper functions
+      "ed-editor/ui.forms",      # JSON form objects
+      "ed-editor/ui.generators", # HTML Generators
+      "ed-editor/ui.templates",  # Jquery templates used
+      "ed-editor/ui.events" ]    # Events handlers
 
     # Configure the default encoding used in templates for Ruby 1.9.
     config.encoding = "utf-8"

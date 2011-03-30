@@ -4,9 +4,9 @@ class Ed < Resource
   attr_accessor :code
   belongs_to :user
 
-  after_initialize :read_file
+  #after_initialize :read_file
   after_find :read_file
-  after_create :read_file
+  #after_create :read_file
   after_update :read_file
 
   def allowed() 

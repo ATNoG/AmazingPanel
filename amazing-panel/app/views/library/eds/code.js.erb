@@ -1,6 +1,10 @@
-$("#source").html("<%= escape_javascript(text_area_tag(:code, @code, :cols => 0, :rows => 30)) %>")
+$("ul.sidetabs").empty();
+$("ul.sidetabs").html("<li class=\"sidetab-active\"><a href=\"#ed\">ed</a></li>");
+
+$("#ed").html("<%= escape_javascript(text_area_tag(:ed_code, @code, :cols => 0, :rows => 30)) %>")
 if (CodeMirror != undefined){
-  CodeMirror.fromTextArea('code', {
+  $(".CodeMirror-wrapping").remove();
+  CodeMirror.fromTextArea('ed_code', {
     parserfile: ["../tokenizeruby.js", "../parseruby.js"],
     stylesheet: "/stylesheets/codemirror/rubycolors.css",
     path: "/javascripts/codemirror/base/",
@@ -8,8 +12,22 @@ if (CodeMirror != undefined){
     textWrapping: true,
     indentUnit: 2,
     parserConfig: {},
-    readOnly: true,
-    height: "465px",
+    readOnly: false,
+    height: "400px",
     width: "100%"
-  }, 0);
+  });
 }
+
+<% @apps.each do |key, app| %>
+  <% hkey = key.gsub(/:/,"_") %>
+  $("ul.sidetabs").append("<li><a href=\"#<%= hkey %>\"><%= key %></a></li>");
+  if ($("#<%= hkey %>").length == 0){
+    $("#ed").after("<div id=\"<%= hkey %>\" class=\"sidetab\"></div>");
+  }
+  $("#<%= hkey %>").html("<%= escape_javascript(text_area_tag( (hkey+"_code").to_sym, app, :cols => 0, :rows => 30)) %>");
+<% end %>
+
+$(".sidetab").hide();
+$(".sidetab:eq(0)").show();
+$(".sidetabs li:first-child").addClass("sidetab-active");
+

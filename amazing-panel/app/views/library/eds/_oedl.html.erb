@@ -2,17 +2,74 @@
   <li class="tab-active"><a href="#design">Design</a></li>
   <li><a id="oedl-source" href="#source">Source</a></li>
 </ul>
-<div id="design" class="oedl-tab tab">
-  <%= render :partial => 'testbeds/map' %>
-<!--
-  <div class="oedl-actions sidebar">
-    <div class="node-add-action button">Node</div>
-    <div class="preferences-view-action ed-editor-button preferences-button">Preferences</div>
+<div id="design" class="oedl-tab tab">  
+  <div class="oedl-timeline timeline">
+    <div class="oedl-timeline-title">Timeline (<a href="#" onclick="editor.generateTimeline()">Reload</a>)</div>
+    <ul class="events"></ul>
+    <div class="oedl-timeline-scale">        
+      <div class="oedl-timeline-selector"><span></span></div>
+      <ul class="intervals">
+      </ul>
+    </div>
+    <div class="oedl-timeline-actions">
+    </div>
   </div>
-  <div class="canvas">
-  </div>  
--->
+  <div class="clear"></div>
+  <div class="topbar"> 
+    <div class="topbar-switch">
+      <div class="topbar-switch-button">Show</div>
+    </div>
+    <div class="topbar-content">
+      <p id="no-apps-warning" class="notice"> No applications in any of groups. </p>
+      <p id="no-groups-warning" class="notice"> No groups defined. </p>
+      <div class="topbar-item">
+       <div id="table-groups" class="hidden grid-view-new">
+         <div class="grid-view-row grid-view-header">
+           <div class="group-color">Group</div>
+           <div>Nodes</div>
+         </div>
+         <div class="grid-view-row">
+         </div>      
+       </div>
+       <div id="table-groups-actions" class="invisible grid-view-actions">
+         <a href="#" class="remove-group-item">Remove Selected</a>
+       </div>
+     </div>
+     <div class="topbar-item">
+       <div id="table-applications" class="hidden grid-view-new">
+         <div class="grid-view-row grid-view-header">
+           <div class="group-color">Group</div>
+           <div>Application</div>
+         </div>
+         <div class="grid-view-row">
+         </div>
+       </div>
+       <div id="table-applications-actions" class="invisible grid-view-actions">
+         <a href="#" class="remove-application-item">Remove Application</a>
+         <a href="#" class="addevent-application-item">Add Event</a>
+       </div>
+     </div>
+   </div>
+  </div>
+
+  <div class="clear"></div>
+
+  <div class="preferences-view-action preferences-button"><span>Preferences</span></div>
+  <div class="oedl-actions sidebar"></div>
+  <div id="testbed-view">
+    <%= hidden_field_tag :testbed_name, @testbed.name %>
+    <%= hidden_field_tag :testbed_id, @testbed.id %>
+    <%= render :partial => 'testbeds/map' %>
+  </div>
+
 </div>
 <div id="source" class="oedl-tab tab">
+  <div class="sidetabs-container">
+    <ul class="sidetabs">
+      <li class="sidetab-active"><a href="#ed">ed</a></li>
+    </ul>
+    <div id="ed" class="sidetab">
+    </div>
+  </div>
 </div>
 

@@ -44,14 +44,14 @@ li > a {
   padding: 0px 10px 0px 10px;
 }
 
-select, input[type=text], input[type=file], input[type=password] {
+
+select, input[type=text], input[type=password] {
   border:1px solid #ccc;  
   border-radius:5px;  
   -moz-border-radius:5px;  
   -webkit-border-radius:5px;  
   padding:2px;  
 }
-
 
 input[type=submit] {	
   border:1px solid #bbb;  
@@ -68,6 +68,7 @@ input[type=submit]:hover {
 	border:1px solid black;  
 	color: #000;
 }
+
 a:visited {
   color:#3E5C6B;
   text-decoration:none;
@@ -98,13 +99,16 @@ a:link {
   height: 0%;
 }
 
-.italic {
-  font-style: italic;
-}
+.italic { font-style: italic; }
+.bold { font-weight: bold; }
 
-.bold {
-  font-weight: bold;
-}
+.left { float: left !important; }
+.no-float { float: none !important; }
+.right { float: right !important; }
+
+.inline { display: inline !important; }
+.round { border-radius: 5px; }
+.pad { padding: 2px; }
 
 .info {
   background: #DBE3FF url(/images/info.png) no-repeat 1px 1px;
@@ -152,6 +156,9 @@ a:link {
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
   border-radius: 5px;  
+}
+.no-icon {
+  background-image: none;
 }
 
 .loading {
@@ -213,7 +220,13 @@ a:link {
   background: -moz-linear-gradient(top,  #d1d1d1,  #eeeeee) !important; /* for firefox 3.6+ */
 
 }
+.list { 
+}
 
+.list > li {
+  list-style: disc;
+  margin-left: 30px;
+}
 .tabs {
 	margin: 0;
     padding: 0;
@@ -265,6 +278,7 @@ a:link {
     border-bottom: 1px solid #fff;
     font-weight: bold;
 }
+
 .tab {
   background: white;
   border-bottom-left-radius: 5px 5px;
@@ -275,6 +289,150 @@ a:link {
   border: 1px solid #999;
   border-top:none;
   height: 90%;
+}
+
+/* Side tabs */
+.sidetabs-container {
+  height: 450px;
+}
+
+.sidetabs {
+  float: left;
+  list-style: none;
+  position: relative;
+  width: 12%;
+}
+
+.sidetabs li {
+  float: left;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  background-color: #a4a4a4;
+  width: 100%;
+  text-align: center;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+
+.sidetabs li a {
+  color: #f0f0f0;
+}   
+
+.sidetabs li.sidetab-active {
+  font-weight: bold;
+  background-color: #1e1e1e;
+}
+
+.sidetabs li.sidetab-active a {
+  color: #f0f0f0;
+}   
+
+.sidetabs li:hover {
+  background: #ccc;
+}
+
+.sidetab {
+  background: white;
+  float: left;
+  width: 85%;
+  margin-left: -1px;
+}
+
+/* Embedded modal tabs */
+.modal-tab {
+  height: 365px;
+  overflow-y: auto;
+}
+
+#modal-tabs {
+  margin-top: 5px;
+  width: 99%;
+}
+
+.ui-dform-p {
+  margin-left: 3px;
+}
+
+.ui-dform-p > label {
+  font-weight: bold;
+}
+.grid-view-new {
+  display: table;
+  border: 1px solid #a4a4a4;
+  width: 180px;
+}
+
+.grid-view-header {
+  background-color: #f0f0f0;
+  color: #1e1e1e;
+  font-size: 11px;
+}
+
+.grid-view-header > div {
+  padding-left: 4px;
+}
+
+.grid-view-row {
+  display: table-row;
+  padding-left: 1px;
+}
+
+.grid-view-row > .group-color {
+  cursor: pointer;
+}
+
+.grid-view-row > .group-color > input {
+  cursor: pointer;
+  margin-top: -1px;
+}
+
+
+.grid-view-header > .group-color {
+  width: 22px;
+  height: 22px;
+}
+
+
+
+.grid-view-row > div {
+  display: table-cell;
+  padding: 4px;
+  border: 1px solid #a4a4a4;
+}
+
+.grid-view-row > div:first-child {
+  width: 110px;
+  margin-left: 1px;
+}
+.grid-view-row > div:nth-last-child {
+  width: 80px;
+}
+
+.grid-view-row-selected > div {
+  background-color: #ffdead;
+}
+
+/*
+.grid-view-actions {
+  display: none;
+}*/
+
+.grid-view-actions > a {
+  font-size: 9px;
+  text-decoration: underline;
+}
+
+#table-applications {
+  margin-top: 20px;
+}
+
+#table-groups {
+}
+
+#table-groups {
+  margin-top: 20px;
 }
 
 .flash-msg-integrated {
@@ -652,6 +810,10 @@ ul#action-list > li {
   padding: 5px;
 }
 
+.ededitor-form {
+  margin-bottom: 10px;
+}
+
 .CodeMirror-line-numbers {
   width: 2.2em;
   /*color: #1e1e1e;
@@ -666,20 +828,229 @@ ul#action-list > li {
   color:#F8F8F8;
 }
 
+
+/**
+  * Ed Editor - Timeline
+  */
+.oedl-timeline {
+  height: 60px; 
+}
+
+.oedl-timeline-actions {
+  clear:both;
+}
+.oedl-timeline-actions > a {
+  font-size: 9px;
+  text-decoration: underline;
+  margin-right: 5px;
+}
+
+.oedl-timeline > .oedl-timeline-title {
+  font-size: 12px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  /*border: 1px solid #a4a5a5;
+  border-radius: 10px;*/
+  opacity: 0.9;
+  padding:4px;
+}
+
+ul.events {
+  list-style-type: none;
+  margin: 0;
+  padding: 0 0 5px 0;
+}
+
+ul.events li {
+  -webkit-border-radius: 11px;
+  -moz-border-radius: 11px;
+  border-radius: 11px;
+  background: #eee;
+  border: 1px solid #ddd;
+  color: #707070;
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-bottom: 6px;
+  padding: 3px 0;
+  position: relative;
+  text-align: center;
+}
+
+ul.events li.event-selected {
+  border: 1px solid #cc1100;
+}
+
+ul.events li:hover {
+  border: 1px solid #1e1e1e;
+  cursor: pointer;
+}
+
+ul.events li:hover span {
+  display: inline-block;
+}
+
+ul.events li span {
+  display: none;
+  text-align: center;
+  font-size: 9px;
+  float: left;
+  margin-top: -15px;
+}
+
+ul.events li.oedl-command-event span {
+  display: none;
+  text-align: center;
+  font-size: 9px;
+  float: left;
+  margin-top: -15px;
+  width: 100%;
+}
+
+
+
+ul.events li em {
+  color: #aaa;
+  font-weight: normal;
+  font-size: 0.9em;
+}
+
+ul.intervals {
+  list-style-type: none;
+  padding: 0;
+  display: block;
+}
+
+/* The width depends on the number of intervals. For example 100 / 7 = 14.29% 
+  -- then subtract a little bit for room for the borders */
+ul.intervals li {
+  background: #fff url(/images/1x1_eee.gif) repeat-x left 10%;
+  border-right: 1px solid #ccc;
+  color: #999;
+  float: left;
+  font-size: 10px;
+  padding-left: 4px;
+  margin-right: -4px;
+  width: 14.17%;
+}
+
+ul.intervals li span {
+  margin-left: -6px;
+  display:inline;
+  border-left: 1px solid #ccc;
+}
+
+ul.intervals li.first {
+  border-left: 1px solid #ccc;
+}
+
+.oedl-timeline-selector {
+  height: 20px;
+  position: relative;
+  width: 3px;
+  background-color: rgba(200, 10, 10, 80);  
+  padding-left: -10px;
+  margin-bottom: 1px;
+}
+
+.oedl-timeline-selector:hover {
+  background-color: rgba(255, 0, 0);  
+  cursor:pointer;
+}
+.oedl-timeline-selector > span {
+  margin-left:  5px;
+  font-size: 10px;
+  color: #999;
+}
+
+.input-applications {
+  font-size: 8px;
+  display: none;  
+}
+
+/* Ed Editor - UI*/
+
 #design {
-  height: 650px;
+  height: 1024px;
+  border-bottom: none;
+  border-radius: 0px;
+}
+
+#source {
+  height: 400px;
 }
 
 #design > .sidebar {
-  width: 10%;
-  height: 95%;
+  width: 120px;
+  height: 200px;
   border: 1px solid #A4A4A4;
   padding: 5px 5px 5px 0px;
   float: left;
-  background: #f0f0f0;
+  background: #ffffff;
+  margin-top: 25px;
+  font-size: 10px;
 }
 
-#design > .sidebar > .ed-editor-button {
+.sidebar p {
+  padding-bottom: 10px;
+  padding-left: 5px;
+}
+
+
+#design > #testbed-view {
+  margin-left: 100px;
+  float:left;
+}
+
+#design > .right-sidebar {
+  float:right;
+  margin-right: 40px;
+  width: 150px;
+}
+
+.topbar {
+  margin-top: 20px;
+}
+
+.topbar .topbar-switch {
+  border-top: 6px solid #99CCCC;
+  margin-top: 4px;
+  width: 100%;
+  cursor: pointer;
+  text-align: center;
+}
+
+.topbar .topbar-switch > div.topbar-switch-button {
+  background-color: #99CCCC;
+  margin-top: -1px;
+  color: white;
+  padding: 0px 3px 0px 3px;
+  display: inline-block;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.topbar .topbar-switch:hover > div.topbar-switch-button {
+  background-color: #1e1e1e;
+}
+
+.topbar .topbar-switch:hover {
+  border-top: 6px solid #1e1e1e;
+}
+
+.topbar .topbar-switch + .topbar-content {
+  display: none;
+}
+
+.topbar .topbar-switch-active + .topbar-content {
+  display: block;
+}
+
+.topbar .topbar-content > .topbar-item {
+  float: left;
+  margin-right: 10px;
+}
+
+.ed-editor-button {
   -moz-border-radius: 10px;
   -webkit-border-radius: 10px;
   border-radius: 10px;  
@@ -698,12 +1069,12 @@ ul#action-list > li {
   cursor: pointer;
 }
 
-#design > .sidebar > .node-add-action {
-  border-radius: 10px;
-  -moz-border-radius: 10px;
-  -webkit-border-radius: 10px;
+#design > .sidebar > .oedl-action-button {
   float: left;
+  width:108px;
+  margin-bottom: 5px;
   margin-left: 5px;
+  font-size: 12px;
 }
 
 #add-group {
@@ -711,6 +1082,26 @@ ul#action-list > li {
   border-bottom: 1.5px solid #A4A4A4;
   height: 30px;
   padding: 5px;
+}
+/*
+.attr-choose {
+  border-top: 1.5px solid #A4A4A4;
+  border-bottom: 1.5px solid #A4A4A4;
+  height: 30px;
+  padding: 5px;
+}
+
+.dialog-add-field {
+  margin-top: -25px;
+  margin-left: 5px;
+}
+*/
+
+#add-application-button {
+  padding: 3px;
+  font-size: 11px;
+  margin-left: 10px;
+
 }
 
 #add-group > .group-add-action {
@@ -720,6 +1111,12 @@ ul#action-list > li {
 
 #groups {
   overflow: auto;
+}
+
+.group-color {
+  height: 20px !important;
+  width: 20px !important;
+  padding: 2px;
 }
 
 #groups > .group {
@@ -736,22 +1133,36 @@ ul#action-list > li {
   cursor: pointer;
 }
 #groups > .group > .group-color {
-  height: 20px;
-  width: 20px;
   float:left;
-  padding: 2px;
 }
 
-#design > .sidebar > .preferences-button {
-  position: absolute;
-  top: 86%;
+.preferences-button {
+  position: relative;
   border-radius: 0px;
   -moz-border-radius: 0px;
   -webkit-border-radius: 0px;
-  width: 98px;
-  margin-left: -1px;
+  width: 125px;
+  margin-left: 0px;
+  top: 28px;
+  height: 20px;
+  font-family: sans;
+  font-size: 11px;
+  cursor: pointer;
+  border: 1px solid #7f7f7f;
+  margin-bottom: 2px;
+  text-align: center;
+  background-color: #a4a4a4;
+  color: white;
+  line-height: 20px;
+  height: 20px;
+  font-weight: bold;
 }
 
+.preferences-button > span {
+  margin-top: -439px;
+}
+
+/*
 #design > .sidebar > .ed-editor-context-menu-node {
   position : fixed;
   border : 1px solid gray;
@@ -762,6 +1173,7 @@ ul#action-list > li {
   font-size: 10px;
   display: none;
 }
+*/
 
 #design > .canvas {
   margin-left: 5px;
@@ -772,72 +1184,14 @@ ul#action-list > li {
   padding: 5px;
 }
 
-
-/** OEDL Designer SVG CSS
-  *
+/**
+  * General Toolbar, subToolbar actions
   */
-/*
-circle.node, text.node-label {
-  text-anchor: middle;
-  font-size: 10px;
-  cursor: pointer;
-}
-
-circle.node {
-  stroke-width: 1.5;
-  fill: #fff;
-  stroke: black;
-}
-
-g.node-box {
-  display:none;
-  cursor: move;
-}
-
-g.node-box > rect {
-  stroke-width: 0.5;
-  stroke: #bfbfbf;
-  fill: #fff;
-}
-
-g.node-box > path.node-box-close-button {
-  stroke-width: 0.5;
-  stroke: #bfbfbf;
-  fill: #fff;
-  cursor: pointer;
-}
-
-g.node-box > path.node-box-close-button:hover {
-  opacity: 0.8;
-  stroke-width: 2;
-  stroke: red;
-}
-*/
-/*
-#oedl-design-viewer {
-  height: 20px;
-}
-
-#oedl-design-viewer > li {
-  height: 20px;
-  line-height: 20px;
-}
-
-#oedl-design-viewer > li > a {
-  font-size: 12px;
-  font-weight: normal;
-  line-height: 20px;
-}
-
-*/
 #toolbar {  
   border: 1px solid #A4A4A4;  
   height: 24px;
   border-top:none;
   line-height: 24px;
-  /*filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#eee', endColorstr='#fff'); /* for IE */
-  /*background: -webkit-gradient(linear, left top, left bottom, from(#eee), to(#fff)); /* for webkit browsers */
-  /*background: -moz-linear-gradient(top,  #eee,  #fff) !important; /* for firefox 3.6+ */
   background-color: #eee;
 }
 
@@ -1071,7 +1425,7 @@ div.description {
   color: white !important; 
   border: 1px solid #6565cb;
   text-align:center;
-  float:right;
+  float: right;
   cursor: pointer;
   font-weight: bold;
 }
@@ -1086,6 +1440,17 @@ div.description {
   font-size: 10px;
   position: absolute;
   right: 15px;
+  top: 15px;
+  width: 18px;
+  line-height: 18px;
+}
+
+.check-button {
+  background: #7D1;
+  border: 1px solid #1D5;
+  font-size: 10px;
+  position: absolute;
+  right: 45px;
   top: 15px;
   width: 18px;
   line-height: 18px;

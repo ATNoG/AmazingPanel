@@ -1,14 +1,29 @@
-function updateStatus() { 
+$.extend({
+  uniformize: function(p){
+      if (p){
+        $("select, textarea, input:password, input:text, input:checkbox, input:radio, input:file", $(p)).uniform(); 
+      } else {
+        $("select, textarea, input:password, input:text, input:checkbox, input:radio, input:file").uniform(); 
+      }
+  },
+  init: function(){
+    $("a, .action, .has-tooltip").tipsy({ live: true, fade:true });
+    $(".flash-msg-integrated").slideDown(500).delay(5000).slideUp(200);
+    //this.uniformize();
+  }
+  });
+
+function updateStatus() {
   var testbed = $('.testbed')
   var timestamp = testbed.attr("timestamp");
   var id = testbed.attr('id').replace(/testbed-/, "");
-  $.getScript('/testbeds/'+id+'.js?timestamp='+timestamp);  
-  setTimeout(updateStatus, 60000);  
+  $.getScript('/testbeds/'+id+'.js?timestamp='+timestamp);
+  setTimeout(updateStatus, 60000);
 }
+
 <% if user_signed_in? %>
 $(document).ready(function(){
-  $("a, .action").tipsy({ live: true });
-  $(".flash-msg-integrated").slideDown(500).delay(5000).slideUp(200);
+  $.init();
   var descs = $("div.description"), sep = 50;
   for (i=0;i<descs.length; ++i){
     var text = $(descs[i]).html();
@@ -21,24 +36,21 @@ $(document).ready(function(){
       $(".tab").hide();
       $(".tab:eq(0)").show();
       $(".tabs li:first-child").addClass("tab-active");
-      $(".tabs li").live('click', function(evt){
+      $(".tabs:not(#modal-tabs) li").live('click', function(evt){
         var active_tab = $($(this).find("a").attr("href"));
-    	$(".tab").hide();
-     	$(".tabs li").removeClass("tab-active");
-    	$(this).addClass("tab-active");
+        $(".tab").hide();
+        $(".tabs li").removeClass("tab-active");
+        $(this).addClass("tab-active");
         active_tab.fadeIn();
-        active_tab.focus();
+    	active_tab.focus();
         return false;
       });
-}
+  }
   <% if (@c == "projects" and @a == "assign")%>
     <%= render :partial => 'projects' %>
   <% end %>
 
   <% if (@c == "library/eds") %>
-    <% if (@a == "new") %>
-      <%= render :partial => 'ed_editor' %>
-    <% end %>
     <% if (@a == "show" or @a =="edit") %>
       <%= render :partial => 'library' %>
     <% end %>
@@ -143,6 +155,7 @@ function filter_path(path, field, cmp, value){
   return path+"?filter=field&field="+field+"&op="+cmp+"&value="+value;
 }
 
+
   <% if (@c == "library/sys_images") and (@a == "edit" or @a == "new")%>
 function AJAXUploadSupport(){
     return supportFileAPI() && supportAjaxUploadProgressEvents();
@@ -193,8 +206,7 @@ function onloadHandler(evt) {
 
 <% else %>
 $(document).ready(function(){
-  $("a, .action").tipsy({ live: true });
-  $(".flash").slideDown(500).delay(5000).slideUp(200);
+  $.init();
   <%= render :partial => 'network' %>
 });
 
