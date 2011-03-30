@@ -66,7 +66,7 @@
 	  <td class="actions-2">
         <div class="table-actions">
           <%= activate_user_action(user, { :text => false, :link => true}) %>
-          <%= delete_action(admin_user_path(:id=>user.id), { "original-title" => "Delete account", :text => false, 
+          <%= delete_action(admin_user_path(:id=>user.id), { "original-title" => "Delete account", :text => false, :confirm => "All data related to this user will be deleted. Are you sure?",
                             :link => true}) %>
 	    </div>
 	  </td>
