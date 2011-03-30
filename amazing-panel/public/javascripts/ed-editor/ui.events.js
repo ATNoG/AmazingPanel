@@ -134,7 +134,7 @@ EdEditor.prototype.onApplicationAdd = function(evt){
     }
 
     app = { 
-      "uri" : info.uri,  
+      "uri" : this.engine.uri_for(info.uri),  
       "options" : {
         "selected" : properties.selected,
         "properties": eproperties
@@ -483,13 +483,14 @@ EdEditor.prototype.bindEvents = function() {
   });
 
   // Sidetabs from source view
+  $(".sidetabs:not(#modal-tabs) li:not(.sidetab-active)").live('hover', function(evt){ $(this).toggleClass('hoverable') });
   $(".sidetabs:not(#modal-tabs) li").live('click', function(evt){        
     var href = $(this).find("a").attr("href").replace("#",""),
         active_tab = $($(this).find("a").attr("href"));
     $(".sidetab").hide();
-    $(".sidetabs li").removeClass("sidetab-active");
+    $(".sidetabs li").removeClass("sidetab-active hoverable");
     $(this).addClass("sidetab-active");    
-    active_tab.fadeIn().focus();
+    active_tab.show().focus();
     $(".CodeMirror-wrapping").remove();
     CodeMirror.fromTextArea(href+"_code", {
         parserfile: ["../tokenizeruby.js", "../parseruby.js"],
@@ -503,7 +504,6 @@ EdEditor.prototype.bindEvents = function() {
         height: "400px",
         width: "100%"
     });
-
     return false;
   }); 
 

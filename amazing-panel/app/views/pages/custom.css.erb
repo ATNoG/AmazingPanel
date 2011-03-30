@@ -297,23 +297,20 @@ a:link {
 }
 
 .sidetabs {
-  float: left;
   list-style: none;
-  position: relative;
   width: 12%;
+  display:inline-block;
 }
 
 .sidetabs li {
-  float: left;
   list-style: none;
-  margin: 0;
-  padding: 0;
-  position: relative;
+  padding: 4px;
   background-color: #a4a4a4;
-  width: 100%;
   text-align: center;
+  display: inline;
   border-top-left-radius: 5px;
-  border-bottom-left-radius: 5px;
+  border-top-right-radius: 5px;
+
 }
 
 .sidetabs li a {
@@ -329,15 +326,15 @@ a:link {
   color: #f0f0f0;
 }   
 
-.sidetabs li:hover {
+.sidetabs li.hoverable {
   background: #ccc;
 }
 
 .sidetab {
   background: white;
-  float: left;
-  width: 85%;
-  margin-left: -1px;
+  width: 100%;
+  margin-top: -3px;
+  display:inline-block;
 }
 
 /* Embedded modal tabs */
@@ -976,7 +973,7 @@ ul.intervals li.first {
 }
 
 #source {
-  height: 400px;
+  height: 430px;
 }
 
 #design > .sidebar {
@@ -993,6 +990,7 @@ ul.intervals li.first {
 .sidebar p {
   padding-bottom: 10px;
   padding-left: 5px;
+  float:left;
 }
 
 
@@ -1156,6 +1154,11 @@ ul.intervals li.first {
   line-height: 20px;
   height: 20px;
   font-weight: bold;
+}
+
+.preferences-button:hover {
+  border: 1px solid #6565cb;
+  background: #51A828;
 }
 
 .preferences-button > span {
@@ -1531,10 +1534,13 @@ div.description {
   clear: both;
 }
 <% if user_signed_in? %>
-  <% if current_user.admin? or (can? :node_info, Testbed) or (can? :node_toggle, Testbed) %>
-    <%= render :partial => "testbeds", :locals => { :selectable => true, :toggleable => false} %>
+
+  <% if (params[:c] == "library/eds" and params[:a] == "new") %>
+    <%= render :partial => "testbeds", :locals => { :selectable => true, :toggleable => true } %>
   <% elsif params[:c] == "experiments" or params[:c] == "projects" or (params[:c] == "library/eds" and params[:a] == "new") %>
     <%= render :partial => "testbeds", :locals => { :selectable => true, :toggleable => true } %>
+  <% elsif current_user.admin? or (can? :node_info, Testbed) or (can? :node_toggle, Testbed) %>
+    <%= render :partial => "testbeds", :locals => { :selectable => true, :toggleable => false} %>
   <% end %>
 <% else %>
   <%= render :partial => "testbeds", :locals => { :selectable => false, :toggleable => false } %>

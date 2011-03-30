@@ -92,6 +92,9 @@ class Library::EdsController < Library::ResourceController
         #file.write(uploaded_io.read)
       #end
       write_resource(@ed, content, "rb")
+      params[:apps].each do |uri, code|
+        ScriptHandler.writeDefinition(uri, code)
+      end
       flash[:success] = t("amazing.ed.created")
       redirect_to(eds_path)
     else
@@ -111,10 +114,10 @@ class Library::EdsController < Library::ResourceController
     @username = User.find(@ed.user_id)
     path = get_path(@ed, "rb");
     content = params[:file].nil? ? params[:code] : params[:file].read
-    #if params[:file].nil? 
+    #if params[:file].nil?
     #  File.open(path, 'w') do |file|
 	#    file.write(params[:code])
-    #  end    
+    #  end
     #else
     #  uploaded_io = params[:file]
     #  path = get_path(@ed, "rb");
@@ -136,44 +139,45 @@ class Library::EdsController < Library::ResourceController
   def destroy
     @ed = resource_find(params[:id])
     @username = User.find(@ed.user_id)
-    #path = get_ed_by_user(@username.username, @ed.id); 
+    #path = get_ed_by_user(@username.username, @ed.id);
     #path = get_path(@ed, "rb");
-    #File.delete(path.to_s)    
+    #File.delete(path.to_s)
     #@ed.destroy
     #respond_to do |format|
     #    format.html { redirect_to(eds_path, :notice => 'Ed was successfully deleted.') }
     #end
 
     if @ed.destroy
-      delete_resource(@ed, extension="rb"); 
+      delete_resource(@ed, extension="rb");
       flash[:success] = t("amazing.ed.destroy");
       return redirect_to(eds_path);
     end
     redirect_to(eds_path, :error => t("errors.ed.destroy"));
-  end 
-  
+  end
+
   # POST /eds/code.js
   def code
     params[:timeline] = timeline(params[:timeline])
-    params[:meta][:groups].each do |index, group|
+    groups = params[:meta][:groups]
+    groups.each do |index, group|
       if group.has_key?(:nodes)
         nodes_hrn = Array.new()
         group[:nodes].each do |n|
           nodes_hrn.push(Node.find(n).hrn)
         end
-        params[:meta][:groups][index][:nodes] = nodes_hrn
+        groups[index][:nodes] = nodes_hrn
       end
     end
 
-    repo = ScriptHandler.scanRepositories()
+    repo = ScriptHandler.scanRepositories(current_user.username)
     @apps = Hash.new();
     params[:apps][:applications].each do |uri, app|
       args = [uri, app[:name], app]
-      @apps[uri] = Generator.new().from_sexp(:createApplicationDefinition, args)      
+      @apps[uri] = Generator.new().from_sexp(:createApplicationDefinition, args)
       definition = ScriptHandler.getDefinition(nil, @apps[uri])
       repo[uri] = definition.properties[:repository][:apps][uri]
     end
-    scriptgen = Generator.new({:meta => params, :repository => repo})    
+    scriptgen = Generator.new({:meta => params, :repository => repo})
     @code = scriptgen.to_s();
   end
 
@@ -187,7 +191,8 @@ class Library::EdsController < Library::ResourceController
 
   private
   def scan
-    @apps = ScriptHandler.scanRepositories()
+    @apps = ScriptHandler.scanRepositories(current_user.username)
+    add_namespace()
   end
 
   def definition(app)
@@ -195,8 +200,13 @@ class Library::EdsController < Library::ResourceController
     unless @apps.nil?
       @apps = @apps.properties[:repository][:apps]
     end
+    add_namespace()
+  end
+  def user_oedl_repository
+    ScriptHandler.uri_for(current_user.username)
   end
 
-
-
+  def add_namespace
+    @apps[:__namespace__] = user_oedl_repository
+  end
 end

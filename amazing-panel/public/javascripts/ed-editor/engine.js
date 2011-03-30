@@ -476,6 +476,8 @@ Engine.prototype.saveApplication = function(info, properties) {
     name: info.name,
     options: $.extend(info, { properties: {} })
   };
+  uri = this.uri_for(info.uri)
+  info.uri = uri
   for (p in properties) {
     var prop = properties[p];
     app.options.properties[p] = {
@@ -486,14 +488,19 @@ Engine.prototype.saveApplication = function(info, properties) {
       })
     };
   }
-  this.reference.my.applications[info.uri] = app;
+  this.reference.my.applications[uri] = app;
+  return app
 };
 
-// 'XXX' double check delete - don't apply to native hash tables
+Engine.prototype.uri_for = function(raw_uri) {
+  return this.reference.namespace + raw_uri;
+}
+
 Engine.prototype.loadOEDLReference = function(data) {
   var tmp = this.reference;
+  this.reference.namespace = data.__namespace__
+  delete data.__namespace__
   for (uri in data) {
-
     tmp.keys.push(uri);
     tmp.properties[uri] = data[uri].properties;
     tmp.measures[uri] = data[uri].measures;

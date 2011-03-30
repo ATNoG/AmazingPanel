@@ -1,23 +1,23 @@
 class Library::ResourceController < ApplicationController
-  layout 'library'  
+  layout 'library'
   respond_to :html
-  
+
   prepend_before_filter :authenticate
   after_filter :save_previous_path
   append_before_filter :filter_resources, :only => [:index]
   #append_before_filter :has_resource_permission, :only => [:update, :destroy, :edit]
 
   load_and_authorize_resource
-  
+
   def resource_find_all
   end
 
   def resource_find(id)
   end
-  
+
   def resource_new(model = nil)
   end
-  
+
   def resource()
   end
 
@@ -28,37 +28,37 @@ class Library::ResourceController < ApplicationController
     return Pathname.new(APP_CONFIG['inventory']).join('users', resource.user.username, 
                         resource_group(), "#{resource.id}.#{extension}");
   end
- 
+
   #def get_ed_by_user(username, filename)
     #return get_path_for_library_resource(username, 'eds', filename);
   #end
-  
+
   #def get_sysimage_by_user(username, filename)
     #return get_path_for_library_resource(username, 'sysimages', filename);
   #end
-  
-  def order_by(column, order)    
+
+  def order_by(column, order)
     return resource().order(column.to_s + " " + order)
   end
-  
+
   def filter_params(params)
     controller = self.request.parameters[:controller]
     if (/clear(:\d+)?/.match(params[:filter]))
-      if (params[:filter] == "clear")      
+      if (params[:filter] == "clear")
 	if params[:value].nil?
-	  return nil 	
+	  return nil
 	end
 	return params[:value].to_i
       end
     end
     filter = params[:filter];
-    if filter == "field"      
-      ret = Array.new    
+    if filter == "field"
+      ret = Array.new
       ret.push({ :field =>  params[:field], :op => params[:op], :value => params[:value] });
       return ret
     end
   end
-  
+
   def filter(args)
     controller = self.request.parameters[:controller]
 
@@ -68,28 +68,28 @@ class Library::ResourceController < ApplicationController
       add_filters(filters)
       puts "filters:"+session[controller][:filters].inspect
     end
-    
-    if session[controller].nil? or session[controller][:filters].length == 0            
+
+    if session[controller].nil? or session[controller][:filters].length == 0
       session[controller] = Hash.new
       session[controller][:filters] = Hash.new
       @filters = session[controller][:filters]
       return resource_find_all()
     end
-    
+
     session[controller][:filters].each do |k,f|
       begin
 	m = resource().method(f[:op])
 	puts m.inspect
-	if resources.nil? 
+	if resources.nil?
 	  resources = m.call(f[:field], f[:value])
-	else	  
-	  _r = m.call(f[:field], f[:value])	  
-	  tmp = Array.new	  
+	else
+	  _r = m.call(f[:field], f[:value])
+	  tmp = Array.new
 	  resources.each do |r|
 	    if _r.index(r).nil? == false
 	      tmp.push(r)
 	    end
-	  end	 
+	  end
 	  if tmp.length > 0
 	    resources = tmp
 	  else tmp.length == 0
@@ -104,12 +104,12 @@ class Library::ResourceController < ApplicationController
     return resources
   end
 
-  def index 
+  def index
     current_page = params[:page]
     if current_page.nil?
       current_page = '1'
     end
-    
+
     if @resources.nil? == false
       @resources = @resources.paginate(:page => current_page)
     end
@@ -124,19 +124,19 @@ class Library::ResourceController < ApplicationController
       controller = self.request.parameters[:controller]
       session_filters = session[controller][:filters]
       if filters.class.to_s == "Fixnum"
-	    session_filters.delete(filters)    
-      elsif filters.nil?	
+	    session_filters.delete(filters)
+      elsif filters.nil?
     	if session_filters.nil? == false
-    	  session_filters.clear()	  
-    	end	
-      elsif filters.length>0 	
+    	  session_filters.clear()
+    	end
+      elsif filters.length>0
     	if session_filters.nil?
     	  session_filters = Hash.new
-    	end	
+    	end
     	filters.each do |_f|
     	  if session_filters.index(_f).nil?
     	    _id = session_filters.length + 1
-    	    session_filters[_id] = _f	    
+    	    session_filters[_id] = _f
     	  end
     	end
       end
@@ -147,7 +147,7 @@ class Library::ResourceController < ApplicationController
     def filter_resources
       unless params[:filter].nil?
         redirect_to url_for(:action => 'index')
-      end    
+      end
       @resources = filter(params)
     end
 
@@ -167,7 +167,7 @@ class Library::ResourceController < ApplicationController
         file.write(content)
       end
     end
-    
+
     # For now everyone has read permissions
     def read_resource(resource, content, extension="")
       path = get_path(resource, extension)

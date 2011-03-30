@@ -23,7 +23,8 @@ module OMF::Experiments
     end
     
     module ScriptHandler
-      BLACKLIST = [ ".", "..",
+      APPS_REPOSITORY = "#{APP_CONFIG['oedl_repository']}/test/app"
+      BLACKLIST = [
         "itgdec.rb",
         "gennySenderAppDef.rb",
         "gennyReceiverAppDef.rb",
@@ -60,7 +61,7 @@ module OMF::Experiments
         if code.nil?
           r_path = uri_or_path
           if uri_or_path.index(':')
-            r_path = "#{APP_CONFIG['oedl_repository']}/#{uri_or_path.gsub(/[:]/,'/')}.rb"
+            r_path = "#{APP_CONFIG['oedl_repository']}/#{uri_or_path.gsub(/[:]/,'/')}.rb"            
           end
           code = IO::read(r_path)
           eval(code, c.getBinding(), r_path)
@@ -70,17 +71,44 @@ module OMF::Experiments
         return c
       end
 
-      def self.scanRepositories()
-        repo_app_path = Dir.new("#{APP_CONFIG['oedl_repository']}/test/app")
-        files = repo_app_path.entries.delete_if { |x| BLACKLIST.include?(x) }
+      def self.writeDefinition(uri, code)
+        unless code.nil? or uri.nil?          
+          if uri.index(':')
+            r_path = Pathname.new("#{APP_CONFIG['oedl_repository']}/#{uri.gsub(/[:]/,'/')}.rb")
+            FileUtils.mkdir_p(r_path.parent)            
+            File.open(r_path, 'w') do |file|
+              file.write(code)
+            end
+          end
+          return true
+        end
+        return false
+      end
+
+      def self.scanRepositories(username=nil)
+        directories = [APPS_REPOSITORY]
+        directories.push("#{APP_CONFIG['oedl_repository']}/user/#{username}")
         apps = Hash.new()
-        files.each do |f|
-          c = getDefinition("#{repo_app_path.path}/#{f}")
-          apps.merge!(c.properties[:repository][:apps])
+        directories.each do |repo|
+          next unless File.exists?(repo) and File.directory?(repo)
+          repo_app_path = Dir.new(repo)
+          Dir.chdir(repo)
+          entries = Dir.glob("*.rb")
+          entries.delete_if { |x| BLACKLIST.include?(x) } if repo == APPS_REPOSITORY
+          Rails.logger.debug entries.inspect
+          entries.each do |f|
+            c = getDefinition("#{repo_app_path.path}/#{f}")
+            apps.merge!(c.properties[:repository][:apps])
+          end        
         end
         return apps
       end
+  
+      def self.uri_for(username)
+        return "user:#{username}:"
+      end
     end
+    
 
     # Get the appropiate results for the experiment
     def self.results(experiment,args)

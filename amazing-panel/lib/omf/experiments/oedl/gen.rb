@@ -34,10 +34,11 @@ module OMF::Experiments::OEDL
             if k != "properties"
               begin
                 # attributes
+                next if ["uri", "name"].include?(k)
                 if k == "version"
                   v_values = v.split(".")
                   sexp = version(v_values)
-                else
+                else                  
                   sexp = attr_assgn(k, v)
                 end
                 blockApp[block_index] = sexp
@@ -112,7 +113,7 @@ module OMF::Experiments::OEDL
               blockApp = s(:block, nil)                      
               i = 1
               
-              unless application[:options].nil?
+              unless application[:options].blank?
                   definition = @repository[application[:uri]]
                   application[:options][:properties].each do |k,v|
                     app_setProp = property(k, get_property_value(v, k, definition))
@@ -121,7 +122,7 @@ module OMF::Experiments::OEDL
                   end
               end
     
-              unless application[:measures].nil?
+              unless application[:measures].blank?
                 application[:measures][:selected].each do |m|
                   app_setProp = measure(m) 
                   blockApp[i] = app_setProp.deep_clone

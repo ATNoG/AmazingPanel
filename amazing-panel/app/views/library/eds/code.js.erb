@@ -24,7 +24,9 @@ if (CodeMirror != undefined){
   if ($("#<%= hkey %>").length == 0){
     $("#ed").after("<div id=\"<%= hkey %>\" class=\"sidetab\"></div>");
   }
-  $("#<%= hkey %>").html("<%= escape_javascript(text_area_tag( (hkey+"_code").to_sym, app, :cols => 0, :rows => 30)) %>");
+  <% app_id = hkey+"_code" %>
+  <% app_name = "apps["+key+"]" %>
+  $("#<%= hkey %>").html("<%= escape_javascript(text_area_tag( (app_name).to_sym, app, :cols => 0, :rows => 30, :id => app_id)) %>");
 <% end %>
 
 $(".sidetab").hide();
