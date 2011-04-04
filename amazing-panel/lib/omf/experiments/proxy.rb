@@ -92,19 +92,22 @@ module OMF::Experiments::Controller
     end
 
     def prepare
-
       info("Unpreparing experiments")
+
       # Unprepare all experiments
       # - One Experiment at a time -
       unprepare_all_action()
 
       info("Cleaning all temporary files")
+
       # Clean all log files
       clean_action()
 
       info("Updating status")
+
       # Update status to Status::PREPARING
       update_status_action(Status::PREPARING)
+      
       debug("Current Status = #{Status.index(@experiment.status)}")
 
       images = {}
@@ -112,7 +115,6 @@ module OMF::Experiments::Controller
       @experiment.resources_map.each do |rm|
         images[rm.sys_image.id] = (images[rm.sys_image.id] || []).push(rm.node)
       end
-
 
       images.each do |img, nodes|
         info("Loading SysImage ##{img} on #{nodes.collect{|n| n.hrn}.join(",")}")
@@ -126,36 +128,39 @@ module OMF::Experiments::Controller
     end
 
     def start
-      info("Experiment #{@id} EID generated: #{@eid}")
       #   Generate and change the runs of experiment
       #   Necessary to have different runs to generate different ids, 
       #   so it don't inflict any instability on OML Server and AggMgr
       generate_id()
       
+      info("Experiment #{@id} EID generated: #{@eid}")      
       info("Updating status")
+      
       # Update status to Status::STARTING
       update_status_action(Status::STARTING)
+      
       debug("Current Status = #{Status.index(@experiment.status)}")
-
       info("Starting Experiment #{@id} Run = #{@run}")      
+      
       # Issues the start action
       if start_action()
         error("\t Failed!")
         return cond_set_status("FAILED")
       end
 
-      # Fetch results
       info("Fetching results")
-      files = load_results_action()
 
+      # Fetch results
+      files = load_results_action()
       if files.blank?
         error("No files available from experiment")
         return cond_set_status("FAILED")
       end
 
       @experiment.repository.current.save_run(@run, files)
+
       info("Run #{@run} files copied to branch <#{@experiment.current}> @commit=#{"dummy"}")
-      
+
       state = get_current_state(Status::STARTING)
       return cond_set_status(state)
     end
@@ -304,3 +309,5 @@ module OMF::Experiments::Controller
     def debug(msg) @logger.debug("\t"+msg) end
   end
 end
+
+require 'omf/experiments/proxy/local'
