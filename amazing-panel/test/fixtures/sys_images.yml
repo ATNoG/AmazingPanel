@@ -1,34 +1,39 @@
 --- 
 sys_images_001: 
-  name: Sample
-  created_at: 2010-11-10 01:58:21
-  size: "54477"
-  kernel_version_os: 2.6.36
-  updated_at: 2010-11-10 02:08:30
+  name: Amazing Baseline
+  created_at: 2010-12-15 14:05:34
+  size: "91226112"
+  kernel_version_os: Voyage_DebianSid-Mixin
+  updated_at: 2011-01-12 18:19:19
   baseline: "1"
-  id: "5"
+  id: "1"
   user_id: "1"
-  description: asdfghjk
+  description: |-
+    This baseline image is bundled for AMazING project. 
+    
+    It can be extended for creation of other baselines.
+    
+    It is also used in AMazING testsss.
   sys_image_id: 
 sys_images_002: 
-  name: Based on Sample
-  created_at: 2010-11-10 01:59:07
-  size: "30932"
-  kernel_version_os: 2.6.36
-  updated_at: 2010-11-10 01:59:07
-  baseline: "0"
-  id: "6"
-  user_id: "1"
-  description: 1234567gfghnm
-  sys_image_id: "5"
-sys_images_003: 
-  name: Independent
-  created_at: 2010-11-10 02:10:55
-  size: "76879"
-  kernel_version_os: 2.6.35
-  updated_at: 2010-11-10 02:10:55
+  name: Amazing Baseline All
+  created_at: 2011-01-27 14:46:47
+  size: "91226112"
+  kernel_version_os: Voyage_DebianSid-Mixin
+  updated_at: 2011-02-08 18:40:20
   baseline: "1"
-  id: "7"
-  user_id: "1"
-  description: foobar
-  sys_image_id: 
+  id: "3"
+  user_id: "4"
+  description: This baseline image is bundled for AMazING project. It can be extended for creation of other baselines. It is also used in AMazING tests.
+  sys_image_id: "1"
+sys_images_003: 
+  name: NotAmazing
+  created_at: 2011-01-28 18:34:27
+  size: "407996"
+  kernel_version_os: raf-xpto-awesome-v23
+  updated_at: 2011-01-28 18:34:59
+  baseline: "0"
+  id: "4"
+  user_id: "6"
+  description: I have NO IDEA how to create this, so I uploaded a few boxes of Cereals.
+  sys_image_id: "1"

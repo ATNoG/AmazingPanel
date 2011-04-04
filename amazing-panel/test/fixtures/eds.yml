@@ -1,15 +1,36 @@
 --- 
 eds_001: 
   name: Hello World
-  created_at: 2010-10-29 15:59:44
-  updated_at: 2010-11-28 19:03:51
+  created_at: 2010-12-15 11:24:33
+  updated_at: 2011-02-03 18:27:04
   id: "1"
   user_id: "1"
-  description: Hello World
+  description: Just a Sender and a Receiver. Two nodes Experiment
 eds_002: 
-  name: Hello World 2
-  created_at: 2010-10-31 18:12:29
-  updated_at: 2010-10-31 18:12:29
+  name: SHF
+  created_at: 2011-01-26 12:04:48
+  updated_at: 2011-01-26 12:04:48
   id: "2"
+  user_id: "4"
+  description: Super high frenquency testing
+eds_003: 
+  name: ED_iperf1
+  created_at: 2011-01-27 15:01:07
+  updated_at: 2011-01-27 15:01:07
+  id: "3"
+  user_id: "4"
+  description: Testing iperf omf app
+eds_004: 
+  name: EmptyED
+  created_at: 2011-02-07 19:10:12
+  updated_at: 2011-02-07 19:10:12
+  id: "8"
+  user_id: "4"
+  description: No ED at all
+eds_005: 
+  name: Generated
+  created_at: 2011-03-30 18:40:50
+  updated_at: 2011-03-30 18:40:50
+  id: "18"
   user_id: "1"
-  description: Hello World 2
+  description: Generated

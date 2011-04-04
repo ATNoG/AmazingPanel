@@ -63,7 +63,6 @@ module EVC
         } 
       }
       save_branch_info(branch_info)
-      load_branch_info
       return [true, "Branch #{name} created successfully"]
     end
 
@@ -100,7 +99,7 @@ module EVC
       message = "Clone of branch #{name}" if message.nil?
       timestamp = Time.now.to_i
       branch_info = YAML.load_file(branch_info_path())
-      Rails.logger.debug branch_info.inspect
+      #Rails.logger.debug branch_info.inspect
       branch_info[@name]['changelog'][timestamp] = create_changelog_entry(message)
 
       save_branch_info(branch_info)
@@ -111,13 +110,17 @@ module EVC
     end
 
     def runs
+      return load_branch_info()[@name]['runs'].to_i
     end
 
-    def run(run_id=last_run())
-    end
-
-    def last_run()
-    end
+    def next_run(save=false)
+      eid = runs().to_i + 1
+      if save
+        info = load_branch_info
+        info[@name]['runs'] = eid
+      end
+      return eid
+    end    
 
     # Store the results of a given run
     # Note: this method will NOT remove any file passed..

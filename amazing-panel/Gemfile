@@ -55,6 +55,7 @@ gem "query_trace"
 
 # To use debugger
 gem 'ruby-debug'
+gem 'activerecord-nulldb-adapter'
 #gem 'autotest'
 #gem 'autotest-rails-pure'
 #gem 'autotest-notification'

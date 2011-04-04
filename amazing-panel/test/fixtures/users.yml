@@ -1,41 +1,199 @@
 --- 
-users_001: 
-  name: "Jo\xC3\xA3o Martins"
-  encrypted_password: $2a$10$mAtvZRgXFOLiZtuX15Zmbu5D5PhLL579.gGinx97qHwcJFdRvhkmu
-  created_at: 2010-10-26 23:50:43
-  updated_at: 2010-12-02 13:39:17
-  last_sign_in_ip: 127.0.0.1
-  username: jmartins
-  admin: "1"
-  last_sign_in_at: 2010-12-02 01:25:06
-  intention: Godlike!
-  sign_in_count: "90"
-  id: "1"
-  password_salt: $2a$10$mAtvZRgXFOLiZtuX15Zmbu
-  current_sign_in_ip: 127.0.0.1
+users_004: 
+  name: "Jo\xC3\xA3o Paulo Barraca"
+  encrypted_password: $2a$10$4KhW5dq3exVqD6axyLxei.1yWciq/hCJtdRzaNlBhY5R4Xjlnw3hC
+  created_at: 2011-01-27 17:37:43
+  institution: IT
+  updated_at: 2011-03-16 16:49:42
+  last_sign_in_ip: 193.136.92.181
+  username: jpbarraca
+  admin: "0"
+  last_sign_in_at: 2011-03-16 12:26:08
+  intention: ""
+  sign_in_count: "7"
+  id: "5"
+  password_salt: $2a$10$4KhW5dq3exVqD6axyLxei.
+  roles_mask: "2"
+  current_sign_in_ip: 193.136.92.123
+  remember_token: omqgrzdAapp241P9HfDk
+  reset_password_token: 
+  activated: "1"
+  current_sign_in_at: 2011-03-16 16:49:42
+  remember_created_at: 2011-03-16 16:49:42
+  email: jpbarraca@av.it.pt
+users_005: 
+  name: Rui Ferreira
+  encrypted_password: $2a$10$lX7vJBQkv09aXDu7EnQ46Oy97ry.vEGYT7m1/B/vTqfKqzX37ePUG
+  created_at: 2011-01-28 11:10:12
+  institution: IT
+  updated_at: 2011-02-03 20:23:32
+  last_sign_in_ip: 193.136.92.86
+  username: raf
+  admin: "0"
+  last_sign_in_at: 2011-01-28 18:20:55
+  intention: Testing
+  sign_in_count: "12"
+  id: "6"
+  password_salt: $2a$10$lX7vJBQkv09aXDu7EnQ46O
+  roles_mask: "2"
+  current_sign_in_ip: 193.136.92.86
   remember_token: 
   reset_password_token: 
   activated: "1"
-  current_sign_in_at: 2010-12-02 13:39:17
+  current_sign_in_at: 2011-01-28 18:36:00
   remember_created_at: 
-  email: joaolemos@ua.pt
-users_002: 
-  name: Patrick Marques
-  encrypted_password: $2a$10$YMShNB7dj0jNoAHK/.uIa.Y3Fn/XqdScaJkcJ0f6bQiRIkC.uuVQa
-  created_at: 2010-10-26 23:52:14
-  updated_at: 2010-11-10 02:01:14
-  last_sign_in_ip: 127.0.0.1
-  username: pmarques
+  email: rferreira@av.it.pt
+users_006: 
+  name: Diogo
+  encrypted_password: $2a$10$ZNG9zcVPeWt2zLeODrcs8.vQFTJdcg/xAduDErBqn1VBhxBWG0JiW
+  created_at: 2011-02-10 11:59:02
+  institution: Univ. Aveiro
+  updated_at: 2011-02-11 14:37:55
+  last_sign_in_ip: 
+  username: dgomes
   admin: "0"
-  last_sign_in_at: 2010-11-07 00:43:16
-  intention: Just a Experimenter.
-  sign_in_count: "4"
-  id: "2"
-  password_salt: $2a$10$YMShNB7dj0jNoAHK/.uIa.
-  current_sign_in_ip: 127.0.0.1
+  last_sign_in_at: 
+  intention: Snooping around :)
+  sign_in_count: "0"
+  id: "7"
+  password_salt: $2a$10$ZNG9zcVPeWt2zLeODrcs8.
+  roles_mask: 
+  current_sign_in_ip: 
+  remember_token: 
+  reset_password_token: 
+  activated: "1"
+  current_sign_in_at: 
+  remember_created_at: 
+  email: dgomes@av.it.pt
+users_007: 
+  name: Test
+  encrypted_password: $2a$10$O4SwjAUb9NFjdwD3FMlIDO/TTjDBN670cwnW6HTAqkhkI0HSfeFYG
+  created_at: 2011-03-11 20:18:15
+  institution: SAM
+  updated_at: 2011-03-11 20:52:24
+  last_sign_in_ip: 
+  username: juandelortega
+  admin: "0"
+  last_sign_in_at: 
+  intention: SAM
+  sign_in_count: "0"
+  id: "12"
+  password_salt: $2a$10$O4SwjAUb9NFjdwD3FMlIDO
+  roles_mask: 
+  current_sign_in_ip: 
   remember_token: 
   reset_password_token: 
   activated: "0"
-  current_sign_in_at: 2010-11-07 17:11:46
+  current_sign_in_at: 
   remember_created_at: 
-  email: patrickfmarques@ua.pt
+  email: jmartins@av.it.pt
+users_008: 
+  name: "Andr\xC3\xA9 Rainho"
+  encrypted_password: $2a$10$b8oovSCt/gu52Obb/qNGq.OFN40hYw92H.vvPYk/adqDHNoaqPK8W
+  created_at: 2011-03-15 14:06:08
+  institution: "Instituto de Telecomunica\xC3\xA7\xC3\xB5es"
+  updated_at: 2011-03-16 03:27:41
+  last_sign_in_ip: 
+  username: arainho
+  admin: "0"
+  last_sign_in_at: 
+  intention: Testbed Maintainer
+  sign_in_count: "0"
+  id: "13"
+  password_salt: $2a$10$b8oovSCt/gu52Obb/qNGq.
+  roles_mask: "9"
+  current_sign_in_ip: 
+  remember_token: 
+  reset_password_token: 
+  activated: "1"
+  current_sign_in_at: 
+  remember_created_at: 
+  email: arainho@av.it.pt
+users_009: 
+  name: Foo
+  encrypted_password: $2a$10$7/R9fbBOaxrB07KSEit7tuhc1k35/hyv6kbVYnlTOZLLcPV7gQg1W
+  created_at: 2011-03-29 17:58:42
+  institution: ""
+  updated_at: 2011-03-29 17:58:42
+  last_sign_in_ip: 
+  username: foobar
+  admin: "0"
+  last_sign_in_at: 
+  intention: ""
+  sign_in_count: "0"
+  id: "40"
+  password_salt: $2a$10$7/R9fbBOaxrB07KSEit7tu
+  roles_mask: 
+  current_sign_in_ip: 
+  remember_token: 
+  reset_password_token: 
+  activated: "0"
+  current_sign_in_at: 
+  remember_created_at: 
+  email: carlos.goncalves@ua.pt
+users_001: 
+  name: "Jo\xC3\xA3o Martins"
+  encrypted_password: $2a$10$r1qZVMCNUQECPJV9iSZCVuAoaEabKcq94D/lEmGokbEwUEi79wDOe
+  created_at: 2010-12-15 10:47:10
+  institution: Universidade de Aveiro
+  updated_at: 2011-03-31 20:07:00
+  last_sign_in_ip: 193.136.92.123
+  username: jmartins
+  admin: "1"
+  last_sign_in_at: 2011-03-31 14:59:24
+  intention: Testing purporses on Amazing Panel.
+  sign_in_count: "196"
+  id: "1"
+  password_salt: $2a$10$r1qZVMCNUQECPJV9iSZCVu
+  roles_mask: "3"
+  current_sign_in_ip: 193.136.92.123
+  remember_token: 
+  reset_password_token: 
+  activated: "1"
+  current_sign_in_at: 2011-03-31 20:07:00
+  remember_created_at: 
+  email: joaolemos@ua.pt
+users_002: 
+  name: "Gon\xC3\xA7alo Morais"
+  encrypted_password: $2a$10$C1zNOu5gpqdUSHYRw4Jpteky3YfWkOrCG1y5QbrcZlIIWJoXFR4OS
+  created_at: 2010-12-20 20:07:17
+  institution: Universidade de Aveiro
+  updated_at: 2011-03-28 15:52:02
+  last_sign_in_ip: 193.136.93.164
+  username: testftp
+  admin: "0"
+  last_sign_in_at: 2011-03-28 15:51:44
+  intention: Test
+  sign_in_count: "20"
+  id: "3"
+  password_salt: $2a$10$C1zNOu5gpqdUSHYRw4Jpte
+  roles_mask: "2"
+  current_sign_in_ip: 193.136.93.164
+  remember_token: 
+  reset_password_token: BhrYwEk6P2xzBL17PfIp
+  activated: "1"
+  current_sign_in_at: 2011-03-28 15:52:02
+  remember_created_at: 
+  email: madjackoo@gmail.com
+users_003: 
+  name: "Carlos Gon\xC3\xA7alves"
+  encrypted_password: $2a$10$CSUKrW.9HyxlcNyQhKKqeuxsBzpccxdWcukiQqQwimXMfUjRrFotu
+  created_at: 2011-01-24 17:16:01
+  institution: IT
+  updated_at: 2011-03-29 17:24:02
+  last_sign_in_ip: 193.136.93.210
+  username: cgoncalves
+  admin: "1"
+  last_sign_in_at: 2011-03-29 14:33:50
+  intention: Make a bomb and explode it somewhere, somehow, someday just for fun!
+  sign_in_count: "47"
+  id: "4"
+  password_salt: $2a$10$CSUKrW.9HyxlcNyQhKKqeu
+  roles_mask: "3"
+  current_sign_in_ip: 193.136.93.210
+  remember_token: 
+  reset_password_token: 
+  activated: "1"
+  current_sign_in_at: 2011-03-29 17:24:02
+  remember_created_at: 
+  email: cgoncalves@av.it.pt

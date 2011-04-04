@@ -108,7 +108,6 @@ class Experiment < ActiveRecord::Base
   """
   Custom Callbacks 
   """
-
   def after_clone_branch()
     set_resources_map()
   end
@@ -138,7 +137,7 @@ class Experiment < ActiveRecord::Base
   """
   def load_all
     unless self.id.blank?
-      self.proxy = OMF::Experiments::Controller::Proxy.new(id)
+      self.proxy = ProxyClass.new(:experiment => self)
       set_user_repository(self.user) unless self.user.nil? or self.id.nil?
     end
   end
@@ -403,6 +402,10 @@ class Experiment < ActiveRecord::Base
     return self.repository.branches.keys
   end
 
+  """
+    Clones the repository <name> from a parent branch (default: master)
+    Parameters: None.
+  """
   def clone(name, parent="master")
     unless check_repository then return false end
     ret = self.repository.clone_branch(name, parent)
@@ -424,11 +427,22 @@ class Experiment < ActiveRecord::Base
   """
   Fetch runs from the current branch
   """
-  def runs    
-    return self.info['runs']
+  def runs
+    pp self.repository
+    return self.repository.current.runs
+  end
+  
+  """
+  Generate and save runs in the current branch
+  """
+  def next_run(save=false)
+    return self.repository.current.next_run(save)
   end
 
   def failures
+  """
+  Fetch failures from the current branch
+  """
     return self.info['failures']
   end
 

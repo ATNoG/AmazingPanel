@@ -26,6 +26,7 @@ development:
 
 test:
   adapter: mysql
+#  adapter: nulldb
   enconding: utf8
   database: inventory_test
   pool: 5

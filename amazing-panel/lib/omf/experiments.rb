@@ -54,4 +54,5 @@ module OMF
 end
 
 require 'omf/experiments/results'
-require 'omf/experiments/ec'
+#require 'omf/experiments/ec'
+require 'omf/experiments/proxy'
