@@ -101,7 +101,7 @@ class Experiment < ActiveRecord::Base
   belongs_to :user
   belongs_to :project  
 
-  validates_with ExperimentEdValidator, :fields => [ :nodes ]
+  #validates_with ExperimentEdValidator, :fields => [ :nodes ]
   after_initialize :load_all
   after_create :create_repository
  

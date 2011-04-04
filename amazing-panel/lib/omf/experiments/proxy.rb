@@ -14,8 +14,8 @@ module OMF::Experiments::Controller
       @hash[key]
     end
 
-    def Status.key(value)
-      @hash.key(value)
+    def Status.index(value)
+      @hash.index(value)
     end
 
     def Status.each
@@ -25,7 +25,7 @@ module OMF::Experiments::Controller
     Status.add_item :UNINITIALIZED, 0
     Status.add_item :PREPARING, 1
     Status.add_item :PREPARED, 2
-    Status.add_item :STARTED, 3
+    Status.add_item :STARTING, 3
     Status.add_item :FINISHED, 4
     Status.add_item :FINISHED_AND_PREPARED, 5
     Status.add_item :PREPARATION_FAILED, -1    
@@ -88,19 +88,24 @@ module OMF::Experiments::Controller
       # Blocking means with exceptions
       @flags[:blocking] = args[:blocking] unless args[:blocking].blank?
 
-      debug("Proxy Loaded on Experiment ##{@experiment.id}")
+      debug("Proxy Loaded on Experiment ##{@id}")
     end
 
     def prepare
+
+      info("Unpreparing experiments")
       # Unprepare all experiments
       # - One Experiment at a time -
       unprepare_all_action()
 
+      info("Cleaning all temporary files")
       # Clean all log files
       clean_action()
 
+      info("Updating status")
       # Update status to Status::PREPARING
       update_status_action(Status::PREPARING)
+      debug("Current Status = #{Status.index(@experiment.status)}")
 
       images = {}
       # Group Resource Maps by system image
@@ -108,10 +113,12 @@ module OMF::Experiments::Controller
         images[rm.sys_image.id] = (images[rm.sys_image.id] || []).push(rm.node)
       end
 
-      # Load each resource
+
       images.each do |img, nodes|
+        info("Loading SysImage ##{img} on #{nodes.collect{|n| n.hrn}.join(",")}")
+        
+        # Load each sysimage to resource(s)
         ret = load_resource_action(SysImage.find(img), nodes)
-        info("Loading SysImage ##{img} on #{comma_nodes}... #{ret}")
       end
 
       state = get_current_state(Status::PREPARING)
@@ -119,20 +126,36 @@ module OMF::Experiments::Controller
     end
 
     def start
+      info("Experiment #{@id} EID generated: #{@eid}")
       #   Generate and change the runs of experiment
       #   Necessary to have different runs to generate different ids, 
       #   so it don't inflict any instability on OML Server and AggMgr
       generate_id()
       
+      info("Updating status")
       # Update status to Status::STARTING
       update_status_action(Status::STARTING)
+      debug("Current Status = #{Status.index(@experiment.status)}")
 
+      info("Starting Experiment #{@id} Run = #{@run}")      
       # Issues the start action
-      start_action()
+      if start_action()
+        error("\t Failed!")
+        return cond_set_status("FAILED")
+      end
 
       # Fetch results
-      load_results_action()
+      info("Fetching results")
+      files = load_results_action()
 
+      if files.blank?
+        error("No files available from experiment")
+        return cond_set_status("FAILED")
+      end
+
+      @experiment.repository.current.save_run(@run, files)
+      info("Run #{@run} files copied to branch <#{@experiment.current}> @commit=#{"dummy"}")
+      
       state = get_current_state(Status::STARTING)
       return cond_set_status(state)
     end
@@ -151,13 +174,14 @@ module OMF::Experiments::Controller
 
     def run
       ret = prepare() unless @experiment.prepared?
-      ret = start() unless @experiment.starting? and ret > 0
-      return ret
+      ret = start() unless @experiment.starting? or ret < 0
+      return ret > 0
     end
 
     def batch_run(n=1)
       for i in 0..n
-        run()
+        err = run()
+        break unless err
       end
     end
 
@@ -165,7 +189,7 @@ module OMF::Experiments::Controller
     def generate_id()      
       # Experiment Runs
       @run = @experiment.repository.current.next_run(true)
-      @eid = "#{@experiment.id} + #{@run}"
+      @eid = "#{@id}_#{@run}"
     end
 
     """
@@ -173,7 +197,7 @@ module OMF::Experiments::Controller
       no return value
     """
     def update_status_action(v)
-      Experiment.find(@id).update_attributes!(:status => v)
+      @experiment.update_attributes!(:status => v)
     end
 
     def unprepare_all_action
@@ -195,8 +219,12 @@ module OMF::Experiments::Controller
       raise NotImplementedError.new("clean_action() not implemented")
     end
 
-    def load_resource_action
+    def load_resource_action(img, nodes)
       raise NotImplementedError.new("load_resource_action() not implemented")
+    end
+    
+    def start_action()
+      raise NotImplementedError.new("start_action() not implemented")
     end
 
     def load_results_action
@@ -251,6 +279,8 @@ module OMF::Experiments::Controller
         value = Status::PREPARING
       when "PREPARED"
         value = Status::PREPARED
+      when "DONE"
+        value = Status::FINISHED_AND_PREPARED
       else
         if preparing
           value = Status::PREPARATION_FAILED
@@ -258,7 +288,7 @@ module OMF::Experiments::Controller
           value = Status::EXPERIMENT_FAILED
         end
       end
-      status(value)
+      update_status_action(value)
       
       # raise if it is in blocking mode
       if (value < 0) and !@flags[:blocking].blank?

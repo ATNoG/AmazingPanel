@@ -1,6 +1,6 @@
 module EVC
   class Branch
-    attr_accessor :id, :name, :user, :info
+    attr_accessor :id, :name, :user, :commit, :info
 
     # Initialize a new Branch class instance
     # Parameters: id(String), name (String), user (String)
@@ -8,6 +8,7 @@ module EVC
       @id = id
       @name = name
       @user = user
+      @commit = latest_commit()
     end
 
     def branches_path()
@@ -22,6 +23,14 @@ module EVC
     def branch_info_path(name=nil)
       name = @name if name.nil?
       return "#{branch_path(name)}/.info"
+    end
+
+    def branch_resource_map_path()      
+      return "#{branch_path()}/objects/#{@commit}/resource_map.yml"
+    end
+    
+    def branch_code_path()      
+      return "#{branch_path()}/objects/#{@commit}/code.rb"
     end
 
     def create_changelog_entry(message)
@@ -118,6 +127,7 @@ module EVC
       if save
         info = load_branch_info
         info[@name]['runs'] = eid
+        save_branch_info(info)
       end
       return eid
     end    

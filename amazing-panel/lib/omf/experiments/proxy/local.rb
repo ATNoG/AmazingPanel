@@ -5,7 +5,8 @@ module OMF::Experiments::Controller
       comma_nodes = ns.join(",") 
       cmd = "omf load -i users/#{img.sys_image.user.username}/#{img.sys_image_id}.ndz -t #{comma_nodes} -e #{@id}"
       info("OMF-ExpCtl: #{cmd}")
-      ret = system(cmd)
+      #ret = system(cmd)
+      return ret
     end
 
     def load_results_action()            
@@ -17,10 +18,15 @@ module OMF::Experiments::Controller
       tmp_basename = "#{APP_CONFIG['omlserver_tmp']}#{@eid.to_s}"      
       
       debug("Requesting AM - GET #{path}")
-      response = http.request(request)
+      #response = http.request(request)
 
       files = [".sq3", "-state.xml", "-prepare.xml", ".log"]      
       files.map!{|f| tmp_basename+f }
+
+      if File.size?(files[0]).nil?
+        files.delete_at(0)
+      end
+
       @experiment.repository.current.save_run(@run, files)
       info("Run ##{@run} files copied")
       return files
@@ -29,10 +35,17 @@ module OMF::Experiments::Controller
     def clean_action()
       prepare_log_file = "#{APP_CONFIG['omlserver_tmp']}/#{@id}-prepare.xml"
       if File.exists?(prepare_log_file)
-        FileUtils.rm(prepare_log_file)
+        #FileUtils.rm(prepare_log_file)
         debug("Clean: \"#{@id}-prepare.xml\" removed")
       end
     end
+
+    def start_action()
+      cmd = "omf exec -e #{@eid} #{@experiment.repository.current.branch_code_path}"
+      debug("OMF-ExpCtl: #{cmd}")
+      #return system(cmd)
+      return true
+    end    
 
     def prepare_state
       status = prepare_status_data
