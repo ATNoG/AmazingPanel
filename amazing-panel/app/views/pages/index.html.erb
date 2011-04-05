@@ -33,9 +33,14 @@
   <div id="news" class="box">
     <h1 id="news-title" class="small-headline"><span>News</span></h1>
     <% @news.each do |n|%>
-      <p class="news-item-title">
-      <%= n[:title] %>
-      </p>
+      <div class="news-item">
+        <p class="news-item-date">
+          <%= n[:created_on] %>
+        </p>    
+        <p class="news-item-title">
+          <%= n[:title] %>
+        </p>    
+      </div>
     <% end %>
   </div>  
 </div>

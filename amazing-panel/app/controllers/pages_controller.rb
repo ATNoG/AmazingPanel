@@ -6,14 +6,14 @@ class PagesController < ApplicationController
   def index 
     @news = Array.new()
     NEWS_SOURCES.each do |source|
-      url = URI.parse(source)
-      p = Net::HTTP::Get.new(url.path) 
-      http = Net::HTTP.new(url.host, url.port)
-      body = http.request(p).body
-      content = ActiveSupport::JSON.decode(body)
+      content = fetch_news(source)
       unless content.blank?
         ns = content.take(5).uniq().collect! {|n| 
-          { :title => n['title'], :created_on => n['created_on'] }
+          { 
+            :title => n['title'], 
+            :created_on => n['created_on'],
+            :id => n['id']
+          }
         }
         @news = @news.concat(ns)
       end
@@ -28,5 +28,15 @@ class PagesController < ApplicationController
   
   def custom
     render 'custom.css', :content_type => 'text/css'
+  end
+
+  private
+  def fetch_news(source)
+    url = URI.parse(source)
+    p = Net::HTTP::Get.new(url.path) 
+    http = Net::HTTP.new(url.host, url.port)
+    body = http.request(p).body
+    content = ActiveSupport::JSON.decode(body)
+    return content
   end
 end

@@ -12,8 +12,8 @@
 	position:relative;
     width:640px;
     height:240px;
+    margin: 0 auto;
     margin-top: 10px;
-    margin-left: 150px;
     margin-bottom: 20px;
 	background: url(/images/loading-nivo.gif) no-repeat 50% 50%;
 
