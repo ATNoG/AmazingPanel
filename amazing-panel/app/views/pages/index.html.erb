@@ -1,7 +1,53 @@
-<h1>AMazING Testbed</h1>
-<p>The AMazING (Advanced Mobile wIreless Network playGround) consists of a free 
-access wireless testbed, composed by 24 fixed nodes located at IT Aveiro rooftop. 
-At the core of the testbed, there are the support servers and redundant storage. 
-Servers provide processing power to schedule, manage and analyze results. In the 
-near future we expect to extend the testbed with a high speed mobile node (>60km/h) 
-and integrate experiments with NS3.</p>
+<% content_for :head do %>
+  <%= javascript_include_tag 'jquery.nivo.slider.pack' %>
+  <%= stylesheet_link_tag 'jquery.nivo.slider' %>
+  <%= stylesheet_link_tag 'custom.slider' %>
+<% end %>
+
+<% content_for :main_content do %>
+<div id="slider">
+  <%= image_tag('testbeds/1/image-1.jpg') %>
+  <%= image_tag('testbeds/1/image-2.jpg') %>
+  <%= image_tag('testbeds/1/image-3.jpg') %>
+</div>
+<div id="info-boxes">
+  <div id="testbed-info" class="box">
+    <h1 id="testbed-title" class="small-headline">The <span>AMazING</span> testbed</h1>
+    <p id="testbed-description">
+    The AMazING (Advanced Mobile wIreless Network playGround) consists of a free 
+  access wireless testbed, composed by 24 fixed nodes located at IT Aveiro rooftop. 
+  At the core of the testbed, there are the support servers and redundant storage. 
+  Servers provide processing power to schedule, manage and analyze results. In the 
+  near future we expect to extend the testbed with a high speed mobile node (>60km/h) 
+  and integrate experiments with NS3.
+    </p>
+    <br/>
+    <h1 id="platform-title" class="small-headline">About <span>AMazING Panel</span></h1>
+    <p id="platform-description">
+    The AMazING Panel consists on a Testbed Management System built on top of an OMF-enabled testbed. 
+    The platform aims to provide easy-of-use for experimenters through a clean web interface, 
+    facilitating the creation and reproducibility of their experiments, without 
+    having much knowledge on the tools underneath.
+    </p>
+  </div>
+  <div id="news" class="box">
+    <h1 id="news-title" class="small-headline"><span>News</span></h1>
+    <% @news.each do |n|%>
+      <p class="news-item-title">
+      <%= n[:title] %>
+      </p>
+    <% end %>
+  </div>  
+</div>
+<div class="to-footer-gradient">
+</div>
+<% end %>
+
+<% content_for :footer do %>
+<% end %>
+
+<% content_for :bottom_scripts do %>
+<script>
+$('#slider').nivoSlider();
+</script>
+<% end %>
