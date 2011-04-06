@@ -122,7 +122,8 @@ module OMF::Experiments::Controller
         # Load each sysimage to resource(s)
         ret = load_resource_action(SysImage.find(img), nodes)
       end
-
+      
+      info("Checking preparation state...")
       state = get_current_state(Status::PREPARING)
       return cond_set_status(state) 
     end
@@ -134,7 +135,6 @@ module OMF::Experiments::Controller
       generate_id()
       
       info("Experiment #{@id} EID generated: #{@eid}")      
-      info("Updating status")
       
       # Update status to Status::STARTING
       update_status_action(Status::STARTING)
@@ -143,8 +143,7 @@ module OMF::Experiments::Controller
       info("Starting Experiment #{@id} Run = #{@run}")      
       
       # Issues the start action
-      if start_action()
-        error("\t Failed!")
+      if !start_action()
         return cond_set_status("FAILED")
       end
 
@@ -158,9 +157,9 @@ module OMF::Experiments::Controller
       end
 
       @experiment.repository.current.save_run(@run, files)
-
       info("Run #{@run} files copied to branch <#{@experiment.current}> @commit=#{"dummy"}")
 
+      info("Checking experiment state...")
       state = get_current_state(Status::STARTING)
       return cond_set_status(state)
     end
@@ -257,9 +256,9 @@ module OMF::Experiments::Controller
     def get_current_state(status)
       case status
       when Status::PREPARING
-        Hash.from_xml(prepare_state)
+        prepare_state
       when Status::STARTING
-        Hash.from_xml(starting_state)
+        start_state
       end
     end
 
@@ -297,7 +296,10 @@ module OMF::Experiments::Controller
       
       # raise if it is in blocking mode
       if (value < 0) and !@flags[:blocking].blank?
+        error("Experiment failed!")
         raise ControllerProxyError.new(value) 
+      else
+        info("Experiment success.")
       end
       
       return value

@@ -137,8 +137,8 @@ class Experiment < ActiveRecord::Base
   """
   def load_all
     unless self.id.blank?
+      set_user_repository(self.user) unless self.user.nil?
       self.proxy = ProxyClass.new(:experiment => self)
-      set_user_repository(self.user) unless self.user.nil? or self.id.nil?
     end
   end
 
@@ -343,6 +343,7 @@ class Experiment < ActiveRecord::Base
   """
   def set_resources_map(rms=nil)    
     revision = @attributes.has_key?('revision') ? @attributes['revision'] : nil
+    repository.current.change_branch_commit(revision)
     self.resources_map.clear() unless self.resources_map.nil?
     valid = false
     if rms.nil?

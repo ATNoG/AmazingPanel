@@ -8,7 +8,7 @@ module EVC
       @id = id
       @name = name
       @user = user
-      @commit = latest_commit()
+      @commit = change_branch_commit()
     end
 
     def branches_path()
@@ -118,6 +118,13 @@ module EVC
                      "#{branch_path()}/objects/#{timestamp}")
     end
 
+    def change_branch_commit(timestamp = latest_commit())
+      timestamp = latest_commit() if timestamp.blank?
+      branch_info = YAML.load_file(branch_info_path())
+      changelog_entry = branch_info[@name]['changelog'][timestamp]
+      @commit = timestamp unless changelog_entry.nil?
+    end
+
     def runs
       return load_branch_info()[@name]['runs'].to_i
     end
@@ -160,13 +167,13 @@ module EVC
       return commits
     end
 
-    def resource_map(timestamp=nil)
+    def resource_map(timestamp=latest_commit())
       timestamp = latest_commit() if timestamp.blank?
       rs = YAML.load_file("#{branch_path()}/objects/#{timestamp}/resource_map.yml")
       return rs
     end
     
-    def ed(timestamp=nil)
+    def ed(timestamp=latest_commit())
       timestamp = latest_commit() if timestamp.blank?
       e = File.open("#{branch_path()}/objects/#{timestamp}/code.rb")
       return e.read()

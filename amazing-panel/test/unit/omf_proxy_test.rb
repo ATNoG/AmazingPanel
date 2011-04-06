@@ -36,14 +36,13 @@ class OMFProxyTest < ActiveSupport::TestCase
     c = Experiment.find(38)
     p = c.proxy 
     p.prepare()
-    assert c.finished?
+    assert c.prepared?
   end
 
   test "start_local" do
     ProxyClass = LocalProxy
     c = Experiment.find(38)
-    p = c.proxy
-    
+    p = c.proxy    
     p.start()
     assert c.finished?
   end
