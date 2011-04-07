@@ -67,14 +67,20 @@ module OMF::Experiments::Controller
   """
   class AbstractProxy
     include ProxySupport
-    attr_accessor :experiment
+    attr_reader :experiment, :author
+    attr_writer :author
 
     def initialize(args={})
       raise ArgumentError.new("No experiment provided") if args[:experiment].nil?
       raise ArgumentError.new("Wrong type: ") unless args[:experiment].class == Experiment
 
-      @experiment = args[:experiment]
-      
+      # Experiment Model
+      @experiment = args[:experiment]      
+
+      # Experimenter running the ed. Default: Creator of the Ed
+      @author = @experiment.user.username
+
+      # Default Flags
       @flags = {
         :blocking => false
       }
@@ -87,7 +93,7 @@ module OMF::Experiments::Controller
 
       # Blocking means with exceptions
       @flags[:blocking] = args[:blocking] unless args[:blocking].blank?
-
+      
       debug("Proxy Loaded on Experiment ##{@id}")
     end
 
@@ -132,10 +138,12 @@ module OMF::Experiments::Controller
       #   Generate and change the runs of experiment
       #   Necessary to have different runs to generate different ids, 
       #   so it don't inflict any instability on OML Server and AggMgr
-      generate_id()
-      
+      generate_id()          
       info("Experiment #{@id} EID generated: #{@eid}")      
       
+      @experiment.repository.current.create_author_file(@author, @experiment.repository.current.commit, @eid)
+      info("Created author_file for Experiment #{@id}")
+
       # Update status to Status::STARTING
       update_status_action(Status::STARTING)
       
@@ -159,6 +167,8 @@ module OMF::Experiments::Controller
       @experiment.repository.current.save_run(@run, files)
       info("Run #{@run} files copied to branch <#{@experiment.current}> @commit=#{"dummy"}")
 
+      @experiment.repository.current.remove_author_file(@author)
+
       info("Checking experiment state...")
       state = get_current_state(Status::STARTING)
       return cond_set_status(state)
@@ -167,26 +177,33 @@ module OMF::Experiments::Controller
     # status method to get all the current status of the 
     # undergoing experiment
     def status
-      if @experiment.preparing? or @experiment.prepared?
+      if @experiment.preparing? 
         status_prepare_action
-      elsif @experiment.starting?
+      elsif @experiment.started?
         status_experiment_action
-        #else        
-        #self.send(Status.key(@experiment.status).to_s)
       end
     end
 
-    def run
+    def run_once
+      puts "RUN_ONCE"
+      ret = @experiment.status
       ret = prepare() unless @experiment.prepared?
-      ret = start() unless @experiment.starting? or ret < 0
-      return ret > 0
+      ret = start() unless @experiment.started? or ret < 0
+      return (@experiment.prepared? and @experiment.finished?)
     end
 
     def batch_run(n=1)
-      for i in 0..n
-        err = run()
+      puts "BATCH_RUN"
+      info("Batch with #{n} runs")
+      for i in 1..n
+        debug("Run ##{i}")
+        err = run_once()
         break unless err
       end
+    end
+    
+    def update_status_action(v)
+      @experiment.update_attributes!(:status => v)
     end
 
     protected
@@ -194,29 +211,28 @@ module OMF::Experiments::Controller
       # Experiment Runs
       @run = @experiment.repository.current.next_run(true)
       @eid = "#{@id}_#{@run}"
-    end
+    end    
 
     """
       _action() are the main actions of the proxy, 
       no return value
     """
-    def update_status_action(v)
-      @experiment.update_attributes!(:status => v)
-    end
-
     def unprepare_all_action
       Experiment.prepared.update_all(:status => 4, :status => 5) 
       Experiment.prepared.update_all(:status => 0, :status => 2) 
     end
     
     def status_prepare_action
-      nodes = check_nodes_status(prepare_status_data())
-      state = check_overal_status()
+      data = prepare_status_data()
+      nodes = check_nodes_status(data)
+      state = check_overall_status(data)
       return { :nodes => nodes, :state => state }
     end
 
-    def status_experiment_action
-      return @experiment.finished?
+    def status_experiment_action()
+      author_data = @experiment.repository.current.load_author_file(@author)
+      @eid = author_data['experiment']['eid']
+      return check_experiment_status(start_state())
     end
 
     def clean_action
@@ -273,6 +289,10 @@ module OMF::Experiments::Controller
     # This helper will help to check overall preparation status
     def check_overall_status(status_data)      
       raise NotImplementedError.new("prepare_state() not implemented")
+    end
+    
+    def check_experiment_status(status_data)      
+      raise NotImplementedError.new("check_experiment_status() not implemented")
     end
 
     # Conditional Set status, when a prepare, start finished its main action

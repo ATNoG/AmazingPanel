@@ -33,8 +33,33 @@ module EVC
       return "#{branch_path()}/objects/#{@commit}/code.rb"
     end
 
+    def author_file_path(author)
+      return "#{branch_path()}/.#{author}"
+    end
+
     def create_changelog_entry(message)
       return {"author" => @user, "message" => message}
+    end
+    
+    def create_author_file(author, commit, eid)
+      File.open(author_file_path(author), 'w') {|f|
+        data = { 
+          "experiment" => {          
+            "author" => author, 
+            "commit" => commit,
+            "eid" => eid
+          }
+        } 
+        f.write(data.to_yaml)
+      }
+    end
+    
+    def load_author_file(author)
+      return YAML.load_file(author_file_path(author))
+    end
+
+    def remove_author_file(author)
+      FileUtils.rm(author_file_path(author))
     end
 
     def load_branch_info

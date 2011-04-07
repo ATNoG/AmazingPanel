@@ -59,14 +59,14 @@ module OMF::Experiments::Controller
       return status
     end
     
-    def prepare_status_data
+    def prepare_status_data()
       logpath = "#{APP_CONFIG['omlserver_tmp']}#{@id}-prepare.xml"
       debug("Reading #{logpath}")
       return Hash.from_xml(IO::read(logpath))
     end
 
-    def start_status_data
-      logpath = "#{APP_CONFIG['omlserver_tmp']}#{@id}-state.xml"
+    def start_status_data()
+      logpath = "#{APP_CONFIG['omlserver_tmp']}#{@eid}-state.xml"
       debug("Reading #{logpath}")
       return Hash.from_xml(IO::read(logpath))
     end
@@ -76,10 +76,10 @@ module OMF::Experiments::Controller
       nodesProgress = status_data["testbed"]["experiment"]["progress"]
       unless nodesProgress.nil?
         nodesProgress.each do |k,v|
-          #system "echo #{k} > /tmp/foobar.log"
           node = Node.find_by_hrn(k)
           next if node.nil?
           id = node.id
+          msg = ""
           case v["status"]
           when "LOADING"
             msg = "Loading image..."
@@ -94,7 +94,7 @@ module OMF::Experiments::Controller
           else
             msg = "Ops, unknown state!"
           end
-          nodes[id.to_s] ={ :progress => v["percentage"], :state => v["status"], :msg => msg }
+          nodes[id.to_s] = { :progress => v["percentage"], :state => v["status"], :msg => msg }
         end
       end
       return nodes
@@ -103,6 +103,10 @@ module OMF::Experiments::Controller
     def check_overall_status(status_data)      
       state = status_data["testbed"]["experiment"]["status"]
       cond_set_status(state, true)
+    end
+
+    def check_experiment_status(status_data)
+      return status_data == "DONE"
     end
   end
 end
