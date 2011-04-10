@@ -4,7 +4,7 @@
   <li><%= rev_pane_link %> </li>
   <li><%= ed_pane_link %> </li>
   <li><%= rm_pane_link %> </li>
-  <% if @experiment.finished? and @raw_results.length > 0%>
+  <% if @raw_results.length > 0%>
     <li><a href="#results">Results</a></li>
   <% end %>
   <% unless @experiment.prepared? %>
@@ -42,7 +42,7 @@
 </div>
 <% end %>
 
-<% if @experiment.finished? and @raw_results.length > 0 %>
+<% if @raw_results.length > 0 %>
   <%= render :partial => 'results' %>
 <% end %>  
 <% if !@experiment.prepared? %>

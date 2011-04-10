@@ -62,7 +62,8 @@ function showStatus(estatus, session, options) {
       if (!options.text && preparing) {
         options.text = "<p class=\"text success\">Preparation finished</p>";
       }
-      buttons = ["run"];
+      //buttons = ["run"];
+      setTimeout(experimentStat,2000);
       break;    
     case <%= ExperimentStatus.PREPARING %>:
       $("#images-loading").empty();

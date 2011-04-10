@@ -55,7 +55,7 @@ class ExperimentsController < ApplicationController
     end        
 
     set_resources_instance_variables()    
-    results_for_run if @experiment.finished?
+    results_for_run
 
     respond_to do |format|
       format.sq3 {
@@ -122,7 +122,7 @@ class ExperimentsController < ApplicationController
 
   def stat 
     stat = @experiment.stat(!params[:log].blank?)
-    unless stat or stat.nil? 
+    unless stat == true or stat.nil? 
   	  @nodes = stat[:nodes] if stat.has_key?(:nodes)
       @state = stat[:state] if stat.has_key?(:state)
       @log = ec.log(slice) if stat.has_key?(:log)

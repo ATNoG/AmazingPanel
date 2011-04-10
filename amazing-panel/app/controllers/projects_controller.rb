@@ -46,13 +46,11 @@ class ProjectsController < ApplicationController
     @experiments = Experiment.where(:project_id => params[:id])
     _res = Hash.new() 
     @experiments.each do |e|
-      if e.finished?
         _res[e.id] = false
         runs = e.runs
         if runs > 0
           _res[e.id] = true
         end
-      end
     end
     @results = _res
     session[:project_id] = params[:id]

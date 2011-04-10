@@ -47,7 +47,7 @@ module ExperimentsHelper
   def experiment_widget(experiment)
     status = experiment.status
     l_button = "button giant-button"
-    l_run_class= (experiment.finished? or experiment.prepared? or experiment.not_init?) ? l_button : l_button+" button-disabled"
+    l_run_class= !(experiment.preparing? or experiment.started?) ? l_button : l_button+" button-disabled"
     l_stop_class = (experiment.started? or experiment.preparing?) ? l_button : l_button+" button-disabled"
     
     l_run = content_tag(:div, "Run", :id => "run-experiment-button", :class=>l_run_class)

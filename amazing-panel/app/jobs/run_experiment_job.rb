@@ -18,7 +18,6 @@ class RunExperimentJob < Jobs::ExperimentJob
     experiment.proxy.author = u.username
     next_run = experiment.repository.current.next_run
     experiment.proxy.batch_run(@runs)    
-    Mailers.run_conclusion(experiment, next_run, @runs, @commit, @branch)
-    #Delayed::Worker.logger.debug experiment.inspect
+    Mailers.run_conclusion(experiment, u, next_run, @runs, @commit, @branch).deliver
   end
 end

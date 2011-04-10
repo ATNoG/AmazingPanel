@@ -93,8 +93,6 @@ module OMF::Experiments::Controller
 
       # Blocking means with exceptions
       @flags[:blocking] = args[:blocking] unless args[:blocking].blank?
-      
-      debug("Proxy Loaded on Experiment ##{@id}")
     end
 
     def prepare
@@ -177,7 +175,7 @@ module OMF::Experiments::Controller
     # status method to get all the current status of the 
     # undergoing experiment
     def status
-      if @experiment.preparing? 
+      if @experiment.preparing? or @experiment.prepared? 
         return status_prepare_action
       elsif @experiment.started?
         return status_experiment_action
