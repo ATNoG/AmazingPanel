@@ -32,16 +32,16 @@ module OMF::Experiments::OEDL
           }
           @ref = ref
         end
-      
+
         def setProperty(name, value)
           @ref.properties[:groups][@group][:node][:applications][@name][:properties][name] = value
         end
-      
+
         def measure(metric, options={})
           @ref.properties[:groups][@group][:node][:applications][@name][:metrics][metric] = options
         end
       end
-      
+
       class OEDLNode < Prototype
         attr_accessor :net
         def initialize(ref, name)
@@ -51,17 +51,25 @@ module OMF::Experiments::OEDL
           ref.properties[:groups][name][:node] = { :applications => Hash.new(), :net => Hash.new()}
           @ref = ref
         end
-      
-        def w0()
-          tmp = @ref.properties[:groups][@group][:node]
-          if tmp[:net][:w0].nil?
-            tmp[:net][:w0] = Interface.new()      
-          end
-          return @ref.properties[:groups][@group][:node][:net][:w0]
+
+        def w0() interface(:w0) end
+        def w1() interface(:w1) end
+        def e0() interface(:e0) end
+        def e1() interface(:e1) end
+
+        def prototype(uri, properties)
         end
-      
+
         def addApplication(id, opts={}, &block)
           block.call(Application.new(@ref, id, @group))
+        end
+        protected
+        def interface(name)
+          tmp = @ref.properties[:groups][@group][:node]
+          if tmp[:net][name].nil?
+            tmp[:net][name] = Interface.new()
+          end
+          return @ref.properties[:groups][@group][:node][:net][name]
         end
       end
 
@@ -70,7 +78,7 @@ module OMF::Experiments::OEDL
 
         def initialize(ref, uri, name)
           @ref = ref
-          @uri = uri 
+          @uri = uri
           ref.properties[:repository][:apps][@uri] = { :name => name, :properties => Hash.new }
           ref.properties[:repository][:apps][@uri] = { :name => name, :properties => Hash.new, :measures => Hash.new }
           @ref = ref
@@ -82,21 +90,21 @@ module OMF::Experiments::OEDL
         end
 
         def defProperty(name, description, mnemonic = nil, options = nil)
-          @ref.properties[:repository][:apps][@uri][:properties][name] = { 
-              :description => description, 
+          @ref.properties[:repository][:apps][@uri][:properties][name] = {
+              :description => description,
               :mnemonic => mnemonic,
               :options => options
           }
-        end        
+        end
 
         def defMeasurement(name, &block)
           @current_measure = name
           @ref.properties[:repository][:apps][@uri][:measures][@current_measure] = {}
-          block.call(self) 
+          block.call(self)
         end
 
         def defMetric(name, type)
-          @ref.properties[:repository][:apps][@uri][:measures][@current_measure][name] = {            
+          @ref.properties[:repository][:apps][@uri][:measures][@current_measure][name] = {
             :type => type
           }
         end
@@ -112,8 +120,8 @@ module OMF::Experiments::OEDL
         end
         @properties[:groups][name] = {:selector => selector}
         block.call(OEDLNode.new(self, name))
-      end      
-      
+      end
+
       def defEvent(name, interval = 5, &block)
       end
       
