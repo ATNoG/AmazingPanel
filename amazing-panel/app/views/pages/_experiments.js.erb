@@ -109,25 +109,16 @@ $(".show-dump-anchor").live("click", function(evt){
 
 
 $("#run-experiment-button").live('click', function(evt){
-    $.getScript("<%= run_experiment_path(experiment) %>", function(evt){  
-      $("#run-experiment-button").addClass("button-disabled");
-      $("#stop-experiment-button").removeClass("button-disabled");
+    var runs = parseInt(prompt("How many runs you would like to make?", 1));
+    if (runs && runs > 0) {
+      var script = "<%= run_experiment_path(experiment) %>?commit="+experiment.commit+"&branch="+experiment.branch+"&n="+runs;
+      $.getScript(script, function(evt){  
+        $("#run-experiment-button").addClass("button-disabled");
+        $("#stop-experiment-button").removeClass("button-disabled");
       });
+    }
 });
 
-$("#prepare-experiment-button").live('click', function(evt){
-    $.getScript("<%= prepare_experiment_path(experiment) %>", function(evt){
-      $("#prepare-experiment-button").addClass("button-disabled");
-      $("#stop-experiment-button").removeClass("button-disabled");
-      });
-});
-
-$("#start-experiment-button").live('click', function(evt){
-  $.getScript("<%= start_experiment_path(experiment) %>", function(evt){
-    $("#start-experiment-button").addClass("button-disabled");
-    $("#stop-experiment-button").removeClass("button-disabled");
-  });
-});
 $("#stop-experiment-button").live('click', function(evt){
     var text = $("#experiment-widget-tabs").html();
     var warn = $("#stop-warn");
@@ -135,6 +126,7 @@ $("#stop-experiment-button").live('click', function(evt){
       $("#status").prepend("<p id=\"stop-warn\" class=\"notice\">Stopping not available in the moment.</p>");
     }
 });
+
 
 <% if experiment.finished? %>
 $("select#runs").change(function(){

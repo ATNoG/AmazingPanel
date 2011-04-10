@@ -178,9 +178,9 @@ module OMF::Experiments::Controller
     # undergoing experiment
     def status
       if @experiment.preparing? 
-        status_prepare_action
+        return status_prepare_action
       elsif @experiment.started?
-        status_experiment_action
+        return status_experiment_action
       end
     end
 
@@ -193,7 +193,6 @@ module OMF::Experiments::Controller
     end
 
     def batch_run(n=1)
-      puts "BATCH_RUN"
       info("Batch with #{n} runs")
       for i in 1..n
         debug("Run ##{i}")

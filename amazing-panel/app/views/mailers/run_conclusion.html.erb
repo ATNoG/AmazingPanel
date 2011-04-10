@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+  </head>
+  <style>
+    pre {font-family:arial, helvetica; font-size:12px;}      
+  </style>
+  <body>
+  <pre>
+Dear <%= @user.name %>, 
+
+  The experiment #<%= @experiment.id %> with runs <%= @run_string %> has <%= @experiment.finished? ? "finished" : "failed" %>.
+
+  Login <%= link_to "here", url_for(experiment_path(@experiment))+"?revision=#{@revision}&branch=#{@branch}" %> to see your results.
+
+Best Regards,
+AMazINg Team
+  </pre>
+  </body>
+</html>

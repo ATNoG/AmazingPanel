@@ -3,8 +3,8 @@ require 'pp'
 require 'omf/experiments/oedl'
 
 module OMF
-  module Experiments  
-    class Context      
+  module Experiments
+    class Context
       include OMF::Experiments::OEDL
       attr_accessor :id, :properties
       def initialize(id)
@@ -22,9 +22,9 @@ module OMF
         script = OMF::Workspace.open_ed(ed.user, "#{ed.id.to_s}.rb")
         file = OMF::Workspace.ed_for(ed.user, "#{ed.id.to_s}.rb")
         c = Context.new(exp_id)
-        #pp c 
+        #pp c
         eval(script, c.getBinding(), file)
-        return c 
+        return c
       end
     end
 
@@ -43,11 +43,12 @@ module OMF
         apps.each do |app, properties|
           properties[:metrics].each do |name, options|
             metrics.push({:name => name})
-          end          
-          app_metrics.push({:app => app, :metrics => metrics });
+          end
+          app_metrics.push({:app => app, :metrics => metrics, :raw => false });
         end
-      end      
+      end
       data = OMF::Experiments::GenericResults.new(experiment, args)
+      app_metrics = data.get_metrics_by_results() if app_metrics.blank?
       return { :metrics => app_metrics, :results => data }
     end
   end

@@ -108,19 +108,13 @@ class ExperimentsController < ApplicationController
     redirect_to(project_path(@experiment.project)) 
   end
 
-  def prepare    
+  def run
     reset_stat_session
-    @experiment.prepare
-    @msg = "Experiment preparation job is added to queue."
-    Rails.logger.debug("Queueing preparation experiment")
+    @experiment.change(params[:commit], params[:revision])
+    @experiment.run(params[:n].to_i, current_user.id, params[:revision])
+    @msg = "#{params[:n]} runs in selected branch/revision <b>was added to the queue</a>.</b>"
+    Rails.logger.debug("Running experiment")
   end
-
-  def start
-    reset_stat_session
-    @experiment.prepare
-    @msg = "Experiment run job added to queue."
-    Rails.logger.debug("Queueing run experiment")
-  end 
 
   def stop
     @experiment.stop
@@ -128,10 +122,12 @@ class ExperimentsController < ApplicationController
 
   def stat 
     stat = @experiment.stat(!params[:log].blank?)
-	@nodes = stat[:nodes] if stat.has_key?(:nodes)
-	@state = stat[:state] if stat.has_key?(:state)
-    @log = ec.log(slice) if stat.has_key?(:log)
-    stat_session
+    unless stat or stat.nil? 
+  	  @nodes = stat[:nodes] if stat.has_key?(:nodes)
+      @state = stat[:state] if stat.has_key?(:state)
+      @log = ec.log(slice) if stat.has_key?(:log)
+      stat_session
+    end
   end
   
   private    

@@ -43,18 +43,14 @@ module ExperimentsHelper
     session['estatus'] = status
     "showStatus(#{status}, #{estatus}, options);"    
   end
-
+  
   def experiment_widget(experiment)
     status = experiment.status
     l_button = "button giant-button"
-    #l_run_class= (experiment.finished? or experiment.prepared? or experiment.not_init?) ? l_button : l_button+" button-disabled"
-    l_prepare_class = (!experiment.prepared? and !experiment.preparing? ) ? l_button : l_button+" button-disabled"
-    l_start_class = (experiment.prepared? and !experiment.started?) ? l_button : l_button+" button-disabled"
+    l_run_class= (experiment.finished? or experiment.prepared? or experiment.not_init?) ? l_button : l_button+" button-disabled"
     l_stop_class = (experiment.started? or experiment.preparing?) ? l_button : l_button+" button-disabled"
     
-    #l_run = content_tag(:div, "Run", :id => "run-experiment-button", :class=>l_run_class)
-    l_prepare = content_tag(:div, "Prepare", :id => "prepare-experiment-button", :class=>l_prepare_class)
-    l_start = content_tag(:div, "Start", :id => "start-experiment-button", :class=>l_start_class)
+    l_run = content_tag(:div, "Run", :id => "run-experiment-button", :class=>l_run_class)
     l_stop = content_tag(:div, "Stop", :id => "stop-experiment-button", :class=>l_stop_class)
     error = image_tag('error.png')
     img = image_tag('loading.gif')
@@ -69,10 +65,11 @@ module ExperimentsHelper
     end
     text  = content_tag(:span, _str_, :class => "text")
     err_text  = content_tag(:span, "", :class => "text")
-    container = content_tag(:div, l_prepare+l_start+l_stop, :id => "experiment-briefing")
+    container = content_tag(:div, l_run+l_stop, :id => "experiment-briefing")
     images_loader = content_tag(:div, "", :id => "images-loading");
     return (container+images_loader).html_safe
   end  
+  
 
   def pane_link(resource, name, image=nil, desc=nil)
     options = { 

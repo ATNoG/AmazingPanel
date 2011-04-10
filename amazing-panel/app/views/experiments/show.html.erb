@@ -66,5 +66,6 @@
   $("select#parent").change(function(){
     changeBranchActions();
   });
+  var experiment = { "commit" : "<%= @revision %>", "branch" : "<%= @experiment.current %>" }
   </script>
 <% end %>

@@ -46,9 +46,9 @@ AmazingPanel::Application.routes.draw do
   end
  
   resources :experiments do
-    get 'run', :action => 'prepare', :on => :member
-    get 'prepare', :action => 'prepare', :on => :member
-    get 'start', :action => 'start', :on => :member
+    get 'run', :action => 'run', :on => :member
+    #get 'prepare', :action => 'prepare', :on => :member
+    #get 'start', :action => 'start', :on => :member
     get 'stop', :action => 'stop', :on => :member
     get 'stat', :action => 'stat', :on => :member
     get 'queue', :action => 'queue', :on => :collection

@@ -32,6 +32,11 @@ module EVC
     def branch_code_path()      
       return "#{branch_path()}/objects/#{@commit}/code.rb"
     end
+    
+    def branch_results_path(run)
+      run = run_with_results().first if run.nil?
+      return "#{branch_path()}/runs/#{run}/#{@id}_#{run}.sq3"
+    end
 
     def author_file_path(author)
       return "#{branch_path()}/.#{author}"
@@ -152,6 +157,30 @@ module EVC
 
     def runs
       return load_branch_info()[@name]['runs'].to_i
+    end
+
+    def runs_with_results
+      path = "#{branch_path()}/runs/"
+      Rails.logger.debug(path)
+      entries = Pathname.new(path).children.select{ |e| 
+        has_results(e) 
+      }.map{ |d| 
+        d.basename.to_s.to_i 
+      }
+      Rails.logger.debug(entries)
+      return entries
+    end    
+
+    def has_results(run_dir)
+      run_id = run_dir.basename.to_s
+      path = "#{branch_path()}/runs/#{run_id}"
+      Dir.chdir(path)
+      f = Dir.glob("*.sq3")[0]
+      run_db_file = Pathname.new("#{path}/#{f}")
+      if run_dir.directory? and File.exists?(run_db_file)
+        return (File.size(run_db_file) > 0)
+      end
+      return false
     end
 
     def next_run(save=false)

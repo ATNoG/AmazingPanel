@@ -138,10 +138,10 @@ class Experiment < ActiveRecord::Base
   def load_all
     unless self.id.blank?
       set_user_repository(self.user) unless self.user.nil?
-      self.proxy = ProxyClass.new(:experiment => self)
+      load_proxy
     end
   end
-
+  
   """
   Check if repository is initialized
   """
@@ -180,6 +180,10 @@ class Experiment < ActiveRecord::Base
 
   public
 
+  def load_proxy
+    self.proxy = ProxyClass.new(:experiment => self)
+  end
+
   """
     All experiment jobs from the queue
   """
@@ -216,9 +220,7 @@ class Experiment < ActiveRecord::Base
   """
   def sq3(run=nil, dump=false)
     id = self.id
-    ec = self.proxy
-    exp_id = run.nil? ? "#{id}_#{ec.runs.first}.sq3" : "#{id}_#{run}.sq3"
-    results = "#{APP_CONFIG['exp_results']}#{id}/#{run}/#{exp_id}"       
+    results = self.repository.current.branch_results_path(run)       
     unless dump == false
       return IO.popen("sqlite3 #{results} .dump").read
     end
@@ -229,9 +231,7 @@ class Experiment < ActiveRecord::Base
   Fetch content of SQLite3 Database
   """
   def results(run)
-    Rails.logger.debug self.id
-    ec = self.proxy
-    r = ec.runs
+    r = self.repository.current.runs_with_results
     run = r.max() if r.length > 0 and run.nil?
     
     _tmp = OMF::Experiments.results(self, {:run => run})
@@ -241,17 +241,18 @@ class Experiment < ActiveRecord::Base
     seq_num = Array.new()
     length = 0;
     metrics.each do |m|
-      model = db.select_model_by_metric(m[:app], m[:metrics])
-      table = model.table_name()
-      columns = model.column_names()
-      oml_seq = model.find(:all, :from => "#{table}", :select => "oml_seq")      
-      dataset = model.find(:all, :from => "#{table}")      
-      length = dataset.length
-      results[table] = { 
-        :columns => columns, 
-        :set => dataset, 
-        :length => length
-      }
+      db.select_model_by_metric(m[:app], m[:metrics]) do |model|
+        table = model.table_name()
+        columns = model.column_names()
+        oml_seq = model.find(:all, :from => "#{table}", :select => "oml_seq")      
+        dataset = model.find(:all, :from => "#{table}")      
+        length = dataset.length
+        results[table] = { 
+          :columns => columns, 
+          :set => dataset, 
+          :length => length
+        }
+      end
     end
     seq_num = (1..length).to_a
     return { :seq_num => seq_num, :results => results, :runs_list => r }
@@ -272,14 +273,18 @@ class Experiment < ActiveRecord::Base
     end
     return ret
   end
-
+  
   """
-  Enqueue a experiment stop job to the queue
+  Enqueue a experiment run job to the queue
   """
-  def stop
-    if ec.check(:started) or ec.check(:prepared)
-      ec.stop()
+  def run(n, user_id, revision)
+    njobs = Job.all.size
+    ret = false
+    if njobs > 0
+      ret = true
     end
+    Delayed::Job.enqueue RunExperimentJob.new(self.id.to_i, user_id, n, revision, self.current)
+    return ret
   end
 
   """
@@ -300,14 +305,7 @@ class Experiment < ActiveRecord::Base
   """
   def stat(with_log=false)
     tmp = {}
-    ec = self.proxy
-	case 
-	when (started? or finished?)
-	  tmp[:msg] = ec.experiment_status()		
-	when (preparing? or prepared? or preparation_failed?)
-      tmp = ec.prepare_status()  
-      if with_log then tmp[:log] = ec.log() end
-    end   
+    tmp = self.proxy.status()
     return tmp
   end
   

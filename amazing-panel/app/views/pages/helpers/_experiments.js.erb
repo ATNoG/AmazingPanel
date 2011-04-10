@@ -37,7 +37,7 @@ function hideLog(){
 }
 
 function buttonChange(buttons){
-  var values = ["start","stop","prepare"];    
+  var values = ["start","stop","prepare","run"];    
   for(i=0;i<values.length;++i){ 
     $("#"+values[i]+"-experiment-button").addClass("button-disabled"); 
   }
@@ -56,13 +56,13 @@ function showStatus(estatus, session, options) {
 
   switch(estatus){
     case <%= ExperimentStatus.UNINITIALIZED %>:
-      buttons = ["prepare"];
+      buttons = ["run"];
       break;
     case <%= ExperimentStatus.PREPARED %>:      
       if (!options.text && preparing) {
         options.text = "<p class=\"text success\">Preparation finished</p>";
       }
-      buttons = ["start"];
+      buttons = ["run"];
       break;    
     case <%= ExperimentStatus.PREPARING %>:
       $("#images-loading").empty();
@@ -80,25 +80,25 @@ function showStatus(estatus, session, options) {
       if (!started) { 
         options.text = undefined; 
       }
-      buttons = ["prepare"];
+      buttons = ["run"];
       break;
     case <%= ExperimentStatus.FINISHED_AND_PREPARED %>:
       if (!started) { 
         options.text = undefined; 
       }
-      buttons = ["start"];
+      buttons = ["run"];
       break;
     case <%= ExperimentStatus.PREPARATION_FAILED %>:
       if (preparing) { 
         options.error = "Preparation failed";
       }
-      buttons = ["prepare"]
+      buttons = ["run"]
       break;
     case <%= ExperimentStatus.EXPERIMENT_FAILED %>:
       if (started) { 
         options.error = "Experiment failed";
       }
-      buttons = ["prepare", "start"];
+      buttons = ["run"];
       break;
     default:      
       break;
