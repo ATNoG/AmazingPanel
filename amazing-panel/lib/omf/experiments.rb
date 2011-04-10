@@ -9,7 +9,7 @@ end
 require 'omf/experiments/oedl'
 
 module OMF::Experiments
-    class Context      
+    class Context
       include OMF::Experiments::OEDL::Environment
       attr_accessor :id, :properties
       def initialize(id)
@@ -21,8 +21,9 @@ module OMF::Experiments
         return binding
       end
     end
-    
+
     module ScriptHandler
+      #APP_CONFIG = YAML.load_file("#{Rails.root}/config/config.yml")[Rails.env]
       APPS_REPOSITORY = "#{APP_CONFIG['oedl_repository']}/test/app"
       BLACKLIST = [
         "itgdec.rb",
@@ -53,7 +54,7 @@ module OMF::Experiments
         file = OMF::Workspace.ed_for(ed.user, "#{ed.id.to_s}.rb")
         c = Context.new(exp_id)
         eval(script, c.getBinding(), file)
-        return c 
+        return c
       end
 
       def self.getDefinition(uri_or_path, code=nil)
@@ -61,7 +62,7 @@ module OMF::Experiments
         if code.nil?
           r_path = uri_or_path
           if uri_or_path.index(':')
-            r_path = "#{APP_CONFIG['oedl_repository']}/#{uri_or_path.gsub(/[:]/,'/')}.rb"            
+            r_path = "#{APP_CONFIG['oedl_repository']}/#{uri_or_path.gsub(/[:]/,'/')}.rb"
           end
           code = IO::read(r_path)
           eval(code, c.getBinding(), r_path)
@@ -72,10 +73,10 @@ module OMF::Experiments
       end
 
       def self.writeDefinition(uri, code)
-        unless code.nil? or uri.nil?          
+        unless code.nil? or uri.nil?
           if uri.index(':')
             r_path = Pathname.new("#{APP_CONFIG['oedl_repository']}/#{uri.gsub(/[:]/,'/')}.rb")
-            FileUtils.mkdir_p(r_path.parent)            
+            FileUtils.mkdir_p(r_path.parent)
             File.open(r_path, 'w') do |file|
               file.write(code)
             end
@@ -99,16 +100,15 @@ module OMF::Experiments
           entries.each do |f|
             c = getDefinition("#{repo_app_path.path}/#{f}")
             apps.merge!(c.properties[:repository][:apps])
-          end        
+          end
         end
         return apps
       end
-  
+
       def self.uri_for(username)
         return "user:#{username}:"
       end
     end
-    
 
     # Get the appropiate results for the experiment
     def self.results(experiment,args)
@@ -125,14 +125,16 @@ module OMF::Experiments
         apps.each do |app, properties|
           properties[:metrics].each do |name, options|
             metrics.push({:name => name})
-          end          
-          app_metrics.push({:app => app, :metrics => metrics });
+          end
+          app_metrics.push({:app => app, :metrics => metrics, :raw => false });
         end
-      end      
+      end
       data = OMF::Experiments::GenericResults.new(experiment, args)
+      app_metrics = data.get_metrics_by_results() if app_metrics.blank?
       return { :metrics => app_metrics, :results => data }
     end
 end
 
 require 'omf/experiments/results'
-require 'omf/experiments/ec'
+#require 'omf/experiments/ec'
+require 'omf/experiments/proxy'

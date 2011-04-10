@@ -1,6 +1,6 @@
 <% params.merge!(Rails.application.routes.recognize_path(params[:p])) %>
 
-<% if (@a == "new") or (@a == "create")%>
+<% if (@a == "new") or (@a == "create") or (@a == "show")%>
 $(".field > #experiment_submit").hover(function() {
   var _toggle = 'arrow-active-toggle'
   var _selector = $('.arrow-active')
@@ -42,6 +42,7 @@ $("#remove-action").live("click", function(evt){
      $("#node-"+node).removeClass("mapped").css("background-color", "gray");
   }
 });
+
 $("#associate-action").live("click", function(evt){    
     var n_images = $("#experiment_sys_images").attr("last");
     var __sys_image = $("#experiment_sys_images option:selected");
@@ -89,19 +90,6 @@ if (url.match('#')) {
     elem.parent().click();
 }
 
-$(".more-ed-anchor[ed]").live("click", function(evt){
-  $("#modal-dialog > .title-box").html("Experiment Definition");
-  $("#modal-dialog > .modal-container").html("<div id=\"ed-<%= +experiment.ed.id %>\"></div>");
-  var tmp = $("#modal-dialog, .modal-container")
-  tmp.css("width","500px"); 
-  $("#modal-dialog").css("height","500px").css("top","20%").css("left", "30%");
-  $(".modal-container").css("height","465px"); 
-  $.getScript("<%= ed_path(experiment.ed, :format=>"js")  %>");
-	$("#modal-dialog").fadeIn();
-  $("#modal-dialog").toggleClass("dialog-active");
-
-});
-
 $(".show-dump-anchor").live("click", function(evt){
   $("#modal-dialog > .title-box").html("Results SQlite3 Database Dump");
   $("#modal-dialog > .modal-container").html("<textarea id=\"dump\" cols=\"0\" rows=\"0\"></textarea>");
@@ -112,48 +100,25 @@ $(".show-dump-anchor").live("click", function(evt){
   var run = $("#runs option:selected").text();
   $("#modal-dialog > .modal-container > #dump").load("<%= experiment_path(experiment, :format=>"sq3") %>?run="+run+"&dump=true",
     function(){
-      if (CodeMirror != undefined) {
-        CodeMirror.fromTextArea('dump', {
-          parserfile: ["../parsesql.js"],
-          stylesheet: "/stylesheets/codemirror/sqlcolors.css",
-          path: "/javascripts/codemirror/base/",
-          lineNumbers: false,
-          textWrapping: false,
-          indentUnit: 2,
-          parserConfig: {},
-          readOnly: true,
-          height: "465px",
-          width: "100%"
-        }, 0);
-      }        
+      <%= render :partial => 'library/eds/codemirror.js', :locals => {:target => 'dump', :syntax => 'sql'} %>
       $("#modal-dialog").fadeIn();
       $("#modal-dialog").toggleClass("dialog-active");
     }
   );  
-
 });
 
 
 $("#run-experiment-button").live('click', function(evt){
-    $.getScript("<%= run_experiment_path(experiment) %>", function(evt){  
-      $("#run-experiment-button").addClass("button-disabled");
-      $("#stop-experiment-button").removeClass("button-disabled");
+    var runs = parseInt(prompt("How many runs you would like to make?", 1));
+    if (runs && runs > 0) {
+      var script = "<%= run_experiment_path(experiment) %>?commit="+experiment.commit+"&branch="+experiment.branch+"&n="+runs;
+      $.getScript(script, function(evt){  
+        $("#run-experiment-button").addClass("button-disabled");
+        $("#stop-experiment-button").removeClass("button-disabled");
       });
+    }
 });
 
-$("#prepare-experiment-button").live('click', function(evt){
-    $.getScript("<%= prepare_experiment_path(experiment) %>", function(evt){
-      $("#prepare-experiment-button").addClass("button-disabled");
-      $("#stop-experiment-button").removeClass("button-disabled");
-      });
-});
-
-$("#start-experiment-button").live('click', function(evt){
-  $.getScript("<%= start_experiment_path(experiment) %>", function(evt){
-    $("#start-experiment-button").addClass("button-disabled");
-    $("#stop-experiment-button").removeClass("button-disabled");
-  });
-});
 $("#stop-experiment-button").live('click', function(evt){
     var text = $("#experiment-widget-tabs").html();
     var warn = $("#stop-warn");
@@ -161,6 +126,7 @@ $("#stop-experiment-button").live('click', function(evt){
       $("#status").prepend("<p id=\"stop-warn\" class=\"notice\">Stopping not available in the moment.</p>");
     }
 });
+
 
 <% if experiment.finished? %>
 $("select#runs").change(function(){

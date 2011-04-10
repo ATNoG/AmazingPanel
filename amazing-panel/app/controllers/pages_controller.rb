@@ -1,5 +1,6 @@
 class PagesController < ApplicationController
   respond_to :html, :only => [:index]
+  respond_to :mobile, :only => [:index]
   respond_to :js, :only => [:application] 
   respond_to :css, :only => [:custom]
   

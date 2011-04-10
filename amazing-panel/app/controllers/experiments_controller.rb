@@ -8,15 +8,11 @@ class ExperimentsController < ApplicationController
 
   include Library::SysImagesHelper
   include ProjectsHelper
+  include BranchesHelper
 
-
-  #layout 'experiments'
   load_and_authorize_resource :experiment
 
   prepend_before_filter :authenticate
-
-  #append_before_filter :is_public, :only => [:show]
-
   respond_to :html, :js
 
   def queue
@@ -46,33 +42,21 @@ class ExperimentsController < ApplicationController
   end
 
   def show
-    @experiment = Experiment.find(params[:id])
-    ec = OMF::Experiments::Controller::Proxy.new(params[:id].to_i)
-  	@status = @experiment.status
-    @nodes = Hash.new()
+    #@experiment.set_user_repository(current_user)
+    change_branch()  	
+    sort_revisions()
+
+    @status = @experiment.status
+    @code = @experiment.ed.code
+    @resources = Hash.new()
+    
     @experiment.resources_map.each do |rm|
-      @nodes[rm.node_id] = rm.sys_image_id
-    end
+      @resources[rm.node_id] = rm.sys_image_id
+    end        
 
-    unless params.has_key?("resources")    
-      #@log = OMF::Experiments::Controller::Proxy.new(params[:id].to_i).log
-      @log = ""
-    end
+    set_resources_instance_variables()    
+    results_for_run if @experiment.finished?
 
-    case 
-    when params.has_key?("resources")
-      @resources = @experiment.resources_map
-      @testbed = @resources.first.testbed
-      service = OMF::GridServices::TestbedService.new(@testbed.id);
-      @nodes = service.mapping()
-      @has_map = service.has_map()
-      #@nodes = OMF::GridServices.testbed_status(@testbed.id)
-    when @experiment.finished?
-      ret = @experiment.results(params[:run]) 
-      @results = ret[:results]
-      @seq_num = ret[:seq_num]
-      @raw_results = ret[:runs_list]
-    end
     respond_to do |format|
       format.sq3 {
         render_sqlite_file
@@ -82,6 +66,11 @@ class ExperimentsController < ApplicationController
     end 
   end
 
+  def resources    
+    @ed = Ed.try(:find, params[:ed])
+    @allowed = @ed.allowed
+  end
+
   def new
     @experiment = Experiment.new()
     default_vars()
@@ -89,7 +78,7 @@ class ExperimentsController < ApplicationController
 
   def update    
     if params.key?('reset')      
-      @experiment = Experiment.find(params[:id])
+      #@experiment = Experiment.find(params[:id])
       @experiment.update_attributes(:status => 0)
     end
     redirect_to(experiment_url(@experiment)) 
@@ -103,91 +92,70 @@ class ExperimentsController < ApplicationController
     @experiment.project = Project.find(params[:experiment][:project_id])
     @experiment.status = 0
     @experiment.runs = 0
-    @experiment.failures = 0      
-    testbed = params[:experiment][:nodes]["testbed"]
-    if @experiment.save
-      params[:experiment][:nodes].each do |k,v|
-        rm = @experiment.resources_map.create(:node_id => k, 
-                                              :sys_image_id => v[:sys_image], 
-                                              :testbed_id => testbed)
-      end
-    end
-
-    if @experiment.valid?
+    @experiment.failures = 0
+    rms = transform_map(params[:experiment][:nodes])
+    @experiment.set_resources_map(rms)
+    if @experiment.save()
       redirect_to(@experiment)
     else
-      @experiment.destroy
-      @experiment.resources_map.destroy
       default_vars()
       render :actions => 'new'
     end
   end
 
   def destroy
-    @exp = Experiment.find(params[:id])
-    @exp.destroy
-    redirect_to(project_path(@exp.project)) 
+    @experiment.destroy
+    redirect_to(project_path(@experiment.project)) 
   end
 
-  def prepare
-    njobs = Job.all.size
-    @msg = nil
-    session[:estatus] = nil
-    if njobs > 0
-      @msg = "Preparation of this Experiment added to queue."
-    end
-    Delayed::Job.enqueue PrepareExperimentJob.new('prepare', params[:id])
-  end
-
-  def start
-    ec = OMF::Experiments::Controller::Proxy.new(params[:id].to_i)
-    njobs = Job.all.size
-    session[:estatus] = nil
-    @msg = nil
-    if ec.check(:prepared)
-      if njobs > 0
-        @msg = "Execution of this Experiment added to queue."
-      end
-      Delayed::Job.enqueue StartExperimentJob.new('start', params[:id])
-      Rails.logger.debug("Queueing experiment")
-    end
+  def run
+    reset_stat_session
+    @experiment.change(params[:commit], params[:revision])
+    @experiment.run(params[:n].to_i, current_user.id, params[:revision])
+    @msg = "#{params[:n]} runs in selected branch/revision <b>was added to the queue</a>.</b>"
+    Rails.logger.debug("Running experiment")
   end
 
   def stop
-    ec = OMF::Experiments::Controller::Proxy.new(params[:id].to_i)
-    if ec.check(:started) or ec.check(:prepared)
-      ec.stop()
-    end
+    @experiment.stop
   end
 
   def stat 
-    ec = OMF::Experiments::Controller::Proxy.new(params[:id].to_i)
-	@experiment = Experiment.find(params[:id])
-	status = @experiment.status
-    slice = nil
-	case 
-	when (@experiment.started? or @experiment.finished?)
-	  tmp = ec.experiment_status()		
-	  @msg = tmp
-	when (@experiment.preparing? or @experiment.prepared? or @experiment.preparation_failed?)
-      tmp = ec.prepare_status()  
-	  @nodes = tmp[:nodes]
-	  @state = tmp[:state]
-      slice = tmp[:slice]
-      if params.has_key?('log') and !slice.nil?
-        @log = ec.log(slice)
-      elsif params.has_key?('log')      
-        @log = ec.log()
-      end
-    end
-	@status = status
-	@ec = ec
-    if (@status == ExperimentStatus.PREPARING) or (@status == ExperimentStatus.STARTED)
-      session['estatus'] = @status
+    stat = @experiment.stat(!params[:log].blank?)
+    unless stat or stat.nil? 
+  	  @nodes = stat[:nodes] if stat.has_key?(:nodes)
+      @state = stat[:state] if stat.has_key?(:state)
+      @log = ec.log(slice) if stat.has_key?(:log)
+      stat_session
     end
   end
   
   private    
+  def change_branch
+    unless params[:branch].blank?
+      @experiment.change(params[:branch], params[:revision])
+    end
+  end
+
+  def sort_revisions
+    @revisions = @experiment.revisions.to_a.collect{ |r| 
+      { 'timestamp' => r[0], 'message' => r[1]['message'], 
+        'author' => r[1]['author'] }
+    }.sort!{|x,y| x['timestamp'] <=> y['timestamp']}
+    @revision = params[:revision] || @experiment.repository.current.latest_commit
+  end
+
+  def reset_stat_session
+    session[:estatus] = nil
+  end
+  
+  def stat_session
+    status = @experiment.status
+    if (status == ExperimentStatus.PREPARING) or (status == ExperimentStatus.STARTED)
+      session[:estatus] = status
+    end
+  end
+
   def render_sqlite_file
     has_dump = !(params[:dump].nil? or params[:dump] == "false")
     ret = @experiment.sq3(params[:run], has_dump)
@@ -197,26 +165,25 @@ class ExperimentsController < ApplicationController
     render :text => ret
   end
   
-  def is_public
-    begin
-      project = Experiment.find(params[:id]).project
-      is_assigned = project.users.where(:id => current_user.id).exists?
-      if !is_assigned and project.private?        
-        respond_to do |format|
-          format.html { render 'shared/403' }
-          format.js { render 'shared/403' }
-        end
-        return false
-      end
-
-    rescue ActiveRecord::RecordNotFound
-      render 'shared/404', :status => 404
-      return false
+  def set_resources_instance_variables(embedded=true)
+    @resources = @experiment.resources_map
+    @testbed = @resources.first.testbed
+    service = OMF::GridServices::TestbedService.new(@testbed.id);
+    if embedded
+      @nodes = service.mapping()
+      @has_map = service.has_map()
     end
-    return true
-  end  
+    #@nodes = OMF::GridServices.testbed_status(@testbed.id)
+  end
 
-  def default_vars()
+  def results_for_run
+    ret = @experiment.results(params[:run]) 
+    @results = ret[:results]
+    @seq_num = ret[:seq_num]
+    @raw_results = ret[:runs_list]
+  end
+
+  def default_vars
     @projects = Project.all.select { |p| 
       !project_is_user_assigned?(p, current_user.id) ? true : false 
     }.collect { |p| 
@@ -231,6 +198,7 @@ class ExperimentsController < ApplicationController
     @nodes = service.mapping();
     @has_map = service.has_map
     @allowed = Ed.first.allowed
+    #@allowed = Node.all.collect{ |n| n.id }
   end
 end
 

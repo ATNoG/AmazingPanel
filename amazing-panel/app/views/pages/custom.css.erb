@@ -307,19 +307,69 @@ a:link {
 }
 
 .tabs li {
-	float: left;
-	list-style: none;
-    margin: 0;
-    padding: 0;
-    height: 20px;
-    line-height: 20px;
-    border: 1px solid #999;
-    border-left: none;
-    margin-top: -1px;
-    background: #e0e0e0;
-    overflow: hidden;
-    position: relative;
- }
+  float: left;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  height: 20px;
+  line-height: 20px;
+  border: 1px solid #999;
+  border-left: none;
+  margin-top: -1px;
+  background: #e0e0e0;
+  overflow: hidden;
+  position: relative;
+}
+
+.pane-tab > img {
+  vertical-align: sub;
+}
+
+#experiment-widget-tabs{
+  height: 24px;
+}
+
+#experiment-widget-tabs > li {
+  height: 24px;
+  line-height: 24px;
+}
+
+#experiment-widget-tabs > li > a {
+  height: 24px;
+  line-height: 24px;
+  border: none;
+  /*padding: 2px 20px 3px 7px;*/
+  text-align: center;
+}
+
+.pane-link-active {
+  color: white;
+  background-color: #e0e0e0;
+  border-radius: 3px;
+  border: 1px solid #a4a4a4;
+}
+
+.pane-links > a {
+  font-size: 11px;
+  color: gray;
+  margin-left: 5px;
+  padding: 4px;
+  margin: 1px;
+}
+
+.pane-links > a > img {
+  vertical-align: sub;
+  padding-right: 4px;
+}
+
+.pane {
+  display: none;
+  padding-top: 10px;
+}
+
+.pane-links + .pane {
+  display: block;
+}
 
 .tabs li a {
     text-decoration: none;
@@ -497,6 +547,31 @@ a:link {
 
 #table-groups {
   margin-top: 20px;
+}
+  #revisions {
+  height: 550px;  
+}
+
+.current-commit {
+  background-color: #f0f0f0;
+}
+
+.commit-line {
+  border-bottom: 1px solid #cfcfcf;
+}
+
+.commit-line > * {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.commit-line > a {
+  font-size: 10px;
+}
+
+.commit-line > a+span {
+  font-size: 10px;
+  margin-right: 5px;
 }
 
 .flash-msg-integrated {
@@ -1335,7 +1410,7 @@ a.action > img {
   width: 70px;
 }
 
-.profile > .sidebar {
+.profile > #sidebar {
   width: 80%;
   margin-left: 10px;
   padding-left: 10px;
@@ -1416,7 +1491,8 @@ div.description {
 }
 
 .grid-view > tbody > tr:hover, .grid-line-hover {
-  background-color: #fff8dc;
+  /*background-color: #fff8dc;*/
+  background-color: #ccf8dc;
 }
 
 .grid-view > tbody > tr > td > .table-actions{
@@ -1601,7 +1677,6 @@ div.description {
   clear: both;
 }
 <% if user_signed_in? %>
-
   <% if (params[:c] == "library/eds" and params[:a] == "new") %>
     <%= render :partial => "testbeds", :locals => { :selectable => true, :toggleable => true } %>
   <% elsif params[:c] == "experiments" or params[:c] == "projects" or (params[:c] == "library/eds" and params[:a] == "new") %>
@@ -1885,6 +1960,45 @@ div.description {
 .more-ed-anchor {
   font-size: 9px;
   color:#3e5c6b;
+}
+
+.branch-info > * {
+  display: inline-block;
+}
+
+#new-branch-block > #branch_name_input {
+  display: none;
+}
+
+#new-branch-block {
+  display: inline-block;
+}
+
+#new-branch-block:hover > #branch_name_input {
+  display: inline-block;
+  opacity: 1.0;
+}
+
+#new-branch-block > #branch_name_input:focus {
+  display: inline-block;
+  opacity: 1.0;
+}
+
+#branch_name_imput:hover > a {
+  opacity: 1.0;
+}
+
+.omnip-image-action { 
+  opacity: 0.3;
+}
+
+.omnip-image-action:hover { 
+  opacity: 1.0;
+}
+
+#changes_warning {
+  margin: 0px;
+  display: none;
 }
 
 .show-dump-anchor {

@@ -43,18 +43,14 @@ module ExperimentsHelper
     session['estatus'] = status
     "showStatus(#{status}, #{estatus}, options);"    
   end
-
+  
   def experiment_widget(experiment)
     status = experiment.status
     l_button = "button giant-button"
-    #l_run_class= (experiment.finished? or experiment.prepared? or experiment.not_init?) ? l_button : l_button+" button-disabled"
-    l_prepare_class = (!experiment.prepared? and !experiment.preparing? ) ? l_button : l_button+" button-disabled"
-    l_start_class = (experiment.prepared? and !experiment.started?) ? l_button : l_button+" button-disabled"
+    l_run_class= (experiment.finished? or experiment.prepared? or experiment.not_init?) ? l_button : l_button+" button-disabled"
     l_stop_class = (experiment.started? or experiment.preparing?) ? l_button : l_button+" button-disabled"
     
-    #l_run = content_tag(:div, "Run", :id => "run-experiment-button", :class=>l_run_class)
-    l_prepare = content_tag(:div, "Prepare", :id => "prepare-experiment-button", :class=>l_prepare_class)
-    l_start = content_tag(:div, "Start", :id => "start-experiment-button", :class=>l_start_class)
+    l_run = content_tag(:div, "Run", :id => "run-experiment-button", :class=>l_run_class)
     l_stop = content_tag(:div, "Stop", :id => "stop-experiment-button", :class=>l_stop_class)
     error = image_tag('error.png')
     img = image_tag('loading.gif')
@@ -69,8 +65,69 @@ module ExperimentsHelper
     end
     text  = content_tag(:span, _str_, :class => "text")
     err_text  = content_tag(:span, "", :class => "text")
-    container = content_tag(:div, l_prepare+l_start+l_stop, :id => "experiment-briefing")
+    container = content_tag(:div, l_run+l_stop, :id => "experiment-briefing")
     images_loader = content_tag(:div, "", :id => "images-loading");
     return (container+images_loader).html_safe
   end  
+  
+
+  def pane_link(resource, name, image=nil, desc=nil)
+    options = { 
+      :id => "edit-#{resource}-action", 
+      :class => "pane-tab"
+    }
+    
+    return link_to("##{resource}", options) do
+      ret = image_tag(image, :width => 16, :height => 16) unless image.blank?
+      ret + name
+    end
+  end
+
+  def rev_pane_link
+    pane_link("revisions", "Revisions", 'commit_branch.png')
+  end
+
+  def ed_pane_link
+    pane_link("ed", "Definition", 'edit.png')
+  end
+
+  def rm_pane_link
+    pane_link("rm", "Map", 'rm_edit.png')
+  end
+  
+  def commit_branch_image_link
+    pane_link("commit-branch-action", "Commit Branch", 'commit_branch.png', "Commit the current alterations on selected branch")
+  end
+  
+  def commit_branch_image_link(branch="master")
+    options = {
+      :id => "commit-branch-action",
+      "original-title" => "Save current alterations, on selected branch"
+    }
+    #return  link_to(commit_experiment_branch_path(:experiment_id => @experiment.id, :id => "master"), options) do
+    return  link_to("#", options) do
+      image_tag('save.png', :width => 16, :height => 16)
+    end
+  end
+  
+  def new_branch_image_link(branch="master")    
+    return content_tag(:div, :id=>"new-branch-block") do 
+      text_field_tag(:name, nil, :class => "left", :id=>"branch_name_input") + 
+        link_to("#", { "original-title" => "Create a new branch from the selected at the right",
+                       :id => "new-branch-action" }) do        
+          image_tag('new_branch.png', :width => 16, :height => 16)                  
+        end + content_tag (:b, "Need to save your changes", :class => "notice", :id => "changes_warning")
+      end
+  end
+  
+  def change_branch_image_link(branch="master")
+    options = {
+      :id => "change-branch-action",
+      :class => "omnip-image-action",      
+      "original-title" => "Change the working branch"
+    }
+    return  link_to(change_experiment_branch_path(:experiment_id => @experiment.id, :id => "master"), options) do
+      image_tag('branch.png', :width => 16, :height => 16)
+    end
+  end
 end

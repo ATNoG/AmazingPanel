@@ -9,23 +9,23 @@ class Ed < Resource
   #after_create :read_file
   after_update :read_file
 
-  def allowed() 
+  def allowed()
     nodes = Array.new()
     begin
       p = OMF::Experiments::ScriptHandler.exec(-1, self)
       p.properties[:groups].each do |k,v|
         hrn = v[:selector]
         n = Node.find_by_hrn!(hrn)
-        nodes.push(n.id.to_i)    
+        nodes.push(n.id.to_i)
       end
     rescue
       nodes = nil
     end
     return nodes
   end
-  
+
   private
   def read_file()
-    self.code = OMF::Workspace.open_ed(User.find(self.user_id), "#{self.id.to_s}.rb")
+    self.code = OMF::Workspace.open_ed(User.find(self.user_id), "#{self.id.to_s}.rb") unless self.user.blank?
   end
 end

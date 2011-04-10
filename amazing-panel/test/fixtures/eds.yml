@@ -27,3 +27,10 @@ eds_004:
   id: "8"
   user_id: "4"
   description: No ED at all
+eds_005: 
+  name: Generated
+  created_at: 2011-03-30 18:40:50
+  updated_at: 2011-03-30 18:40:50
+  id: "18"
+  user_id: "1"
+  description: Generated

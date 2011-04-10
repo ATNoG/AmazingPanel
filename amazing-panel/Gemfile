@@ -40,6 +40,13 @@ gem 'rack-raw-upload'
 # Queue
 gem 'delayed_job'
 
+# ActiveRecord enhancements
+gem "meta_where"
+
+# ActiveRecord SQL queries debug
+gem "query_trace"
+
+
 # Use unicorn as the web server
 # gem 'unicorn'
 
@@ -51,7 +58,6 @@ gem 'ruby-debug'
 
 # tests without db
 gem 'activerecord-nulldb-adapter'
-
 #gem 'autotest'
 #gem 'autotest-notification'
 #gem 'autotest-rails-pure'

@@ -11,79 +11,61 @@
       <%= add_image_action(experiment_path(@experiment)+"?reset",
                            'clear.png', 'Reset', { :method => "put" }) %>
     <% end %>
-    <%= add_image_action(experiment_path(@experiment, :format => "js")+"?resources",
-                         'network2.png', 'Resource Mapping', { :remote => "true" }) %>
   <% end %>
 <% end %>
 
 <% content_for :content do %>
-
   <%= render :partial => 'details' %>
   <hr/>
-
-<% # EXPERIMENT STATUS %>
-<ul id="experiment-widget-tabs" class="tabs">
-	<li><a href="#status">Status</a></li>
-    <% if @experiment.finished? and @raw_results.length > 0%>
-	  <li><a href="#results">Results</a></li>
-    <% end %>
-    <% unless @experiment.prepared? %>
-	  <li id="log-tab-sel"><a href="#log">Log</a></li>
-    <% end %>
-</ul>
-
-<%= render :partial => 'status' %>
-
-<% if @experiment.finished? and @raw_results.length > 0 %>
-  <%= render :partial => 'results' %>
-<% end %>  
-<% if !@experiment.prepared? %>
-  <div id="log" class="tab">
-  <% unless @experiment.prepared? %>
-    <textarea id="log_area" readonly="readonly">
-    </textarea>
-  <% end  %>
-  </div>
-  <% end %>
+  <%= render :partial => 'env' %> 
 <% end %>
+
 <% content_for :footer do %>
   <%= modal_dialog("", "modal-dialog") %>
 <% end %>
 
 <% content_for :bottom_scripts do %>
-  <script id="prepare-status-template" type="x-jquery-tmpl">    
-      {{each(index,value) nodes}}
-      <div class="image-progress" id="image-node-${index}">
-        <span class="image-label bold node-${value.state}">node-${index}:</span>
-        <div class="progress-container">
-          <span class="progress_text">{{if value.progress}}${value.progress}{{else}}0{{/if}}%</span>
-          <div class="progress_bar" style="width:{{if value.progress}}${value.progress}%{{else}}0%{{/if}}"></div>
-        </div>
-        <span class="image-status">${value.msg}</span>
-        <div class="clear"></div>
-      </div>
-      {{/each}}
-  </script>
-  <script id="experiment-status-template" type="x-jquery-tmpl">
-      <div class="button giant-button" id="prepare-experiment-button">Prepare</div>      
-      <div class="button giant-button" id="start-experiment-button">Start</div>
-      <div class="button giant-button" id="stop-experiment-button">Stop</div>       
-      {{if error}}
-      <div id="error-experiment">
-        <p class="text error">${error}</p>
-      </div>
-      {{else}}        
-      <div id="caption-experiment">
-      {{if warn}}
-          {{html warn}}
-      {{/if}}        
-      {{if text}}
-        <span class="text {{if image}}loading{{/if}}">{{html text}}</span>
-      {{/if}}
-      </div>  
-      {{/if}}
-    </script>
+  <%= render :partial => 'env_templates' %>
+  <script>
+    var code = "<%= raw escape_javascript(@experiment.code) %>";
+    function onChange(){
+      var sizeo = this.historySize();
+      var current_content = this.editor.getCode();
+      var equal = (code == current_content);
+      if (sizeo.undo > 0 && !equal){
+        $("#changes_warning").show();
+      } else {
+        $("#changes_warning").hide();
+      }
+    }
+
+    function onSave(){
+      $("#commit-branch-action").trigger('click');
+    }
+
+    <%= render :partial => 'library/eds/codemirror.js',
+               :locals => {
+                :target => 'code',
+                :readonly => false,
+                :change => "onChange",
+                :save => "onSave",
+                :syntax => 'ruby'
+               } %>
+  <%= render :partial => 'resources_map.js' %>
   <% if @experiment.preparing? or @experiment.started? %>
-  <script>experimentStat();</script>
+    experimentStat();
   <% end %>
+  $("#commit-branch-action").click(function(evt){
+    var message = prompt('Commit Message','Empty Message');
+    if (message) {
+      var message_input_field = "<input id=\"message\" name=\"message\" type=\"hidden\" value=\""+message+"\" />";
+      $("#commit-branch-form").prepend(message_input_field).submit();
+    }
+  });
+  $("#new-branch-action").click(function(evt){$("#new-branch-form").submit();});
+  $("select#parent").change(function(){
+    changeBranchActions();
+  });
+  var experiment = { "commit" : "<%= @revision %>", "branch" : "<%= @experiment.current %>" }
+  </script>
 <% end %>

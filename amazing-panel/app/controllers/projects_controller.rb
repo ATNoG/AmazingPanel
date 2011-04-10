@@ -48,7 +48,7 @@ class ProjectsController < ApplicationController
     @experiments.each do |e|
       if e.finished?
         _res[e.id] = false
-        runs = OMF::Experiments::Controller::Proxy.new(e.id).runs.length
+        runs = e.runs
         if runs > 0
           _res[e.id] = true
         end

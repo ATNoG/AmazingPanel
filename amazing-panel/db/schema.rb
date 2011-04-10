@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110303020052) do
+ActiveRecord::Schema.define(:version => 20110324020628) do
 
   create_table "delayed_jobs", :force => true do |t|
     t.integer  "priority",   :default => 0
@@ -65,16 +65,11 @@ ActiveRecord::Schema.define(:version => 20110303020052) do
 
   create_table "experiments", :force => true do |t|
     t.integer  "ed_id"
-    t.integer  "resources_map_id"
-    t.integer  "duration"
     t.integer  "status"
     t.string   "user_id"
-    t.integer  "phase_id"
     t.integer  "project_id"
-    t.integer  "runs"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "failures"
   end
 
   create_table "inventories", :force => true do |t|
@@ -122,12 +117,6 @@ ActiveRecord::Schema.define(:version => 20110303020052) do
 
   add_index "nodes", ["location_id"], :name => "location_id", :unique => true
 
-  create_table "phases", :force => true do |t|
-    t.integer "number"
-    t.string  "label"
-    t.string  "description"
-  end
-
   create_table "projects", :force => true do |t|
     t.string   "name"
     t.string   "description"
@@ -148,15 +137,6 @@ ActiveRecord::Schema.define(:version => 20110303020052) do
     t.integer "id"
     t.string  "image_name",        :limit => 64
     t.string  "short_description", :limit => 128
-  end
-
-  create_table "resources_maps", :force => true do |t|
-    t.integer  "experiment_id"
-    t.integer  "node_id"
-    t.integer  "sys_image_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "testbed_id"
   end
 
   create_table "sys_images", :force => true do |t|
@@ -198,6 +178,9 @@ ActiveRecord::Schema.define(:version => 20110303020052) do
     t.string   "institution"
     t.string   "username"
     t.integer  "roles_mask"
+    t.integer  "pftpd_uid"
+    t.string   "pftpd_dir"
+    t.string   "pftpd_passwd"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true

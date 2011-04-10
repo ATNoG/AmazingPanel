@@ -1,4 +1,6 @@
 require 'ostruct'
+require 'omf'
+
 ExperimentPhases = {
   :define => OpenStruct.new({
     :order => 1,
@@ -20,3 +22,5 @@ ExperimentStatus = OpenStruct.new({
   :PREPARATION_FAILED => -1,
   :EXPERIMENT_FAILED => -2,
 });
+
+ProxyClass = OMF::ExperimentsController::LocalProxy

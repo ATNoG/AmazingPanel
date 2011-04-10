@@ -1,0 +1,31 @@
+<script id="prepare-status-template" type="x-jquery-tmpl">    
+    {{each(index,value) nodes}}
+    <div class="image-progress" id="image-node-${index}">
+      <span class="image-label bold node-${value.state}">node-${index}:</span>
+      <div class="progress-container">
+        <span class="progress_text">{{if value.progress}}${value.progress}{{else}}0{{/if}}%</span>
+        <div class="progress_bar" style="width:{{if value.progress}}${value.progress}%{{else}}0%{{/if}}"></div>
+      </div>
+      <span class="image-status">${value.msg}</span>
+      <div class="clear"></div>
+    </div>
+    {{/each}}
+</script>
+<script id="experiment-status-template" type="x-jquery-tmpl">
+    <div class="button giant-button" id="run-experiment-button">Run</div>
+    <div class="button giant-button" id="stop-experiment-button">Stop</div>       
+    {{if error}}
+    <div id="error-experiment">
+      <p class="text error">${error}</p>
+    </div>
+    {{else}}        
+    <div id="caption-experiment">
+    {{if warn}}
+        {{html warn}}
+    {{/if}}        
+    {{if text}}
+      <span class="text {{if image}}loading{{/if}}">{{html text}}</span>
+    {{/if}}
+    </div>  
+    {{/if}}
+</script>

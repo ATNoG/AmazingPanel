@@ -28,13 +28,11 @@ schema_migrations_015:
 schema_migrations_004: 
   version: "20101024223126"
 schema_migrations_027: 
-  version: "20110311170745"
+  version: "20110324020628"
 schema_migrations_016: 
   version: "20101224155133"
 schema_migrations_005: 
   version: "20101024223326"
-schema_migrations_028: 
-  version: "20110324020628"
 schema_migrations_017: 
   version: "20110113171441"
 schema_migrations_006: 

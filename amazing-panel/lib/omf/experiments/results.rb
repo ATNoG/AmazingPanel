@@ -16,12 +16,13 @@ module OMF
         class Data < DataGenerated
           abstract_class = true
         end
-        
+
         attr_accessor :tables, :config
         def initialize(experiment, args, app={})
-          @config = { 
-            :adapter => "sqlite3", 
-            :database => "#{APP_CONFIG['exp_results']}/#{experiment.id}/#{args[:run]}/#{experiment.id}_#{args[:run]}.sq3" }
+          @config = {
+            :adapter => "sqlite3",
+            :database => experiment.repository.current.branch_results_path(args[:run]) 
+          }
           @tables = { }
           if (app == {})
             load_models(self.class)
@@ -29,30 +30,56 @@ module OMF
             create_models(app)
           end
         end
-      
-        def select_model_by_metric(app, metrics)
+
+        def select_model_by_metric(app, metrics, &block)
           ts = Array.new()
           Data.connection.tables.each do |t|
-            if (app.select {|e| t.include?(e) }).length > 0         
-            #pp "for <#{t}> --> #{has_app}"
+            if (app.select {|e| t.include?(e) }).length > 0
             if (metrics.select {|mt| t.include?(mt[:name]) }).length > 0
                   ts.push(t)
               end
             end
           end
-          if ts.length == 1
-            Data.set_table_name(ts[0])
-            return Data
+          ts.each do |table|
+            Data.reset_column_information()
+            Data.set_table_name(table)
+            Rails.logger.info("Data for #{table}")
+            block.call(Data)
           end
-          return nil
         end
-  
+
         def select_model(table)
           Data.set_table_name(table)
           return Data;
         end
-        
+
+        def get_metrics_by_results()
+          apps = {}
+          Data.connection.tables.select{|e| not_metadata(e) }.each do |t|
+            toks = t.split("_")
+            app_name = toks[0]
+            toks.delete_at(0)
+            apps[app_name] = [] if apps[app_name].nil?
+            measure = toks.join("_")
+            apps[app_name].push(measure)
+          end
+
+          ret = []
+          apps.each do |app, metrics_a|
+            ret.push({
+              :raw => true,
+              :app  => app,
+              :metrics => metrics_a.collect{ |e| { :name => e } }
+            })
+          end
+          return ret
+        end
+
         protected
+          def not_metadata(table_name)
+            return !(["_senders","_experiment_metadata"].include?(table_name))
+          end
+
           def load_models(klass)
             klass.constants.each do |rt|
               rt_class = klass.const_get(rt)
@@ -63,7 +90,7 @@ module OMF
                 @tables[rt_class.to_s] = rt_class
               end
             end
-          end   
+          end
       end
   end
 end

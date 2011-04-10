@@ -58,6 +58,10 @@ GEM
       i18n (~> 0.4.1)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
+    meta_where (0.9.6)
+      activerecord (~> 3.0.0)
+      activesupport (~> 3.0.0)
+      arel (~> 1.0.1)
     mime-types (1.16)
     mysql (2.8.1)
     nokogiri (1.4.4)
@@ -72,6 +76,8 @@ GEM
     prawn_rails (0.0.4)
       prawn (>= 0.8.4)
       rails (>= 3.0.0)
+    query_trace (0.1.1)
+      activerecord
     rack (1.2.1)
     rack-mount (0.6.13)
       rack (>= 1.0.0)
@@ -141,9 +147,11 @@ DEPENDENCIES
   devise
   gravatar_image_tag (= 0.1.0)
   jquery-rails (~> 0.2)
+  meta_where
   mysql (= 2.8.1)
   prawn
   prawn_rails
+  query_trace
   rack-raw-upload
   rails (= 3.0.0)
   rspec (= 2.2.0)

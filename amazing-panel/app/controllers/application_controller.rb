@@ -2,14 +2,30 @@ class ApplicationController < ActionController::Base
   protect_from_forgery
   
   before_filter :set_locale
+  append_before_filter :set_mobile
+
   rescue_from ActionController::RoutingError, :with => :route_not_found
 
   rescue_from CanCan::AccessDenied do |exception|  
     flash[:error] = t(:permission_denied)
     redirect_to(root_path)
   end 
+  
+  helper_method :mobile_device?
 
   private
+    def set_mobile
+      if mobile_device?
+        request.format = :mobile
+      end
+    end
+
+    def mobile_device?      
+      if params[:mobile] == '1'
+        return true
+      end
+      request.user_agent =~ /Mobile|webOS/  
+    end
 
     def set_locale
       I18n.locale = params[:locale]

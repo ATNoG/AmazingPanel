@@ -1,2 +1,24 @@
---- {}
+--- 
+delayed_jobs_001: 
+  created_at: 2011-04-08 17:19:48
+  locked_by: delayed_job host:jimbo pid:8568
+  failed_at: 2011-04-08 17:20:52
+  updated_at: 2011-04-08 17:20:52
+  handler: |
+    --- !ruby/object:RunExperimentJob 
+    branch: master
+    commit: 
+    id: 38
+    phase: experiment
+    runs: 1
+    type: experiment
+    user: 1
 
+  priority: "0"
+  id: "12"
+  run_at: 2011-04-08 17:19:48
+  locked_at: 2011-04-08 17:19:52
+  attempts: "1"
+  last_error: |-
+    {undefined local variable or method `revision' for #<RunExperimentJob:0xb6664980>
+    /home/jmartins/git/amazing-panel/app/jobs/run_experiment_job.rb:21:in `perform'\n/var/lib/gems/1.8/gems/delayed_job-2.1.4/lib/delayed/backend/base.rb:87:in `invoke_job'\n/var/lib/gems/1.8/gems/delayed_job-2.1.4/lib/delayed/worker.rb:120:in `run'\n/usr/lib/ruby/1.8/timeout.rb:62:in `timeout'\n/var/lib/gems/1.8/gems/delayed_job-2.1.4/lib/delayed/worker.rb:120:in `run'\n/usr/lib/ruby/1.8/benchmark.rb:308:in `realtime'\n/var/lib/gems/1.8/gems/delayed_job-2.1.4/lib/delayed/worker.rb:119:in `run'\n/var/lib/gems/1.8/gems/delayed_job-2.1.4/lib/delayed/worker.rb:177:in `reserve_and_run_one_job'\n/var/lib/gems/1.8/gems/delayed_job-2.1.4/lib/delayed/worker.rb:104:in `work_off'\n/var/lib/gems/1.8/gems/delayed_job-2.1.4/lib/delayed/worker.rb:103:in `times'\n/var/lib/gems/1.8/gems/delayed_job-2.1.4/lib/delayed/worker.rb:103:in `work_off'\n/var/lib/gems/1.8/gems/delayed_job-2.1.4/lib/delayed/worker.rb:78:in `start'\n/usr/lib/ruby/1.8/benchmark.rb:308:in `realtime'\n/var/lib/gems/1.8/gems/delayed_job-2.1.4/lib/delayed/worker.rb:77:in `start'\n/var/lib/gems/1.8/gems/delayed_job-2.1.4/lib/delayed/worker.rb:74:in `loop'\n/var/lib/gems/1.8/gems/delayed_job-2.1.4/lib/delayed/worker.rb:74:in `start'\n/var/lib/gems/1.8/gems/delayed_job-2.1.4/lib/delayed/command.rb:104:in `run'\n/var/lib/gems/1.8/gems/delayed_job-2.1.4/lib/delayed/command.rb:83\n/var/lib/gems/1.8/gems/daemons-1.1.0/lib/daemons/application.rb:250:in `call'\n/var/lib/gems/1.8/gems/daemons-1.1.0/lib/daemons/application.rb:250\n/var/lib/gems/1.8/gems/daemons-1.1.0/lib/daemons/daemonize.rb:199:in `call'\n/var/lib/gems/1.8/gems/daemons-1.1.0/lib/daemons/daemonize.rb:199:in `call_as_daemon'\n/var/lib/gems/1.8/gems/daemons-1.1.0/lib/daemons/application.rb:254:in `start_proc'\n/var/lib/gems/1.8/gems/daemons-1.1.0/lib/daemons/application.rb:294:in `start'\n/var/lib/gems/1.8/gems/daemons-1.1.0/lib/daemons/application_group.rb:159:in `start_all'\n/var/lib/gems/1.8/gems/daemons-1.1.0/lib/daemons/application_group.rb:158:in `fork'\n/var/lib/gems/1.8/gems/daemons-1.1.0/lib/daemons/application_group.rb:158:in `start_all'\n/var/lib/gems/1.8/gems/daemons-1.1.0/lib/daemons/application_group.rb:157:in `each'\n/var/lib/gems/1.8/gems/daemons-1.1.0/lib/daemons/application_group.rb:157:in `start_all'\n/var/lib/gems/1.8/gems/daemons-1.1.0/lib/daemons/controller.rb:80:in `run'\n/var/lib/gems/1.8/gems/daemons-1.1.0/lib/daemons.rb:193\n/var/lib/gems/1.8/gems/daemons-1.1.0/lib/daemons/cmdline.rb:112:in `call'\n/var/lib/gems/1.8/gems/daemons-1.1.0/lib/daemons/cmdline.rb:112:in `catch_exceptions'\n/var/lib/gems/1.8/gems/daemons-1.1.0/lib/daemons.rb:192:in `run_proc'\n/var/lib/gems/1.8/gems/delayed_job-2.1.4/lib/delayed/command.rb:81:in `run_process'\n/var/lib/gems/1.8/gems/delayed_job-2.1.4/lib/delayed/command.rb:75:in `daemonize'\n/var/lib/gems/1.8/gems/delayed_job-2.1.4/lib/delayed/command.rb:73:in `times'\n/var/lib/gems/1.8/gems/delayed_job-2.1.4/lib/delayed/command.rb:73:in `daemonize'\nscript/delayed_job:5

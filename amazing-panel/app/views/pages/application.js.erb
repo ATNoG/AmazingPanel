@@ -200,7 +200,8 @@ function onloadHandler(evt) {
 }
   <% end %>
 
-  <% if (@c == "experiments") and (@a != "queue") %>
+  <% experiment_actions = ["queue", "index", "new"] %>
+  <% if @c == "experiments" and !experiment_actions.include?(@a) %>
     <%= render :partial => "pages/helpers/experiments" %>
   <% end %>
 
