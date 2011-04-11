@@ -92,8 +92,10 @@ class Library::EdsController < Library::ResourceController
         #file.write(uploaded_io.read)
       #end
       write_resource(@ed, content, "rb")
-      params[:apps].each do |uri, code|
-        ScriptHandler.writeDefinition(uri, code)
+      unless params[:apps].nil?
+        params[:apps].each do |uri, code|
+          ScriptHandler.writeDefinition(uri, code)
+        end
       end
       flash[:success] = t("amazing.ed.created")
       redirect_to(eds_path)
