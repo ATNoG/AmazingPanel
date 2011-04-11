@@ -10,6 +10,11 @@ $(".field > #experiment_submit").hover(function() {
     _selector.removeClass(_toggle);
   }
   });
+$("select#experiment_ed_id").change(function(){      
+  var _this = $(this);
+  var value = "/eds/"+_this.val();
+  $.getScript(value+"?nodes");
+});
 $("select#map").change(function(){      
   var _this = $(this);  
   var value = _this.val()+".js?mode=embed";

@@ -1,3 +1,9 @@
+<% if params.has_key?("nodes") %>
+  $(".node").removeClass("available");  
+  <% @allowed.each do |n| %>
+    $("#node-<%= n %>").addClass("available");  
+  <% end %>
+<% else %>
 $("#ed-<%= @ed.id %>").html("<p><%= escape_javascript(text_area_tag(:code, @content.readlines, :cols => 0, :rows => 30)) %></p>")
 if (CodeMirror != undefined){
   CodeMirror.fromTextArea('code', {
@@ -13,3 +19,4 @@ if (CodeMirror != undefined){
     width: "100%"
   }, 0);
 }
+<% end %>
