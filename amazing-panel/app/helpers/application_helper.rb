@@ -86,7 +86,7 @@ module ApplicationHelper
 
   def edit_action(object, options={})
     url = object.class == String ? object : url_params_to(object)
-    return add_image_action(url, 'edit.png', "Edit", options) if can?(:update, object)
+    return add_image_action(url+'/edit', 'edit.png', "Edit", options) if can?(:update, object)
   end
 
   def add_image_action(link, src, text=nil, options={})
