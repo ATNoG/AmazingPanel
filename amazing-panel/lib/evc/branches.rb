@@ -34,7 +34,7 @@ module EVC
     end
     
     def branch_results_path(run)
-      run = run_with_results().first if run.nil?
+      run = runs_with_results().first if run.nil?
       return "#{branch_path()}/runs/#{run}/#{@id}_#{run}.sq3"
     end
 
@@ -148,11 +148,13 @@ module EVC
                      "#{branch_path()}/objects/#{timestamp}")
     end
 
-    def change_branch_commit(timestamp = latest_commit())
-      timestamp = latest_commit() if timestamp.blank?
-      branch_info = YAML.load_file(branch_info_path())
-      changelog_entry = branch_info[@name]['changelog'][timestamp]
-      @commit = timestamp unless changelog_entry.nil?
+    def change_branch_commit(timestamp = nil)
+      if (File.directory?(branch_path()))
+        timestamp = latest_commit() if timestamp.blank?
+        branch_info = YAML.load_file(branch_info_path())
+        changelog_entry = branch_info[@name]['changelog'][timestamp]
+        @commit = timestamp unless changelog_entry.nil?
+      end
     end
 
     def runs

@@ -232,7 +232,11 @@ class Experiment < ActiveRecord::Base
   """
   def results(run)
     r = self.repository.current.runs_with_results
-    run = r.max() if r.length > 0 and run.nil?
+    if r.length > 0 and run.nil?
+      run = r.max()
+    else
+      return { :seq_num => [], :results => {}, :runs_list => []}
+    end
     
     _tmp = OMF::Experiments.results(self, {:run => run})
     db = _tmp[:results]
@@ -341,7 +345,7 @@ class Experiment < ActiveRecord::Base
   """
   def set_resources_map(rms=nil)    
     revision = @attributes.has_key?('revision') ? @attributes['revision'] : nil
-    repository.current.change_branch_commit(revision)
+    repository.current.change_branch_commit(revision) unless repository.nil?
     self.resources_map.clear() unless self.resources_map.nil?
     valid = false
     if rms.nil?

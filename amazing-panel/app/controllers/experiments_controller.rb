@@ -91,8 +91,6 @@ class ExperimentsController < ApplicationController
     @experiment.user = current_user
     @experiment.project = Project.find(params[:experiment][:project_id])
     @experiment.status = 0
-    @experiment.runs = 0
-    @experiment.failures = 0
     rms = transform_map(params[:experiment][:nodes])
     @experiment.set_resources_map(rms)
     if @experiment.save()
