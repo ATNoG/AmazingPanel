@@ -23,7 +23,7 @@ module OMF::Experiments
     end
 
     module ScriptHandler
-      #APP_CONFIG = YAML.load_file("#{Rails.root}/config/config.yml")[Rails.env]
+      APP_CONFIG = YAML.load_file("#{Rails.root}/config/config.yml")[Rails.env]
       APPS_REPOSITORY = "#{APP_CONFIG['oedl_repository']}/test/app"
       BLACKLIST = [
         "itgdec.rb",

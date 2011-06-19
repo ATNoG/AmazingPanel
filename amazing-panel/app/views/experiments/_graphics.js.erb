@@ -23,7 +23,10 @@ chart = new Highcharts.Chart({
       value: 0,
       width: 1,
       color: '#808080'
-    }]
+    }],
+    title: {
+      text: null
+    }
   },
   tooltip: {
     formatter: function() {
@@ -43,7 +46,11 @@ chart = new Highcharts.Chart({
     borderWidth: 0
   },
   series: []
-});                
+});
+
+$(".highcharts-title").click(function(evt){
+  chart.setTitle({ text: prompt("Enter  your subtitle") }, null);
+});
 
 $("#sources").change(function(){
   var $this = $(this);
@@ -54,13 +61,17 @@ $("#sources").change(function(){
 });
 
 $("#choose-data-set-button").live('click', function(){
-  var run = $("#runs option:selected").text();
-  var table = $("#sources option:selected").text();
-  var field = $(".column-active option:selected").text();
-  var _tmp = Array();
-  var results = data[table];
+  var run = $("#runs option:selected").text(),
+      table = $("#sources option:selected").text(),
+      field = $(".column-active option:selected").text(),
+      _tmp = Array(), 
+      results = data[table], 
+      exp = $("#exp<%= @experiment.id %>_condition").val();
   for (i=0;i<results.length; ++i) {
-    _tmp.push(results[i].data[field]);
+    var d = results[i].data, cond = eval(exp);
+    if (!exp || cond) {
+      _tmp.push(results[i].data[field]);
+    }
   }
   chart.addSeries({
     name : field+"("+table+", run="+run+")",

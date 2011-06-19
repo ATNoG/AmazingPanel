@@ -162,7 +162,7 @@ module OMF::Experiments::OEDL
               nil,
               :onEvent,
               s(:arglist,
-                s(:lit, :APP_UP_AND_INSTALLED)))
+                s(:lit, :ALL_UP_AND_INSTALLED)))
      end
 
      # generate: group(#{name}).exec({command})

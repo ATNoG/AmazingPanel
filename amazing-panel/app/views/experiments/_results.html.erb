@@ -27,6 +27,11 @@
       <% end %>
       <% i += 1 %>
     <% end %>    
+    <%= clear %>    
+    <div id="graph-data-condition">
+      <span class="bold">Condition:</span>    
+      <input id="exp<%= @experiment.id %>_condition" type="text" />
+    </div>
   <% end %>  
   <%= clear %>
   <%= content_tag :div, :class =>"graph-actions" do %>
@@ -34,7 +39,6 @@
     <%= content_tag :div, "Clear", :id => "clear-data-set-button", :class => 'button' %>
   <% end %>
   <%= content_tag :div, "", :id => "graph", :class => "graph-container" %>  
-
 
 <script>
   <%= render :partial => 'graphics.js' %>

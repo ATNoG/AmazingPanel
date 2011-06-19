@@ -175,7 +175,7 @@ module OMF::Experiments::Controller
     # status method to get all the current status of the 
     # undergoing experiment
     def status
-      if @experiment.preparing? or @experiment.prepared? 
+      if @experiment.preparing?
         return status_prepare_action
       elsif @experiment.started?
         return status_experiment_action

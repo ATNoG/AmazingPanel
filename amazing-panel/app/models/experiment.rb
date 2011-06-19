@@ -234,7 +234,7 @@ class Experiment < ActiveRecord::Base
     r = self.repository.current.runs_with_results
     if r.length > 0 and run.nil?
       run = r.max()
-    else
+    elsif r.length == 0
       return { :seq_num => [], :results => {}, :runs_list => []}
     end
     
