@@ -78,6 +78,7 @@ module OMF::Experiments::Controller
       @experiment = args[:experiment]      
 
       # Experimenter running the ed. Default: Creator of the Ed
+      #@author = @experiment.user.username
       @author = @experiment.user.username
 
       # Default Flags

@@ -43,7 +43,7 @@ class Ability
         
         # experiment
         can [:queue, :create], Experiment
-        can [:read, :update, :destroy, :prepare, :start, :stop, :stat], Experiment do |e|
+        can [:read, :update, :destroy, :prepare, :run, :start, :stop, :stat], Experiment do |e|
           e.user_id == user.id || ProjectsUsers.where({:project_id => e.project_id, :user_id => user.id}).length > 0
         end      
         

@@ -181,7 +181,7 @@ class Experiment < ActiveRecord::Base
   public
 
   def load_proxy
-    self.proxy = ProxyClass.new(:experiment => self)
+    self.proxy = ProxyClass.new({:experiment => self})
   end
 
   """
@@ -313,6 +313,10 @@ class Experiment < ActiveRecord::Base
     return tmp
   end
   
+  def set_proxy_author(user)
+    self.proxy.author = user.username
+  end
+
   """
     Initializes the repository related to a user
   """

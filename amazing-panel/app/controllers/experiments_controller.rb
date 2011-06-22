@@ -43,6 +43,7 @@ class ExperimentsController < ApplicationController
 
   def show
     #@experiment.set_user_repository(current_user)
+    @experiment.set_proxy_author(current_user)
     change_branch()  	
     sort_revisions()
 
@@ -77,6 +78,7 @@ class ExperimentsController < ApplicationController
   end
 
   def update    
+    @experiment.set_proxy_author(current_user)
     if params.key?('reset')      
       #@experiment = Experiment.find(params[:id])
       @experiment.update_attributes(:status => 0)
@@ -108,6 +110,7 @@ class ExperimentsController < ApplicationController
 
   def run
     reset_stat_session
+    @experiment.set_proxy_author(current_user)
     @experiment.change(params[:commit], params[:revision])
     @experiment.run(params[:n].to_i, current_user.id, params[:revision])
     @msg = "#{params[:n]} runs in selected branch/revision <b>was added to the queue</a>.</b>"
@@ -119,11 +122,14 @@ class ExperimentsController < ApplicationController
   end
 
   def stat 
+    @experiment.set_proxy_author(current_user)
     stat = @experiment.stat(!params[:log].blank?)
     unless stat == true or stat.nil? 
-  	  @nodes = stat[:nodes] if stat.has_key?(:nodes)
-      @state = stat[:state] if stat.has_key?(:state)
-      @log = ec.log(slice) if stat.has_key?(:log)
+      if stat != false 
+    	@nodes = stat[:nodes] if stat.has_key?(:nodes)
+        @state = stat[:state] if stat.has_key?(:state)
+        @log = ec.log(slice) if stat.has_key?(:log)
+      end
       stat_session
     end
   end
@@ -158,7 +164,8 @@ class ExperimentsController < ApplicationController
     has_dump = !(params[:dump].nil? or params[:dump] == "false")
     ret = @experiment.sq3(params[:run], has_dump)
     unless has_dump
-      return send_file ret, :type => "application/octet-stream", :x_sendfile => true
+      Rails.logger.info("RESULT: #{ret}")
+      return render :file => ret, :type => "application/octet-stream"
     end
     render :text => ret
   end

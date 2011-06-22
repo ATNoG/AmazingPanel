@@ -68,7 +68,12 @@ module OMF::Experiments::Controller
     def start_status_data()
       logpath = "#{APP_CONFIG['omlserver_tmp']}#{@eid}-state.xml"
       debug("Reading #{logpath}")
-      return Hash.from_xml(IO::read(logpath))
+      if File.exists?(logpath)
+        ret = Hash.from_xml(IO::read(logpath))
+      else
+        ret = { "context" => {"experiment" => { "status" => "RUNNING" } } }
+      end
+      return ret
     end
 
     def check_nodes_status(status_data)    
