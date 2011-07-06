@@ -9,6 +9,10 @@ class Ed < Resource
   #after_create :read_file
   after_update :read_file
 
+  def self.available()
+    return Node.all.collect{ |n| n.id.to_i }
+  end
+
   def allowed()
     nodes = Array.new()
     begin

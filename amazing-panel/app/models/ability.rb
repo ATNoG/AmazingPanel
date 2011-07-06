@@ -43,6 +43,9 @@ class Ability
         
         # experiment
         can [:queue, :create], Experiment
+        can [:read], Experiment do |e|
+          !e.project.private?
+        end
         can [:read, :update, :destroy, :prepare, :run, :start, :stop, :stat], Experiment do |e|
           e.user_id == user.id || ProjectsUsers.where({:project_id => e.project_id, :user_id => user.id}).length > 0
         end      

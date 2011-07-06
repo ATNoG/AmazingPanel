@@ -198,11 +198,14 @@ class ExperimentsController < ApplicationController
     @eds = Ed.all.collect { |e| 
       [e.name, e.id] 
     }
+
+    @eds = @eds.unshift(["<Your Experiment>", 0])
     @testbed = Testbed.first 
     service = OMF::GridServices::TestbedService.new(@testbed.id)
     @nodes = service.mapping();
     @has_map = service.has_map
-    @allowed = Ed.first.allowed
+    @allowed = Ed.available()
+
     #@allowed = Node.all.collect{ |n| n.id }
   end
 end

@@ -25,15 +25,19 @@ class ProjectsController < ApplicationController
 
     _ps = []
     _pub_ps = []
+    _priv_ps = []
     Project.all.select do |p| 
       if !project_is_user_assigned?(p, current_user.id)
         _ps.push(p)
       elsif !p.private?
         _pub_ps.push(p)
+      else
+        _priv_ps.push(p)
       end
     end
     @projects = _ps.paginate(:page => current_page)
     @public_projects = _pub_ps.paginate(:page => current_page)
+    @private_projects = _priv_ps.paginate(:page => current_page)
     #@public_projects = Project.all.select { |p| !project_is_user_assigned?(p, current_user.id) ? true : false }.collect { |p| [p.name, p.id] }
     #puts @projects[0].attributes.inspect
     @users = User.all

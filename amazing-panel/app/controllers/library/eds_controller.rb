@@ -53,7 +53,7 @@ class Library::EdsController < Library::ResourceController
   # GET /eds/1.xml
   def show
     @ed = resource_find(params[:id]);
-    @allowed = @ed.allowed || []
+    @allowed = @ed.allowed || Ed.available()
     path = get_path(@ed, "rb");
     @content = File.open(path, 'r')    
   end
