@@ -40,7 +40,19 @@ defPrototype("iperfReceiver") {|proto|
     app.measure('UDP_Rich_Info', :samples =>1)
   end
 }
-
+defTopology('mainTopology') { |t|
+  baseTopo = Topology["system:topo:active"]
+  t.addNode("myNode_1", "omf.nicta.node1")    
+  t.addNode("myNode_2", "omf.nicta.node2")
+  t.addNode("myNode_3", "omf.nicta.node3")
+  t.addNode("myNode_4", "omf.nicta.node4")
+  # New way of defining emulation tool:
+  t.addLink("myNode_1","myNode_3", {:emulationTool => 'iptable', :state => :down})
+  t.addLink("myNode_1","myNode_4", {:emulationTool => 'iptable', :state => :down})
+  t.addLink("myNode_2","myNode_4", {:emulationTool => 'iptable', :state => :down})
+  t.addLink("myNode_3","myNode_1", {:emulationTool => 'iptable', :state => :down})                 
+  t.saveGraphToFile()
+}
 
 #############################################################################
 # Wireless

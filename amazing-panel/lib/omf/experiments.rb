@@ -18,8 +18,10 @@ module OMF::Experiments
         @properties = {
             :groups => {}, 
             :proto => {}, 
+            :topo => {}, 
             :repository => { 
-                :apps => {}  
+                :apps => {}, 
+                :topo => {}  
             }, 
             :properties => {}
         }

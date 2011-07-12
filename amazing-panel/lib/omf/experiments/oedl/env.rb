@@ -12,7 +12,7 @@ module OMF::Experiments::OEDL
                       :filter
       end
 
-      class Prototype
+      class OEDLObject
         def initialize(ref, name=nil)
           @ref = ref
         end
@@ -21,7 +21,7 @@ module OMF::Experiments::OEDL
         end
       end
       
-      class Application < Prototype
+      class Application < OEDLObject
         def initialize(ref, name, group)
           super(ref)
           @group = group
@@ -44,7 +44,7 @@ module OMF::Experiments::OEDL
         end
       end
       
-      class OEDLPrototypeApplication < Prototype
+      class PrototypeApplication < OEDLObject
         def initialize(ref, proto, uri)
           super(ref)
           @proto = proto
@@ -64,7 +64,7 @@ module OMF::Experiments::OEDL
         end
       end
       
-      class OEDLPrototype < Prototype
+      class Prototype < OEDLObject 
         attr_accessor :name, :description
 
         def initialize(ref, name, description=nil)
@@ -86,12 +86,12 @@ module OMF::Experiments::OEDL
           }
 
           if block
-            block.call(OEDLPrototypeApplication.new(@ref, @name, uri))
+            block.call(PrototypeApplication.new(@ref, @name, uri))
           end
         end
       end
 
-      class OEDLNode < Prototype
+      class OEDLNode < OEDLObject
         attr_accessor :net
         
         def initialize(ref, name)
@@ -127,7 +127,52 @@ module OMF::Experiments::OEDL
         end
       end
 
-      class ApplicationDefinition < Prototype
+      class Topology
+        def initialize(ref, name, selector=nil)
+          @ref = ref
+          @name = name
+          @ref.properties[:topo][name] = {
+            :nodes => Hash.new(),
+            :links => []
+          }
+        end
+
+        def self.[](uri)
+        end
+
+        def addNode(name, hrn)
+          @ref.properties[:topo][@name][:nodes].store(name, { :hrn => hrn })
+        end
+
+        def addLink(src, dst, opts)
+          @ref.properties[:topo][@name][:links].push({ :src => src, :dst => dst, :options => opts})
+        end
+
+        def removeNode(name)
+          @ref.properties[:topo][@name][:nodes].delete(name)
+        end
+
+        def removeLink(src, dst)
+        end
+
+        def select(*args) end
+
+        def size()
+          return 0
+        end
+
+        def getNode(index) end
+        def getFirstNode() end
+        def getLastNode() end
+        def getRandomNode() end
+        def getUniqueRandomNode() end
+        def eachNode(&block) end
+        def setStrict() end
+        def unsetStrict() end
+        def saveGraphToFile() end
+      end
+
+      class ApplicationDefinition < OEDLObject
         #attr_accessor :uri, :name, :path, :version, :shortDescription, :description, :omlPrefix, :measurements
 
         def initialize(ref, uri, name)
@@ -176,13 +221,13 @@ module OMF::Experiments::OEDL
       end
       
       def defProperty(name, default, description=nil)
-        @properties[:properties][name] = { 
-          :default => default, 
+        @properties[:properties][name] = {
+          :default => default,
           :description => description
         }
       end
 
-      def property()        
+      def property()
         # Inline property access for Experiment: property.*
         # due to the properties access of general context
         def self.method_missing(name, args = nil)
@@ -192,11 +237,16 @@ module OMF::Experiments::OEDL
       end
 
       alias :prop :property
-      
+
       def defPrototype(name, description=nil, &block)
         @properties[:proto][name] = {}
-        block.call(OEDLPrototype.new(self, name, description))
-      end 
+        block.call(Prototype.new(self, name, description))
+      end
+
+      def defTopology(name, selector=nil, &block)
+        @properties[:topo][name] = {}
+        block.call(Topology.new(self, name, selector))
+      end
 
       def defGroup(name, selector=nil, &block)
         @properties[:groups][name] = { :selector => selector }
@@ -205,13 +255,13 @@ module OMF::Experiments::OEDL
 
       def defEvent(name, interval = 5, &block)
       end
-      
+
       def onEvent(name, consumeEvent = false, &block)
       end
 
       def defApplication(uri, appName, &block)
-        block.call(ApplicationDefinition.new(self, uri, appName))        
-      end      
+        block.call(ApplicationDefinition.new(self, uri, appName))
+      end
     end
 
 end
