@@ -48,11 +48,11 @@ chart = new Highcharts.Chart({
   series: []
 });
 
-$(".highcharts-title").click(function(evt){
+$(".highcharts-title").live('click', function(evt){
   chart.setTitle({ text: prompt("Enter  your subtitle") }, null);
 });
 
-$("#sources").change(function(){
+$("#sources").live('change', function(evt){
   var $this = $(this);
   var value = $this.val();
   var not_hidden = $(".column-select").hide().removeClass("column-active");
