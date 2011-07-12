@@ -27,11 +27,30 @@ $(".node[description]").live('mouseover mouseout', function(event) {
 <% end %>
 
 <% if params.has_key?("data") %>
+
   <% unless @results.nil? %>
+    <% sources = @results.keys() %>
+    <% fields = {} %>
+  // data global are the results
   data = {
     <% @results.each do |k,v| %>
-    "<%= k %>" : <%= v[:set].to_json.html_safe %>,
+        "<%= k %>" : <%= v[:set].to_json.html_safe %>,
+        <% fields[k] = v[:columns] %>
     <% end %>
   }
+  // Generates new select tags for new results
+  $("select#sources").remove();
+  $("#graph-choose-source").append("<%= escape_javascript(select_tag :sources, options_for_select(sources.collect { |k| [ k, k ]  })) %>");
+  $(".column-select").remove()
+    <% eid = @experiment.id.to_s %>
+    <% fields.each do |k,v| %>
+      <% content = content_tag(:span, "Field:", :class => "bold") +
+        select_tag(:columns, options_for_select(v.collect { |c| [ c, c ] })) %>
+        $("#graph-choose-source + .clear").after("<%= escape_javascript(
+            content_tag(:div, content, :id => "exp#{eid}_"+k,
+                        :class => "column-select hidden")) %>")
+    <% end %>
   <% end %>
+  $("#exp<%= "#{eid}" %>_<%= sources.first %>").removeClass("hidden").addClass("column-active");
+
 <% end %>
