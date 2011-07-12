@@ -4,9 +4,131 @@ require 'omf'
 class OMFExperimentsTest < ActiveSupport::TestCase
   # Replace this with your real tests.
   test "oedl_env" do
-    id = 35
-    exp = Experiment.find(id)
-    object = OMF::Experiments::ScriptHandler.exec(exp.id, exp.ed) 
+    #id = 35
+    #exp = Experiment.find(id)
+    #object = OMF::Experiments::ScriptHandler.exec(exp.id, exp.ed) 
+    #assert_not_nil object
+    code=<<RUBY
+         # Experiment aiming at comparing wireless vs wire communication performances.
+# It will generate UDP traffic using IPerf for 30 seconds each one.
+
+defProperty('receiverWirelessIP', '192.168.0.8', 'receiver wireless ip')
+
+defPrototype("iperfSenderWireless") {|proto|
+  proto.addApplication("test:app:iperf") do |app|
+    app.setProperty('udp', true)             # Protocol to use
+    app.setProperty('client', property.receiverWirelessIP) # Client/Server
+    app.setProperty('bandwidth', 25500000)   # Bandwidth
+    app.setProperty('port', 5000)            # Port to listen on
+    app.setProperty('time', 30)              # Experiment duration (seconds)
+    app.bindProperty('time', 'foo')              # Experiment duration (seconds)
+
+    app.measure('Peer_Info', :samples => 1)
+    app.measure('UDP_Periodic_Info', :samples =>1)
+    app.measure('UDP_Rich_Info', :samples =>1)
+  end
+}
+
+defPrototype("iperfReceiver") {|proto|
+  proto.addApplication("test:app:iperf") do |app|
+    app.setProperty('udp', true)    # Protocol to use
+    app.setProperty('server', true) # Client/Server
+    app.setProperty('port', 5000)   # Port to listen on
+    app.setProperty('interval', 1)  # Interval between bandwidth reports
+
+    app.measure('Peer_Info', :samples => 1)
+    app.measure('UDP_Rich_Info', :samples =>1)
+  end
+}
+
+
+#############################################################################
+# Wireless
+#############################################################################
+defGroup('SenderWireless1', "omf.amazing.node1") {|node|
+  node.prototype("iperfSenderWireless")
+
+  node.net.w1.mode = "managed"
+  node.net.w1.type = "g"
+  node.net.w1.channel = "6"
+  node.net.w1.essid = "helloworld"
+  node.net.w1.ip = "192.168.0.1"
+}
+
+defGroup('SenderWireless2', "omf.amazing.node2") {|node|
+  node.prototype("iperfSenderWireless")
+
+  node.net.w1.mode = "managed"
+  node.net.w1.type = "g"
+  node.net.w1.channel = "6"
+  node.net.w1.essid = "helloworld"
+  node.net.w1.ip = "192.168.0.2"
+}
+
+defGroup('SenderWireless4', "omf.amazing.node4") {|node|
+  node.prototype("iperfSenderWireless")
+
+  node.net.w1.mode = "managed"
+  node.net.w1.type = "g"
+  node.net.w1.channel = "6"
+  node.net.w1.essid = "helloworld"
+  node.net.w1.ip = "192.168.0.4"
+}
+
+defGroup('SenderWireless5', "omf.amazing.node5") {|node|
+  node.prototype("iperfSenderWireless")
+
+  node.net.w1.mode = "managed"
+  node.net.w1.type = "g"
+  node.net.w1.channel = "6"
+  node.net.w1.essid = "helloworld"
+  node.net.w1.ip = "192.168.0.5"
+}
+
+defGroup('Receiver', "omf.amazing.node8") {|node|
+  node.prototype("iperfReceiver")
+
+  node.net.w1.mode = "master"
+  node.net.w1.type = "g"
+  node.net.w1.channel = "6"
+  node.net.w1.essid = "helloworld"
+  node.net.w1.ip = "192.168.0.8"
+}
+
+onEvent(:ALL_UP_AND_INSTALLED) do |node|
+  info "Waiting 40 seconds for nodes to associate..."
+  wait 40
+
+  info "Starting Receiver..."
+  group("Receiver").startApplications
+
+  info "Starting SenderWireless..."
+  group("SenderWireless1").startApplications
+  group("SenderWireless2").startApplications
+  group("SenderWireless4").startApplications
+  group("SenderWireless5").startApplications
+
+  wait 30
+  info "Nodes finished sending traffic!"
+  wait 30
+
+  info "Stopping Receiver..."
+  group("Receiver").stopApplications
+
+  info "Stopping SenderWireless..."
+  group("SenderWireless1").stopApplications
+  group("SenderWireless2").stopApplications
+  group("SenderWireless4").stopApplications
+  group("SenderWireless5").stopApplications
+
+  info "All my Applications are stopped now."
+  allGroups.exec("reboot")
+
+  Experiment.done
+end 
+RUBY
+    object = OMF::Experiments::ScriptHandler.exec_raw(code)
+    pp object
     assert_not_nil object
   end
   

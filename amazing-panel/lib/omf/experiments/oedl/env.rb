@@ -1,6 +1,8 @@
 module OMF::Experiments::OEDL
     
     module Environment
+
+      
       class Experiment
       end
 
@@ -41,14 +43,65 @@ module OMF::Experiments::OEDL
           @ref.properties[:groups][@group][:node][:applications][@name][:metrics][metric] = options
         end
       end
+      
+      class OEDLPrototypeApplication < Prototype
+        def initialize(ref, proto, uri)
+          super(ref)
+          @proto = proto
+          @uri = uri
+        end
+
+        def bindProperty(uri, name)          
+          @ref.properties[:proto][@proto][:applications][@uri][:bind][uri] = name
+        end
+        
+        def setProperty(name, value)
+          @ref.properties[:proto][@proto][:applications][@uri][:properties][name] = value
+        end
+        
+        def measure(mp, options={})
+          @ref.properties[:proto][@proto][:applications][@uri][:measures][mp] = options
+        end
+      end
+      
+      class OEDLPrototype < Prototype
+        attr_accessor :name, :description
+
+        def initialize(ref, name, description=nil)
+          super(ref)
+          @name = name
+          @description = description
+          ref.properties[:proto][name] = { 
+            :applications => {}, 
+          }
+          @ref = ref
+        end
+        
+        def addApplication(uri, name=nil, &block)
+          @ref.properties[:proto][@name][:applications][uri] = { 
+            :name => name,
+            :properties => {},
+            :bind => {},
+            :measures => {}
+          }
+
+          if block
+            block.call(OEDLPrototypeApplication.new(@ref, @name, uri))
+          end
+        end
+      end
 
       class OEDLNode < Prototype
         attr_accessor :net
+        
         def initialize(ref, name)
           super(ref)
           @net = self
           @group = name
-          ref.properties[:groups][name][:node] = { :applications => Hash.new(), :net => Hash.new()}
+          ref.properties[:groups][name][:node] = { 
+            :applications => {}, 
+            :net => {}
+          }
           @ref = ref
         end
 
@@ -57,12 +110,13 @@ module OMF::Experiments::OEDL
         def e0() interface(:e0) end
         def e1() interface(:e1) end
 
-        def prototype(uri, properties)
+        def prototype(uri, properties={})
         end
 
         def addApplication(id, opts={}, &block)
           block.call(Application.new(@ref, id, @group))
         end
+        
         protected
         def interface(name)
           tmp = @ref.properties[:groups][@group][:node]
@@ -79,8 +133,15 @@ module OMF::Experiments::OEDL
         def initialize(ref, uri, name)
           @ref = ref
           @uri = uri
-          ref.properties[:repository][:apps][@uri] = { :name => name, :properties => Hash.new }
-          ref.properties[:repository][:apps][@uri] = { :name => name, :properties => Hash.new, :measures => Hash.new }
+          ref.properties[:repository][:apps][@uri] = { 
+            :name => name, 
+            :properties => {}
+          }
+          ref.properties[:repository][:apps][@uri] = { 
+            :name => name, 
+            :properties => {}, 
+            :measures => {}
+          }
           @ref = ref
         end
 
@@ -113,12 +174,32 @@ module OMF::Experiments::OEDL
           @version = "#{a}.#{b}.#{c}"
         end
       end
+      
+      def defProperty(name, default, description=nil)
+        @properties[:properties][name] = { 
+          :default => default, 
+          :description => description
+        }
+      end
+
+      def property()        
+        # Inline property access for Experiment: property.*
+        # due to the properties access of general context
+        def self.method_missing(name, args = nil)
+          return @properties[:properties][name.to_s][:default]
+        end
+        return self
+      end
+
+      alias :prop :property
+      
+      def defPrototype(name, description=nil, &block)
+        @properties[:proto][name] = {}
+        block.call(OEDLPrototype.new(self, name, description))
+      end 
 
       def defGroup(name, selector=nil, &block)
-        if @properties[:groups].class != Hash
-          @properties[:groups] = Hash.new()
-        end
-        @properties[:groups][name] = {:selector => selector}
+        @properties[:groups][name] = { :selector => selector }
         block.call(OEDLNode.new(self, name))
       end
 
@@ -129,12 +210,8 @@ module OMF::Experiments::OEDL
       end
 
       def defApplication(uri, appName, &block)
-        if @properties[:repository].class != Hash
-          @properties[:repository] = Hash.new()
-          @properties[:repository][:apps] = Hash.new()
-        end
         block.call(ApplicationDefinition.new(self, uri, appName))        
-      end
+      end      
     end
 
 end

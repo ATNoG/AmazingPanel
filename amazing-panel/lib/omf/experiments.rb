@@ -12,9 +12,17 @@ module OMF::Experiments
     class Context
       include OMF::Experiments::OEDL::Environment
       attr_accessor :id, :properties
+      
       def initialize(id)
         @id = id
-        @properties = {}
+        @properties = {
+            :groups => {}, 
+            :proto => {}, 
+            :repository => { 
+                :apps => {}  
+            }, 
+            :properties => {}
+        }
       end
 
       def getBinding
@@ -48,6 +56,12 @@ module OMF::Experiments
         "otr2", 
         "trace_oml2"
       ].to_set
+
+      def self.exec_raw(code)
+        c = Context.new(-1)
+        eval(code, c.getBinding())
+        return c
+      end
 
       def self.exec(exp_id, ed)
         script = OMF::Workspace.open_ed(ed.user, "#{ed.id.to_s}.rb")
