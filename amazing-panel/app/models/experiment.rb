@@ -238,7 +238,7 @@ class Experiment < ActiveRecord::Base
       return { :seq_num => [], :results => {}, :runs_list => []}
     end
     
-    _tmp = OMF::Experiments.results(self, {:run => run})
+    _tmp = OMF::Experiments.results(self, {:repository => self.repository.current, :run => run})
     db = _tmp[:results]
     metrics = _tmp[:metrics]
     results = Hash.new()
