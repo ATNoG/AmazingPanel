@@ -128,16 +128,17 @@ module OMF::Experiments
 
     # Get the appropiate results for the experiment
     def self.results(experiment,args)
-      ed = experiment.ed
-      ed_content = OMF::Workspace.open_ed(ed.user, "#{ed.id.to_s}.rb")
-      #parser = OMF::Experiments::OEDLParser.new(ed_content)
-      script = OMF::Experiments::ScriptHandler.exec(experiment.id, ed)
+      #ed = experiment.ed
+      #ed_content = OMF::Workspace.open_ed(ed.user, "#{ed.id.to_s}.rb")
+      #script = OMF::Experiments::ScriptHandler.exec(experiment.id, ed)
+      code = IO::read( args[:repository].branch_code_path() )
+      script = OMF::Experiments::ScriptHandler.exec_raw(code)
       # Iterate over groups
       app_metrics = Array.new()
       script.properties[:groups].each do |group,v|
         apps = v[:node][:applications]
         metrics = Array.new();
-        pp apps
+        Rails.logger.info apps.inspect
         apps.each do |app, properties|
           properties[:metrics].each do |name, options|
             metrics.push({:name => name})
