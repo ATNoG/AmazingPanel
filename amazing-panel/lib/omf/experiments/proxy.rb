@@ -216,8 +216,8 @@ module OMF::Experiments::Controller
       no return value
     """
     def unprepare_all_action
-      Experiment.prepared.update_all(:status => 4, :status => 5) 
-      Experiment.prepared.update_all(:status => 0, :status => 2) 
+      Experiment.where(:status => 5).update_all(:status => 4) 
+      Experiment.where(:status => 2).update_all(:status => 0) 
     end
     
     def status_prepare_action
