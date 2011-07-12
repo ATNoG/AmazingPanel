@@ -25,8 +25,8 @@ class Ability
     #
     # See the wiki for details: https://github.com/ryanb/cancan/wiki/Defining-Abilities
     # in Ability#initialize
-    unless user.nil? 
-      if user.is? :experimenter        
+    unless user.nil?
+      if user.is? :experimenter
         # user
         can [:read, :update], User, { :id => user.id }
 
@@ -34,13 +34,13 @@ class Ability
         can :create, Project
         can [:users, :read, :index], Project do |p|
           !p.private? || ProjectsUsers.where({:project_id => p.id, :user_id => user.id}).length > 0
-        end      
-      
+        end
+
         # leader
         can [:edit, :unassign_user, :assign_user, :assign, :make_leader, :update, :destroy], Project do |p|
           ProjectsUsers.where(:project_id => p.id, :user_id => user.id, :leader => 1).length == 1
         end
-        
+
         # experiment
         can [:queue, :create], Experiment
         can [:read], Experiment do |e|
@@ -48,22 +48,23 @@ class Ability
         end
         can [:read, :update, :destroy, :prepare, :run, :start, :stop, :stat], Experiment do |e|
           e.user_id == user.id || ProjectsUsers.where({:project_id => e.project_id, :user_id => user.id}).length > 0
-        end      
-        
+        end
+
         # manage his own eds
-        can [:read, :create], Ed
+        can [:read, :create, :code, :doc], Ed
         can [:update, :destroy, :edit], Ed, { :user_id => user.id }
-  
+
         # manage his own sys images
         can [:read, :create], SysImage
         can [:update, :destroy, :edit], SysImage, { :user_id => user.id }
-        
+
         # can see nodes info and state
         can [:read, :node_info], Testbed
       end
-      if user.is? :maintainer        
+      if user.is? :maintainer
         can :manage, Testbed
       end
+
       if user.is? :moderator
         can :manage, Ed
         can :manage, SysImage
