@@ -3,9 +3,11 @@
   <%= content_tag :div, :id => "graph-choose-run" do %>
     <span class="bold">Run:</span>
     <%= select_tag :runs, options_for_select(@raw_results.collect { |k| [ k, k ]  }) %>
+    <%= image_tag "loading.gif", :size => "24x24", :id => "run-loading", :class => "invisible" %>
   <% end %>
   <%= content_tag :div, :id => "download-data-set-button", :class => "button" do %>  
-    <%= link_to "Download", experiment_path(@experiment, :format => "sq3", :run => @raw_results.first ), :id => "run-download-link", 
+    <%= link_to "Download", experiment_path(@experiment, :format => "sq3", 
+      :run => @raw_results.first ), :id => "run-download-link", 
                 "original-title" => "Download raw results" %>
   <% end %> 
   <%= link_to "[See Dump]", "#nav-global", :class=>"show-dump-anchor" %>
@@ -21,9 +23,12 @@
     <% @results.each do |k,v| %>
       <% css_class = (i>0 ? " hidden " : "") %>
       <% css_class += (i==0 ? " column-active  " : "") %>
-      <%= content_tag :div, :id => "exp#{@experiment.id.to_s}_"+k , :class => "column-select "+ css_class do %>
+      <%= content_tag :div, :id => "exp#{@experiment.id.to_s}_"+k , 
+        :class => "column-select "+ css_class do %>
+          
         <span class="bold">Field:</span>
         <%= select_tag :columns, options_for_select(v[:columns].collect { |c| [ c, c ]  }) %>
+      
       <% end %>
       <% i += 1 %>
     <% end %>    

@@ -44,24 +44,25 @@ class ExperimentsController < ApplicationController
   def show
     #@experiment.set_user_repository(current_user)
     @experiment.set_proxy_author(current_user)
-    change_branch()  	
+    change_branch()
     sort_revisions()
 
     @status = @experiment.status
     @code = @experiment.ed.code
     @resources = Hash.new()
-    
+
     @experiment.resources_map.each do |rm|
       @resources[rm.node_id] = rm.sys_image_id
-    end        
+    end
 
-    set_resources_instance_variables()    
+    set_resources_instance_variables()
     results_for_run
 
     respond_to do |format|
       format.sq3 {
         render_sqlite_file
       }
+      format.json
       format.html
       format.js
     end 
@@ -152,7 +153,7 @@ class ExperimentsController < ApplicationController
   def reset_stat_session
     session[:estatus] = nil
   end
-  
+
   def stat_session
     status = @experiment.status
     if (status == ExperimentStatus.PREPARING) or (status == ExperimentStatus.STARTED)
@@ -169,7 +170,7 @@ class ExperimentsController < ApplicationController
     end
     render :text => ret
   end
-  
+
   def set_resources_instance_variables(embedded=true)
     @resources = @experiment.resources_map
     @testbed = @resources.first.testbed
@@ -182,21 +183,21 @@ class ExperimentsController < ApplicationController
   end
 
   def results_for_run
-    ret = @experiment.results(params[:run]) 
+    ret = @experiment.results(params[:run])
     @results = ret[:results]
     @seq_num = ret[:seq_num]
     @raw_results = ret[:runs_list].sort{ |x,y| y <=> x }
   end
 
   def default_vars
-    @projects = Project.all.select { |p| 
-      !project_is_user_assigned?(p, current_user.id) ? true : false 
-    }.collect { |p| 
-      [p.name, p.id] 
+    @projects = Project.all.select { |p|
+      !project_is_user_assigned?(p, current_user.id) ? true : false
+    }.collect { |p|
+      [p.name, p.id]
     }
-    
-    @eds = Ed.all.collect { |e| 
-      [e.name, e.id] 
+
+    @eds = Ed.all.collect { |e|
+      [e.name, e.id]
     }
 
     @eds = @eds.unshift(["<Your Experiment>", 0])

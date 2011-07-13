@@ -48,7 +48,7 @@ chart = new Highcharts.Chart({
   series: []
 });
 
-$(".highcharts-title").live('click', function(evt){
+$(".highcharts-title").click(function(evt) {
   chart.setTitle({ text: prompt("Enter  your subtitle") }, null);
 });
 
