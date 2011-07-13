@@ -185,7 +185,7 @@ class ExperimentsController < ApplicationController
     ret = @experiment.results(params[:run]) 
     @results = ret[:results]
     @seq_num = ret[:seq_num]
-    @raw_results = ret[:runs_list]
+    @raw_results = ret[:runs_list].sort{ |x,y| y <=> x }
   end
 
   def default_vars
