@@ -222,7 +222,9 @@ class Experiment < ActiveRecord::Base
     id = self.id
     results = self.repository.current.branch_results_path(run)       
     unless dump == false
-      return IO.popen("sqlite3 #{results} .dump").read
+      IO.popen("sqlite3 #{results} .dump") { |f|
+        return f.read
+      }
     end
     return results
   end
