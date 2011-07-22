@@ -102,6 +102,32 @@ module OMF::Experiments
         return false
       end
 
+      def self.removeDefinition(uri)
+        path = Pathname.new("#{APP_CONFIG['oedl_repository']}/#{uri.gsub(/[:]/,'/')}.rb")
+        begin
+          FileUtils.remove_file(path)
+          return true
+        rescue
+          return false
+        end
+      end
+
+      def self.scanUserRepository(username)
+        dir = "#{APP_CONFIG['oedl_repository']}/user/#{username}"
+        repo_app_path = Dir.new(dir)
+        
+        apps = Hash.new()
+        
+        Dir.chdir(dir)
+        entries = Dir.glob("*.rb")
+        entries.each do |f|
+          c = getDefinition("#{repo_app_path.path}/#{f}")
+          apps.merge!(c.properties[:repository][:apps])
+        end
+
+        return apps
+      end
+
       def self.scanRepositories(username=nil)
         directories = [APPS_REPOSITORY]
         directories.push("#{APP_CONFIG['oedl_repository']}/user/#{username}")

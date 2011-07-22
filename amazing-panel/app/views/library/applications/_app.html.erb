@@ -1,0 +1,23 @@
+  <p>
+    <b>Name:</b>
+    <%= @app.name %>
+  </p>
+  
+  <p>
+    <b>Path:</b>
+    <%= @app.path %>
+  </p>        
+  
+  <p>
+    <b>Short Description:</b>
+    <%= @app.shortDescription %>
+  </p>        
+
+  <p>
+    <b>Description:</b>
+    <%= @app.description %>
+  </p>        
+
+  <p>
+    <%= text_area_tag :code, @code, :size => '60x30' %> 
+  </p>        

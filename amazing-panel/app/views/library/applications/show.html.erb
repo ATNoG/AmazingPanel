@@ -1,0 +1,15 @@
+<% content_for :head do %>
+  <%= javascript_include_tag 'codemirror/base/codemirror' %>  
+<% end %>
+
+<% content_for :sub_actions do %>
+  <% sub_toolbar do %>
+    <%= back_action(applications_path) %>
+    <%= edit_action(application_path(:id => @app.name)) %>
+    <%= delete_action(application_path(:id => @app.name)) %>
+  <% end %>
+<% end %>
+
+<% content_for :content do %>
+  <%= render :partial => 'app' %>  
+<% end %>

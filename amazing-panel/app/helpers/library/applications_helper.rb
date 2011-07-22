@@ -1,0 +1,2 @@
+module Library::ApplicationsHelper
+end

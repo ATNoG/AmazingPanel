@@ -7,6 +7,7 @@
       <% if can? :index, SysImage %>
         <%= add_action 'System Images', sys_images_path, { :controller => 'library/sys_images'} %>
       <% end %>
+      <%= add_action 'Applications', applications_path, { :controller => 'library/applications'} %>
     </ul>
   </div>
   

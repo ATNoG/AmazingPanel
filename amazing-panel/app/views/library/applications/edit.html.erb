@@ -1,0 +1,16 @@
+<% content_for :head do %>
+  <%= javascript_include_tag 'codemirror/base/codemirror' %>  
+<% end %>
+
+<% content_for :sub_actions do %>
+  <% sub_toolbar do %>
+    <%= back_action(applications_path) %>
+  <% end %> 
+<% end %>
+
+<% content_for :content do %>
+  <%= render :partial => 'form', :locals => { 
+    :target => application_path(:id => @app.name), 
+    :multipart => true, 
+    :remote => false }  %>
+<% end %>
