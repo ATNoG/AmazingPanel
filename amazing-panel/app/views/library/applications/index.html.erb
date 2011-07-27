@@ -1,0 +1,30 @@
+<% content_for :sub_actions do %>
+  <%= sub_toolbar do %>
+  <% end %>
+<% end %>
+
+<% content_for :content do %>
+  <% if @apps.length == 0 %>
+    <p class="info"> No applications defined</p>
+    <p class="notice"> You need to add applications when an experiment definition is created using <%= link_to "IEE GUI", new_ed_path %>.</p>
+  <% else %>
+  <table id="eds" class="grid-view tablesorter">
+    <thead>
+      <tr>
+        <th><span>Name</span></th>
+        <th><span>Path</span></th>
+        <th><span>Description</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @apps.each do |a| %>
+	<tr>
+      <td><%= link_to a.name, application_path(:id => a.name)  %></td>
+	  <td><%= a.path %></td>
+	  <td><div class="description"><%= a.description %></div></td>
+	</tr>
+      <% end %>
+    </tbody>
+  </table>
+  <% end %>
+<% end %>

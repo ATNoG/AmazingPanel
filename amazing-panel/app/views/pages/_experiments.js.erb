@@ -9,7 +9,7 @@ $(".field > #experiment_submit").hover(function() {
   } else {
     _selector.removeClass(_toggle);
   }
-  });
+});
 $("select#experiment_ed_id").change(function(){      
   var _this = $(this);
   var value = "/eds/"+_this.val();
@@ -132,13 +132,19 @@ $("#stop-experiment-button").live('click', function(evt){
     }
 });
 
+$(".log-filter-actions > input[type='checkbox']").live('change', function(evt){
+    var jqEvt = $(evt.target),
+        val = jqEvt.val();
+    $(".log-line[data-level='"+val+"']").toggle();
+});
+
 
 <% if experiment.finished? %>
 $("select#runs").change(function(){
   var _this = $(this);
   var run = _this.val();
   var download_link = "<%= experiment_path(:id => experiment.id , :format => "sq3") %>?run="+run;
-  var data_link = "<%= experiment_path(:id => experiment.id , :format => "js") %>?data&run="+run;
+  var data_link = "<%= experiment_path(:id => experiment.id , :format => "js") %>?data&log&run="+run;
   $("#run-download-link").attr("href", download_link);
   $("#run-loading").removeClass("invisible");
   $.getScript(data_link, function(data,text){

@@ -45,11 +45,7 @@
 <% if @raw_results.length > 0 %>
   <%= render :partial => 'results' %>
 <% end %>  
-<% if !@experiment.prepared? %>
-  <div id="log" class="tab">
-  <% unless @experiment.prepared? %>
-    <textarea id="log_area" readonly="readonly">
-    </textarea>
-  <% end  %>
-  </div>
-  <% end %>
+
+<div id="log" class="tab">
+  <%= render :partial => 'log' %>
+</div>

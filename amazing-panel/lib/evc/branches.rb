@@ -33,9 +33,13 @@ module EVC
       return "#{branch_path()}/objects/#{@commit}/code.rb"
     end
     
-    def branch_results_path(run)
+    def branch_run_path(run, extension="log")
       run = runs_with_results().first if run.nil?
-      return "#{branch_path()}/runs/#{run}/#{@id}_#{run}.sq3"
+      return "#{branch_path()}/runs/#{run}/#{@id}_#{run}.#{extension}"
+    end
+    
+    def branch_results_path(run)
+      branch_run_path(run, "sq3")
     end
 
     def author_file_path(author)
@@ -168,8 +172,9 @@ module EVC
         has_results(e) 
       }.map{ |d| 
         d.basename.to_s.to_i 
-      }
-      Rails.logger.debug(entries)
+      }.sort{ |x,y| y <=> x }
+
+      #Rails.logger.debug(entries)
       return entries
     end    
 

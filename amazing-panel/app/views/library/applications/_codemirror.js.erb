@@ -1,0 +1,28 @@
+<% if defined?(target) and defined?(syntax) %>
+  if (CodeMirror != undefined){
+    <% if syntax.blank? then syntax = 'ruby' end %>
+    <% case %>
+      <% when syntax == "sql" %>
+        <%= "var parserfiles = ['../parsesql.js'];" %>
+        <%= "var stylefile = '/stylesheets/codemirror/sqlcolors.css';" %>
+      <% when syntax == "ruby" %>
+        <%= "var parserfiles = ['../tokenizeruby.js', '../parseruby.js'];" %>
+        <%= "var stylefile = '/stylesheets/codemirror/rubycolors.css';" %>
+      <% end %>
+  var cm_<%= target %> = CodeMirror.fromTextArea("<%= target %>", {
+    parserfile: <%= "parserfiles" %>,
+    stylesheet: <%= "stylefile" %>,
+    path: "/javascripts/codemirror/base/",
+    lineNumbers: false,
+    textWrapping: true,
+    indentUnit: 2,
+    parserConfig: {},
+    readOnly: <%= defined?(readonly) ? readonly  : true %>,
+    height: "<%= defined?(height) ? height : "465px" %>",
+    width: "<%= defined?(width) ? width : "100%" %>",
+    onChange: <%= defined?(change) ? change : "null" %>,
+    saveFunction: <%= defined?(save) ? save : "null" %>,
+    tabMode: "default",
+  }, 0);
+}
+<% end %>

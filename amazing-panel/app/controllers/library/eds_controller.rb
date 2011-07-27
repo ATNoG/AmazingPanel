@@ -172,7 +172,8 @@ class Library::EdsController < Library::ResourceController
       end
     end
 
-    repo = ScriptHandler.scanRepositories(current_user.username)
+    repo = fetchRepositories
+    Rails.logger.debug(repo)
     @apps = Hash.new();
     params[:apps][:applications].each do |uri, app|
       args = [uri, app[:name], app]
@@ -193,8 +194,14 @@ class Library::EdsController < Library::ResourceController
   end
 
   private
+
+  def fetchRepositories
+    user_repo = ScriptHandler.scanUserRepository(current_user.username)
+    ec_repo = ScriptHandler.scanRepositories(current_user.username)
+    return user_repo.merge(ec_repo)
+  end
   def scan
-    @apps = ScriptHandler.scanRepositories(current_user.username)
+    @apps = fetchRepositories
     add_namespace()
   end
 

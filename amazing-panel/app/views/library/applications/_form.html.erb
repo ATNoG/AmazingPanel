@@ -1,0 +1,20 @@
+<%= form_tag(target, :method => "put", :multipart => multipart) do %>
+  
+  <% if multipart %>
+    <div class="field">
+      <%= label_tag :package %>
+      <%= file_field_tag :package %>
+    </div>
+  <% end %>
+  
+  <div class="field">
+    <%= label_tag :code %><br />      
+    <%= text_area_tag :code, @code, :cols => 60, :rows => 30 %> 
+  </div>
+
+  <br/> 
+
+  <div class="actions">
+    <%= submit_tag "Update Application" %>
+  </div>
+<% end %>
