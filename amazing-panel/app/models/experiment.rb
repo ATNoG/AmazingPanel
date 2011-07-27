@@ -418,8 +418,10 @@ class Experiment < ActiveRecord::Base
     path = self.repository.current.branch_run_path(run, "log")
 
     logl = []
-    each_log_line(path) do |date, level, content|
-    	logl.push({ :date => date, :level => level, :content => content })
+    unless run.blank? 
+      each_log_line(path) do |date, level, content|
+      	logl.push({ :date => date, :level => level, :content => content })
+      end
     end
     return logl
   end
