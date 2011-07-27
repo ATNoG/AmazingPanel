@@ -4,6 +4,10 @@
 <% end %>
 
 <% content_for :content do %>
+  <% if @apps.length == 0 %>
+    <p class="info"> No applications defined</p>
+    <p class="notice"> You need to add applications when an experiment definition is created using <%= link_to "IEE GUI", new_ed_path %>.</p>
+  <% else %>
   <table id="eds" class="grid-view tablesorter">
     <thead>
       <tr>
@@ -21,5 +25,6 @@
 	</tr>
       <% end %>
     </tbody>
-    </table>
+  </table>
+  <% end %>
 <% end %>

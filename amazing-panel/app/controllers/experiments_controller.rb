@@ -65,10 +65,10 @@ class ExperimentsController < ApplicationController
       format.json
       format.html
       format.js
-    end 
+    end
   end
 
-  def resources    
+  def resources
     @ed = Ed.try(:find, params[:ed])
     @allowed = @ed.allowed
   end
@@ -78,17 +78,17 @@ class ExperimentsController < ApplicationController
     default_vars()
   end
 
-  def update    
+  def update
     @experiment.set_proxy_author(current_user)
-    if params.key?('reset')      
+    if params.key?('reset')
       #@experiment = Experiment.find(params[:id])
       @experiment.update_attributes(:status => 0)
     end
-    redirect_to(experiment_url(@experiment)) 
+    redirect_to(experiment_url(@experiment))
   end
 
   def create
-    # Merge more data to the experiment cache   
+    # Merge more data to the experiment cache
     @experiment = Experiment.new()
     @experiment.ed = Ed.find(params[:experiment][:ed_id])
     @experiment.user = current_user
@@ -106,7 +106,7 @@ class ExperimentsController < ApplicationController
 
   def destroy
     @experiment.destroy
-    redirect_to(project_path(@experiment.project)) 
+    redirect_to(project_path(@experiment.project))
   end
 
   def run
@@ -122,20 +122,20 @@ class ExperimentsController < ApplicationController
     @experiment.stop
   end
 
-  def stat 
+  def stat
     @experiment.set_proxy_author(current_user)
     stat = @experiment.stat(!params[:log].blank?)
-    unless stat == true or stat.nil? 
-      if stat != false 
+    unless stat == true or stat.nil?
+      if stat != false
     	@nodes = stat[:nodes] if stat.has_key?(:nodes)
         @state = stat[:state] if stat.has_key?(:state)
-        @log = ec.log(slice) if stat.has_key?(:log)
+        @log = stat[:log] if stat.has_key?(:log)
       end
       stat_session
     end
   end
-  
-  private    
+
+  private
   def change_branch
     unless params[:branch].blank?
       @experiment.change(params[:branch], params[:revision])
@@ -143,8 +143,8 @@ class ExperimentsController < ApplicationController
   end
 
   def sort_revisions
-    @revisions = @experiment.revisions.to_a.collect{ |r| 
-      { 'timestamp' => r[0], 'message' => r[1]['message'], 
+    @revisions = @experiment.revisions.to_a.collect{ |r|
+      { 'timestamp' => r[0], 'message' => r[1]['message'],
         'author' => r[1]['author'] }
     }.sort!{|x,y| x['timestamp'] <=> y['timestamp']}
     @revision = params[:revision] || @experiment.repository.current.latest_commit
@@ -187,6 +187,7 @@ class ExperimentsController < ApplicationController
     @results = ret[:results]
     @seq_num = ret[:seq_num]
     @raw_results = ret[:runs_list].sort{ |x,y| y <=> x }
+    @log = @experiment.log(params[:run])
   end
 
   def default_vars

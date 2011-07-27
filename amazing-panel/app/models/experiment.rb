@@ -309,7 +309,7 @@ class Experiment < ActiveRecord::Base
   """
   def stat(with_log=false)
     tmp = {}
-    tmp = self.proxy.status()
+    tmp = self.proxy.status()    
     return tmp
   end
   
@@ -398,6 +398,28 @@ class Experiment < ActiveRecord::Base
       ret = self.repository.init(@attributes['raw_rms'])
       return ret
     end
+  end
+
+  def each_log_line(name, &block)
+  	IO::readlines(name).each do |line|
+  	 	re = /(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) (DEBUG|INFO|ERROR) (.*)/
+  		md = re.match(line)
+  		if md
+  			yield md[1], md[2], md[3]
+  		end
+  	end
+  end
+
+  def log(run=nil)
+    runs = self.repository.current.runs_with_results
+    run = runs.first if run.nil?
+    path = self.repository.current.branch_run_path(run, "log")
+
+    logl = []
+    each_log_line(path) do |date, level, content|
+    	logl.push({ :date => date, :level => level, :content => content })
+    end
+    return logl
   end
     
   """

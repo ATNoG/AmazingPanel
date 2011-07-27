@@ -52,5 +52,9 @@ $(".node[description]").live('mouseover mouseout', function(event) {
     <% end %>
   <% end %>
   $("#exp<%= "#{eid}" %>_<%= sources.first %>").removeClass("hidden").addClass("column-active");
-
 <% end %>
+<% if params.has_key?("log") %>
+  $("#log").empty();
+  $("#log").html("<%= escape_javascript(render(:partial => "log")) %>");
+<% end %>
+

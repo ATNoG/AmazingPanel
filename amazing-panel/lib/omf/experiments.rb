@@ -113,24 +113,24 @@ module OMF::Experiments
       end
 
       def self.scanUserRepository(username)
-        dir = "#{APP_CONFIG['oedl_repository']}/user/#{username}"
-        repo_app_path = Dir.new(dir)
-        
         apps = Hash.new()
-        
-        Dir.chdir(dir)
-        entries = Dir.glob("*.rb")
-        entries.each do |f|
-          c = getDefinition("#{repo_app_path.path}/#{f}")
-          apps.merge!(c.properties[:repository][:apps])
+        dir = "#{APP_CONFIG['oedl_repository']}/user/#{username}"
+        begin
+          repo_app_path = Dir.new(dir)
+          Dir.chdir(dir)
+          entries = Dir.glob("*.rb")
+          entries.each do |f|
+            c = getDefinition("#{repo_app_path.path}/#{f}")
+            apps.merge!(c.properties[:repository][:apps])
+          end
+        rescue Errno::ENOENT
+          Rails.logger.info("No user repository")
         end
-
         return apps
       end
 
       def self.scanRepositories(username=nil)
         directories = [APPS_REPOSITORY]
-        directories.push("#{APP_CONFIG['oedl_repository']}/user/#{username}")
         apps = Hash.new()
         directories.each do |repo|
           next unless File.exists?(repo) and File.directory?(repo)

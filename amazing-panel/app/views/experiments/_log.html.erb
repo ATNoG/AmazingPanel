@@ -1,0 +1,19 @@
+  <div class="log-filter-actions">
+    <%= label_tag "DEBUG" %>
+    <%= check_box_tag :DEBUG, "DEBUG", true %>
+    
+    <%= label_tag "INFO" %>
+    <%= check_box_tag :INFO, "INFO", true %>
+    
+    <%= label_tag "ERROR" %>
+    <%= check_box_tag :ERROR, "ERROR", true %>
+  </div>
+  <% if @log and @log.length > 0 %>
+    <% @log.each do |lline| %>
+      <div class="log-line" data-level="<%= lline[:level] %>">
+        <p class="italic"><%= lline[:date] %></p>
+        <p class="bold"><%= lline[:level] %></p>
+        <p><%= lline[:content] %></p>
+      </div>
+    <% end %>
+  <% end  %>
