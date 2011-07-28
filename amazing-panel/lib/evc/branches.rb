@@ -185,7 +185,7 @@ module EVC
       f = Dir.glob("*.sq3")[0]
       run_db_file = Pathname.new("#{path}/#{f}")
       if run_dir.directory? and File.exists?(run_db_file)
-        return (File.size(run_db_file) > 0)
+        return (File.size(run_db_file) >= 0)
       end
       return false
     end

@@ -7,7 +7,7 @@
   <% if @raw_results.length > 0%>
     <li><a href="#results">Results</a></li>
   <% end %>
-  <% unless @experiment.prepared? %>
+  <% if @log %>
     <li id="log-tab-sel"><a href="#log">Log</a></li>
   <% end %>
 </ul>
