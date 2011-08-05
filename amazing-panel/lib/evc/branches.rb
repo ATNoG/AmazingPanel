@@ -165,6 +165,12 @@ module EVC
       return load_branch_info()[@name]['runs'].to_i
     end
 
+    def preparations
+      p = load_branch_info()[@name]['preparations']
+      p = 0 if p.nil?
+      return p.to_i
+    end
+    
     def runs_with_results
       path = "#{branch_path()}/runs/"
       Rails.logger.debug(path)
@@ -199,6 +205,16 @@ module EVC
       end
       return eid
     end    
+    
+    def next_preparation(save=false)
+      eid = preparations() + 1
+      if save
+        info = load_branch_info
+        info[@name]['preparations'] = eid
+        save_branch_info(info)
+      end
+      return eid
+    end
 
     # Store the results of a given run
     # Note: this method will NOT remove any file passed..

@@ -7,13 +7,13 @@
 
   <div class="field">
     <%= f.label :description %><br />
-    <%= f.text_field :description %>
+    <%= f.text_area :description, :cols => 30, :rows => 5 %>
   </div>
   
   <% if !@content.nil? %>
     <div class="field">
       <%= label_tag :code %><br />      
-      <%= text_area_tag :code, @content.readlines, :cols => 60, :rows => 30 %> 
+      <%= text_area_tag :code, @content, :cols => 60, :rows => 30 %> 
     </div>
   <% end %>
   

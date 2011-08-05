@@ -1,5 +1,4 @@
   <% creator = User.find(@ed.user_id) %>
-  <% code = @content.readlines %>
   <p>
     <b>Creator:</b>
     <%= link_to creator.name, user_path(:id => creator.id) %>
@@ -16,5 +15,5 @@
   </p>        
 
   <p>
-    <%= text_area_tag :code, code, :size => '60x30' %> 
+    <%= text_area_tag :code, @content, :size => '60x30' %> 
   </p>        

@@ -1,8 +1,21 @@
 require 'omf.rb'
 
+class EdValidator < ActiveModel::Validator
+  def validate(record)
+      begin
+        OMF::Experiments::ScriptHandler.exec_raw(record.code);
+      rescue Exception => ex
+        Rails.logger.debug "Syntax error => #{ex.class}"
+        stx_error = ex.message.split(":")
+        record.errors[:ed] << " - "+stx_error[2]
+      end
+  end
+end
+
 class Ed < Resource
   attr_accessor :code
   belongs_to :user
+  validates_with EdValidator 
 
   #after_initialize :read_file
   after_find :read_file
