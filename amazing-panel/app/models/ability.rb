@@ -51,7 +51,7 @@ class Ability
         end
 
         # manage his own eds
-        can [:read, :create, :code, :doc], Ed
+        can [:read, :create, :code, :doc, :validate], Ed
         can [:update, :destroy, :edit], Ed, { :user_id => user.id }
 
         # manage his own sys images

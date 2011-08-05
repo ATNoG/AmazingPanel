@@ -20,6 +20,7 @@ AmazingPanel::Application.routes.draw do
     resources :library, :only => [:index]
     
     resources :eds do
+      post 'validate', :action => 'validate', :on => :collection
       post 'code', :action => 'code', :on => :collection
       get 'doc', :action => 'doc', :on => :collection
     end

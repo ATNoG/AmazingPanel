@@ -32,30 +32,13 @@ class Library::EdsController < Library::ResourceController
     end
   end
 
-  # GET /eds
-  # GET /eds.xml
-  #def index
-  #  current_page = params[:page]
-  #  if current_page.nil?
-  #    current_page = "1"
-  #  end
-  #  @eds = filter(params)
-  #  if @eds.nil? == false
-  #    @eds = @eds.paginate(:page => current_page)
-  #  end
-
-  #  if @error.nil? == false
-  #	  @error = "Invalid Filter."
-  #  end
-  #end
-
   # GET /eds/1
   # GET /eds/1.xml
   def show
     @ed = resource_find(params[:id]);
     @allowed = @ed.allowed || Ed.available()
     path = get_path(@ed, "rb");
-    @content = File.open(path, 'r')    
+    @content = File.open(path, 'r').readlines
   end
 
   # GET /eds/new
@@ -74,24 +57,26 @@ class Library::EdsController < Library::ResourceController
   def edit
     @ed = resource_find(params[:id]);
     path = get_path(@ed, "rb");
-    @content = File.open(path, 'r')
+    @content = File.open(path, 'r').readlines
   end
 
   # POST /eds
   # POST /eds.xml
   def create
+
+    # Creates library resource
     @ed = resource_new(params[:ed])
-    @ed.user_id = current_user.id
+    @ed.user_id = current_user.id    
+    
+    # Fetches source code
     uploaded_io = params[:file]
     code = params[:ed_code]
     content = code unless code.nil?
     content = uploaded_io.read unless uploaded_io.nil?
+    @ed.code = content
 
+    # Validate and save!
     if !content.nil? and @ed.save
-      #path = get_path(@ed, "rb");
-      #File.open(path, 'w') do |file|
-        #file.write(uploaded_io.read)
-      #end
       write_resource(@ed, content, "rb")
       unless params[:apps].nil?
         params[:apps].each do |uri, code|
@@ -116,19 +101,11 @@ class Library::EdsController < Library::ResourceController
     @ed = resource_find(params[:id])
     @username = User.find(@ed.user_id)
     path = get_path(@ed, "rb");
-    content = params[:file].nil? ? params[:code] : params[:file].read
-    #if params[:file].nil?
-    #  File.open(path, 'w') do |file|
-	#    file.write(params[:code])
-    #  end
-    #else
-    #  uploaded_io = params[:file]
-    #  path = get_path(@ed, "rb");
-    #  File.open(path, 'w') do |file|
-    # 	file.write(uploaded_io.read)
-    #  end
-    #end
-    write_resource(@ed, content, "rb")
+
+    @content = params[:file].nil? ? params[:code] : params[:file].read
+    @ed.code = @content
+
+    write_resource(@ed, @content, "rb")
     if @ed.update_attributes(params[:ed])
       flash[:success] = t("amazing.ed.updated")
       redirect_to(ed_path)
@@ -142,13 +119,6 @@ class Library::EdsController < Library::ResourceController
   def destroy
     @ed = resource_find(params[:id])
     @username = User.find(@ed.user_id)
-    #path = get_ed_by_user(@username.username, @ed.id);
-    #path = get_path(@ed, "rb");
-    #File.delete(path.to_s)
-    #@ed.destroy
-    #respond_to do |format|
-    #    format.html { redirect_to(eds_path, :notice => 'Ed was successfully deleted.') }
-    #end
 
     if @ed.destroy
       delete_resource(@ed, extension="rb");
@@ -191,6 +161,20 @@ class Library::EdsController < Library::ResourceController
     scan if type == "all"
     definition(app) if !app.nil?
     respond_with(@apps.to_json)
+  end
+
+  def validate
+    valid = {
+      :status => false,
+    }
+    begin
+      ret = OMF::Experiments::ScriptHandler.exec_raw(params[:code]);
+      valid[:status] = ret
+    rescue Exception => ex
+      valid[:error] = ex.message.split(":")[2]
+    end
+    Rails.logger.debug(valid.to_json)
+    render :json => valid.to_json
   end
 
   private

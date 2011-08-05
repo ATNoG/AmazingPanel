@@ -55,6 +55,20 @@ class ResourcesMap < ActiveRecord::Base
   end
 end
 
+class EdSyntaxValidator < ActiveModel::Validator
+  def validate(record)
+    unless record.code.nil?
+      begin
+        OMF::Experiments::ScriptHandler.exec_raw(record.code);
+      rescue Exception => ex
+        Rails.logger.debug "Syntax error => #{ex.class}"
+        stx_error = ex.message.split(":")
+        record.errors[:ed] << stx_error[2]
+      end
+    end
+  end
+end
+
 class ExperimentEdValidator < ActiveModel::Validator
   def validate(record)
     unless record.ed.code.size > 0
@@ -102,6 +116,7 @@ class Experiment < ActiveRecord::Base
   belongs_to :project  
 
   #validates_with ExperimentEdValidator, :fields => [ :nodes ]
+  validates_with EdSyntaxValidator
   after_initialize :load_all
   after_create :create_repository
  
@@ -456,6 +471,13 @@ class Experiment < ActiveRecord::Base
     return self.repository.current.name
   end
 
+  """
+  Fetch preparations from the current branch
+  """
+  def preparations
+    pp self.repository
+    return self.repository.current.preparations
+  end
 
   """
   Fetch runs from the current branch

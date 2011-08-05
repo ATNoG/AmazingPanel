@@ -23,13 +23,18 @@ class BranchesController < ApplicationController
     
     flash[:error] = t("errors.experiment.evc.branch_commit", 
                       :branch => branch.name)
-    unless branch.blank?
+    @experiment.code = code
+    if @experiment.valid? and !branch.blank?
       branch.commit_branch(params[:message], code, rm)
       flash[:success] = t("amazing.experiments.evc.branch_commit", 
                           :branch => branch.name)
       flash.delete(:error)
-    end  
-    redirect_to experiment_path(@experiment) + "#revisions"
+      redirect_to experiment_path(@experiment) + "#revisions"
+    else
+      flash[:ed_error] = @experiment.errors[:ed]
+      redirect_to experiment_path(@experiment) + "#ed"
+    end
+
   end
 
   def clone

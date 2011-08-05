@@ -44,6 +44,19 @@
       $("#commit-branch-action").trigger('click');
     }
 
+    function commitBranch(){
+      var message = prompt('Commit Message','Empty Message');
+      if (message) {
+        var message_input_field = "<input id=\"message\" name=\"message\" type=\"hidden\" value=\""+message+"\" />";
+        $("#commit-branch-form").prepend(message_input_field).submit();
+      }
+    }
+
+    function errorEd(err){
+      $("#ed_error").remove();
+      $("<p id='ed_error' class='error'>"+err+"</p>").prependTo("#ed");
+    }
+
     <%= render :partial => 'library/eds/codemirror.js',
                :locals => {
                 :target => 'code',
@@ -57,12 +70,16 @@
     experimentStat();
   <% end %>
   $("#commit-branch-action").click(function(evt){
-    var message = prompt('Commit Message','Empty Message');
-    if (message) {
-      var message_input_field = "<input id=\"message\" name=\"message\" type=\"hidden\" value=\""+message+"\" />";
-      $("#commit-branch-form").prepend(message_input_field).submit();
-    }
+    $.post("<%= validate_eds_path %>", { 
+        "code" : cm_code.getCode()
+        }, function(data) {
+          if (data.error){
+            return errorEd(data.error);
+          }
+          commitBranch();
+        });
   });
+
   $("#new-branch-action").click(function(evt){$("#new-branch-form").submit();});
   $("select#parent").change(function(){
     changeBranchActions();
