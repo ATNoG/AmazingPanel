@@ -1,11 +1,19 @@
 module OMF::Experiments::Controller
   class LocalProxy < AbstractProxy
     def load_resource_action(img, nodes)
+      generate_preparation_id(img.id)
+      info("Experiment #{@id} Preparation EID generated: #{@eid}")      
+
       ns = nodes.collect{ |n| n.hrn }
       comma_nodes = ns.join(",") 
-      cmd = "omf load -i users/#{img.user.username}/#{img.id}.ndz -t #{comma_nodes} -e #{@id}"
+
+      cmd = "omf load -i users/#{img.user.username}/#{img.id}.ndz -t #{comma_nodes} -e #{@eid}"   
       info("OMF-ExpCtl: #{cmd}")
+      
+      @experiment.repository.current.create_author_file(@author, 
+          @experiment.repository.current.commit, @eid)      
       ret = system(cmd)
+      @experiment.repository.current.remove_author_file(@author)
       debug("OMF-ExpCtl: success? #{ret}")
       return ret
     end
@@ -60,7 +68,7 @@ module OMF::Experiments::Controller
     end
     
     def prepare_status_data()
-      logpath = "#{APP_CONFIG['omlserver_tmp']}#{@id}-prepare.xml"
+      logpath = "#{APP_CONFIG['omlserver_tmp']}#{@eid}-prepare.xml"
       debug("Reading #{logpath}")
       return Hash.from_xml(IO::read(logpath))
     end

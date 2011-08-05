@@ -1,8 +1,10 @@
 module OMF::Experiments::Controller
 
   """
-    Status Enum, but can be used as a collection
-    Contains all possible proxy status values
+    Experiment status enumeration.
+    Contains all possible proxy status values.
+    (Names are self explanatory)
+
   """
   class Status
     def Status.add_item(key,value)
@@ -20,7 +22,7 @@ module OMF::Experiments::Controller
 
     def Status.each
       @hash.each {|key,value| yield(key,value)}
-    end 
+    end
 
     Status.add_item :UNINITIALIZED, 0
     Status.add_item :PREPARING, 1
@@ -28,13 +30,13 @@ module OMF::Experiments::Controller
     Status.add_item :STARTING, 3
     Status.add_item :FINISHED, 4
     Status.add_item :FINISHED_AND_PREPARED, 5
-    Status.add_item :PREPARATION_FAILED, -1    
+    Status.add_item :PREPARATION_FAILED, -1
     Status.add_item :EXPERIMENT_FAILED, -2
   end
 
   """
-    When activating the blocking mode, this should be the base
-    exception class
+    When activating the blocking mode, this is the base exception class
+    Blocking mode not 
   """
   class ControllerProxyError < Exception
     attr_accessor :value
@@ -47,6 +49,10 @@ module OMF::Experiments::Controller
     Helper functions for proxy
   """
   module ProxySupport
+    """
+    Logging setup procedures for Proxy.
+    Location: <path to panel>/log/<experiment_id>-proxy.log
+    """
     def setup_logger(id)
       logger = Logger.new("#{Rails.root.join("log/#{id}-proxy.log")}")
       logger.formatter = proc { |severity, datetime, progname, msg|
@@ -96,7 +102,22 @@ module OMF::Experiments::Controller
       @flags[:blocking] = args[:blocking] unless args[:blocking].blank?
     end
 
+    """
+    Handles all exceptions from proxy.
+    Used in proxy behaviour methods: prepare, start
+    """
+    def execute(method, &block)
+      begin
+        block.call()
+      rescue Exception => ex
+        @logger.error "On '#{method}' execution -n"
+        @logger.error "The Exception is: #{ex}"
+        @logger.error "#{ex.backtrace.join("\n\t")}"
+      end
+    end
+
     def prepare
+     execute('prepare') do
       info("Unpreparing experiments")
 
       # Unprepare all experiments
@@ -112,7 +133,7 @@ module OMF::Experiments::Controller
 
       # Update status to Status::PREPARING
       update_status_action(Status::PREPARING)
-      
+
       debug("Current Status = #{Status.index(@experiment.status)}")
 
       images = {}
@@ -123,32 +144,34 @@ module OMF::Experiments::Controller
 
       images.each do |img, nodes|
         info("Loading SysImage ##{img} on #{nodes.collect{|n| n.hrn}.join(",")}")
-        
+
         # Load each sysimage to resource(s)
         ret = load_resource_action(SysImage.find(img), nodes)
       end
-      
+
       info("Checking preparation state...")
       state = get_current_state(Status::PREPARING)
       return cond_set_status(state) 
+     end
     end
 
     def start
+     execute('start') do
       #   Generate and change the runs of experiment
       #   Necessary to have different runs to generate different ids, 
       #   so it don't inflict any instability on OML Server and AggMgr
-      generate_id()          
+      generate_id() 
       info("Experiment #{@id} EID generated: #{@eid}")      
-      
+ 
       @experiment.repository.current.create_author_file(@author, @experiment.repository.current.commit, @eid)
       info("Created author_file for Experiment #{@id}")
 
       # Update status to Status::STARTING
       update_status_action(Status::STARTING)
-      
+
       debug("Current Status = #{Status.index(@experiment.status)}")
       info("Starting Experiment #{@id} Run = #{@run}")      
-      
+ 
       # Issues the start action
       if !start_action()
         return cond_set_status("FAILED")
@@ -171,20 +194,22 @@ module OMF::Experiments::Controller
       info("Checking experiment state...")
       state = get_current_state(Status::STARTING)
       return cond_set_status(state)
+     end
     end
 
-    # status method to get all the current status of the 
+    # status method to get all the current status of the
     # undergoing experiment
     def status
+     execute('status') do
       if @experiment.preparing?
         return status_prepare_action
       elsif @experiment.started?
         return status_experiment_action
       end
+     end
     end
 
     def run_once
-      puts "RUN_ONCE"
       ret = @experiment.status
       ret = prepare() unless @experiment.prepared?
       ret = start() unless @experiment.started? or ret < 0
@@ -199,28 +224,32 @@ module OMF::Experiments::Controller
         break unless err
       end
     end
-    
+
     def update_status_action(v)
       @experiment.update_attributes!(:status => v)
     end
 
     protected
-    def generate_id()      
+    def generate_preparation_id(image_id)
+      # Experiment Runs
+      @run = @experiment.repository.current.next_preparation(true)
+      @eid = "#{@id}_p#{@run}_i#{image_id}"
+    end
+
+    def generate_id()
       # Experiment Runs
       @run = @experiment.repository.current.next_run(true)
       @eid = "#{@id}_#{@run}"
-    end    
-
-    """
-      _action() are the main actions of the proxy, 
-      no return value
-    """
-    def unprepare_all_action
-      Experiment.where(:status => 5).update_all(:status => 4) 
-      Experiment.where(:status => 2).update_all(:status => 0) 
     end
-    
+
+    def unprepare_all_action
+      Experiment.where(:status => 5).update_all(:status => 4)
+      Experiment.where(:status => 2).update_all(:status => 0)
+    end
+
     def status_prepare_action
+      author_data = @experiment.repository.current.load_author_file(@author)
+      @eid = author_data['experiment']['eid']
       data = prepare_status_data()
       nodes = check_nodes_status(data)
       state = check_overall_status(data)
@@ -311,7 +340,7 @@ module OMF::Experiments::Controller
         end
       end
       update_status_action(value)
-      
+
       # raise if it is in blocking mode
       if (value < 0) and !@flags[:blocking].blank?
         error("Experiment failed!")
@@ -319,10 +348,10 @@ module OMF::Experiments::Controller
       else
         info("Experiment success.")
       end
-      
+
       return value
     end
-        
+
     private
     def info(msg) @logger.info(msg) end
     def error(msg) @logger.error(msg) end
