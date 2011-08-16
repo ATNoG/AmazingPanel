@@ -24,4 +24,8 @@ class User < Resource
   def is?(role)
     roles.include?(role.to_s)
   end
+
+  def admin?
+    return self.is? :admin
+  end
 end

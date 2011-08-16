@@ -59,10 +59,11 @@ class ApplicationController < ActionController::Base
     end
     
     def admin_user
-      permission_denied(new_user_session_path) unless !current_user.nil?
-      unless current_user.nil?
+      if current_user.nil?
+        permission_denied(new_user_session_path)
+      else
         permission_denied(new_user_session_path) unless current_user.admin?
-      end 
+      end
     end
 
     def permission_denied(path)
