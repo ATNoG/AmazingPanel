@@ -68,6 +68,7 @@
 	  <td>
 	    <div class="table-actions">
           <%= edit_action(sys_image, {:link => true, :text => false, "original-title" => "Edit System Image"} ) %>
+          <%= download_action(sys_image, { :link => true, :text => false, "original-title" => "Download System Image" }) %> 
           <%= delete_action(sys_image, { :confirm => "Are you sure?", :link => true, :text => false, "original-title" => "Delete System Image"}) %>
 	    </div>
 	  </td>

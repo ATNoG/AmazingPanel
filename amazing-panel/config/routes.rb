@@ -27,7 +27,6 @@ AmazingPanel::Application.routes.draw do
 
     resources :sys_images do
       post 'image', :action => 'image', :on => :member
-      get 'download'
     end
     
     resources :applications

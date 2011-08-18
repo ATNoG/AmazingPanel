@@ -4,4 +4,5 @@
 # Mime::Type.register "text/richtext", :rtf
 # Mime::Type.register_alias "text/html", :iphone
 Mime::Type.register_alias "application/octet-stream", :sq3
+Mime::Type.register_alias "application/octet-stream", :ndz
 Mime::Type.register_alias "text/html", :mobile

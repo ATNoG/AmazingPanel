@@ -46,6 +46,15 @@ class Library::SysImagesController < Library::ResourceController
   # GET /sys_images/1.xml
   def show
     @sys_image = resource_find(params[:id])
+
+    respond_to do |format|
+      format.ndz {
+        send_file get_path(@sys_image, "ndz")
+      }
+      format.json
+      format.html
+    end
+
   end
 
   # GET /sys_images/new
@@ -153,9 +162,4 @@ class Library::SysImagesController < Library::ResourceController
     redirect_to(@sys_image) 
   end
 
-  # GET /sys_images/1/download
-  def download
-    @sys_image = resource_find(params[:sys_image_id])
-    send_file get_path(@sys_image, "ndz")
-  end
 end

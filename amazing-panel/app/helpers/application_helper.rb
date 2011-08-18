@@ -89,11 +89,6 @@ module ApplicationHelper
     return add_image_action(url+'/edit', 'edit.png', "Edit", options) if can?(:update, object)
   end
 
-  def download_action(object, options={})
-    url = object.class == String ? object : url_params_to(object)
-    return add_image_action(url+'/download', 'download.png', "Download", options)
-  end
-
   def add_image_action(link, src, text=nil, options={})
     has_text = options[:text]
     text = (has_text == false) ? "" : (" "+text).html_safe
