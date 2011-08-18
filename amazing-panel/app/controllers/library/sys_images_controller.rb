@@ -152,4 +152,10 @@ class Library::SysImagesController < Library::ResourceController
     write_resource(@sys_image, uploaded_io.read, "ndz")
     redirect_to(@sys_image) 
   end
+
+  # GET /sys_images/1/download
+  def download
+    @sys_image = resource_find(params[:sys_image_id])
+    send_file get_path(@sys_image, "ndz")
+  end
 end
