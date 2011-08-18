@@ -51,7 +51,6 @@ class Library::SysImagesController < Library::ResourceController
       format.ndz {
         send_file get_path(@sys_image, "ndz")
       }
-      format.json
       format.html
     end
 
