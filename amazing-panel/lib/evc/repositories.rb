@@ -80,8 +80,7 @@ module EVC
     end
 
     def delete_branch(name)
-      branch = EVC::Branch.new(@id, name, @user.username)
-      return branch.delete_branch()
+      return @branches[name].delete_branch()
     end
     
     private

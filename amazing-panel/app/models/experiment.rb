@@ -466,7 +466,6 @@ class Experiment < ActiveRecord::Base
   Delete branch
   """
   def delete_branch(branch)
-    self.repository = EVC::Repository.new(self.id, user)
     return self.repository.delete_branch(branch)
   end
   
