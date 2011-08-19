@@ -132,8 +132,9 @@ module ExperimentsHelper
   end
 
   def delete_branch_image_link(branch)
-    return link_to(experiment_branch_path(:experiment_id => @experiment.id, :id => branch), :method => :delete, :confirm => "Are you sure?") do
-      image_tag('remove.png', :width => 16, :height => 16)
-    end
+    return link_to(experiment_branch_path(:experiment_id => @experiment.id, :id => branch),
+      :method => :delete, :confirm => "Are you sure?", "original-title" => "Delete selected branch") do
+        image_tag('remove.png', :width => 16, :height => 16)
+      end
   end
 end
