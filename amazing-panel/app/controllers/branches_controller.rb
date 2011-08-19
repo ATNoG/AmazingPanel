@@ -12,6 +12,18 @@ class BranchesController < ApplicationController
   end
 
   def destroy
+    branch = params[:id]
+    if (branch == "master")
+      flash[:error] = t("errors.experiment.evc.delete_master")
+    else
+      ret = @experiment.delete_branch(branch)
+      if ret[0] == true
+        flash[:success] = t("amazing.experiments.evc.branch_delete", :branch => branch)
+      else
+        flash[:error] = t("errors.amazing.experiments.evc.branch_delete", :branch => branch)
+      end
+    end
+    redirect_to(@experiment)
   end
 
   def commit

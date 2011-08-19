@@ -461,6 +461,14 @@ class Experiment < ActiveRecord::Base
     after_clone_branch()
     return ret
   end
+
+  """
+  Delete branch
+  """
+  def delete_branch(branch)
+    self.repository = EVC::Repository.new(self.id, user)
+    return self.repository.delete_branch(branch)
+  end
   
   """
     Fetch current branch from repository

@@ -109,6 +109,16 @@ module EVC
       return [true, "Branch #{name} created successfully"]
     end
 
+    # Deletes branch
+    def delete_branch()
+      unless (File.directory?(branch_path()))
+        return [false, "Branch doesn't exist"]
+      end
+
+      FileUtils.rm_rf(branch_path())
+      return [true, "Branch #{@name} deleted successfully"]
+    end
+
     # Commit changes done to the branch
     # Parameters: message (String), code (String), resource_map (Hash)
     def commit_branch(message, code, resource_map)

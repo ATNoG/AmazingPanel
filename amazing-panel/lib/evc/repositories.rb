@@ -78,6 +78,11 @@ module EVC
       @current = @branches[name] if @branches.keys.include?(name)
       return @current
     end
+
+    def delete_branch(name)
+      branch = EVC::Branch.new(@id, name, @user.username)
+      return branch.delete_branch()
+    end
     
     private
     def refresh_branches()

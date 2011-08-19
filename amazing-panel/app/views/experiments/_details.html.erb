@@ -7,7 +7,8 @@
     <b>Branch:</b>
     <%= select_tag "parent", options_for_select(@experiment.branches, @experiment.current) %>
     <%= commit_branch_image_link %>
-    <%= new_branch_image_link %>    
+    <%= new_branch_image_link %>
+    <%= delete_branch_image_link(@experiment.current) %>
     <% end %>
 </div>
 
