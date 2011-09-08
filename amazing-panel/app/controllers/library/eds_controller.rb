@@ -45,12 +45,7 @@ class Library::EdsController < Library::ResourceController
   # GET /eds/new.xml
   def new
     @ed = Ed.new
-    @testbed = Testbed.first
-    service = OMF::GridServices::TestbedService.new(@testbed.id)
-    @has_map = service.has_map
-    unless ["js", "html"].include?(params[:format])
-      @nodes = service.mapping();
-    end
+    render_testbed()
   end
 
   # GET /eds/1/edit
@@ -87,7 +82,7 @@ class Library::EdsController < Library::ResourceController
       redirect_to(eds_path)
     else
       @ed.errors[:file] = " or code needed."
-
+      render_testbed()
       #redirect_to(new_ed_path)
       render :action => "new"
       #format.html { render :action => "new" }
@@ -178,6 +173,15 @@ class Library::EdsController < Library::ResourceController
   end
 
   private
+
+  def render_testbed
+    @testbed = Testbed.first
+    service = OMF::GridServices::TestbedService.new(@testbed.id)
+    @has_map = service.has_map
+    unless ["js", "html"].include?(params[:format])
+      @nodes = service.mapping();
+    end
+  end
 
   def fetchRepositories
     user_repo = ScriptHandler.scanUserRepository(current_user.username)

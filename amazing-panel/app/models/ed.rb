@@ -6,6 +6,7 @@ class EdValidator < ActiveModel::Validator
         OMF::Experiments::ScriptHandler.exec_raw(record.code);
       rescue Exception => ex
         Rails.logger.debug "Syntax error => #{ex.class}"
+        Rails.logger.debug "Dump => #{ex.backtrace}"
         stx_error = ex.message.split(":")
         record.errors[:ed] << " - "+stx_error[2]
       end
