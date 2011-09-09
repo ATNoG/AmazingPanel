@@ -12,8 +12,8 @@
 <% content_for :content do %>  
   <%= render :partial => 'form', :locals => { 
         :target => sys_image_path, 
-        :multipart => false, 
-        :ajax_upload => true, 
+        :multipart => true, 
+        :ajax_upload => false, 
         :remote => false 
   }  %>
 <% end %>

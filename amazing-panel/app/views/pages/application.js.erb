@@ -58,7 +58,7 @@ $(document).ready(function(){
 
   <% if (@c == "library/sys_images") and (@a == "edit" or @a == "new")%>
     <% params.merge!(Rails.application.routes.recognize_path(params[:p])) %>
-    $("#sys_image_edit").submit(function(){
+    /*$("#sys_image_edit").submit(function(){
       var target = "<%= sys_image_path(:id=>params[:id]) %>";
       var data = $("#sys_image_edit").serialize();
       $.post(target, data, function(data, statusCode, req){             
@@ -68,7 +68,7 @@ $(document).ready(function(){
         }
       );
       return false;
-    });
+    });*/
   <% end %>
 
   <% if (((@c == "testbeds") or (@c == "admin/testbeds")) and (@a == "show")) %>
