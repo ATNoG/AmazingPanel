@@ -122,7 +122,6 @@ class Library::SysImagesController < Library::ResourceController
 
     if @sys_image.update_attributes(params[:sys_image])
       unless uploaded_io.nil?
-        OMF::Workspace.remove_sysimage(@sys_image) 
         write_resource(@sys_image, uploaded_io.read, "ndz")
       end  
 
