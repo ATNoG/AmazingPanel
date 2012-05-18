@@ -1,4 +1,4 @@
-		<% content_for :head do %>
+<% content_for :head do %>
   <%= javascript_include_tag 'jquery.nivo.slider.pack' %>
   <%= stylesheet_link_tag 'jquery.nivo.slider' %>
   <%= stylesheet_link_tag 'custom.slider' %>
@@ -29,35 +29,24 @@
     facilitating the creation and reproducibility of their experiments, without 
     having much knowledge on the tools underneath.
     </p>
-</br>
-<h1 id="project-links-title" class="small-headline"><span> AMazING Project</span></h1>
+
+  </div>
+  <div id="news" class="box">
+    <h1 id="project-links-title" class="small-headline"><span>AMazING</span> Project</h1>
     <p id="project-links">
       AMazING Panel is a project in development that as some tools to assist in this matter.
       It has a website dedicated to the project which includes an issue tracker, a Wiki, a repository where
       the AMazING Panel source code is available and other relevant informations.
     </p>
     </br> </br>
-    <a href="http://helios.av.it.pt/projects/amazing-panel/issues">AMazING Panel Issue Tracker</a>
+    <a id="project-link" href="http://helios.av.it.pt/projects/amazing-panel/issues">Submit an issue</a>
     </br></br>
-    <a href="http://helios.av.it.pt/projects/amazing-panel/wiki">AMazING Panel Wiki</a>
+    <a id="project-link" href="http://helios.av.it.pt/projects/amazing-panel/wiki">View documentation</a>
     </br></br>
-    <a href="http://helios.av.it.pt/projects/amazing-panel/repository">AMazING Panel Repository</a>
-  </div>
-  <div id="news" class="box">
-    <h1 id="news-title" class="small-headline"><span>News</span></h1>
-    <% @news.each do |n|%>
-      <div class="news-item">
-        <p class="news-item-date">
-          <%= n[:created_on] %>
-        </p>    
-        <p class="news-item-title">
-          <%= n[:title] %>
-        </p>    
-      </div>
-    <% end %>
+    <a id="project-link" href="http://helios.av.it.pt/projects/amazing-panel/repository">Download source code</a>
   </div>  
 </div>
-<div class="to-footer-gradient">
+<div class="to-footer-gradient" >
 </div>
 <% end %>
 
