@@ -77,7 +77,13 @@ module OMF::Experiments::Controller
       logpath = "#{APP_CONFIG['omlserver_tmp']}#{@eid}-state.xml"
       debug("Reading #{logpath}")
       if File.exists?(logpath)
-        ret = Hash.from_xml(IO::read(logpath))
+				# Rescue XML prefixes from OML metrics. Assume that experiment runs ok if this appears
+				begin
+        	ret = Hash.from_xml(IO::read(logpath))
+				rescue
+        	ret = { "context" => {"experiment" => { "status" => "DONE" } } }
+        end
+
       else
         ret = { "context" => {"experiment" => { "status" => "RUNNING" } } }
       end

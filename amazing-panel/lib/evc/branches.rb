@@ -64,11 +64,17 @@ module EVC
     end
     
     def load_author_file(author)
-      return YAML.load_file(author_file_path(author))
+			path = author_file_path(author)
+			if (File.exists?(path))
+	      return YAML.load_file(path)
+			end
     end
 
     def remove_author_file(author)
-      FileUtils.rm(author_file_path(author))
+			path = author_file_path(author)
+			if (File.exists?(path))
+      	FileUtils.rm(path)	
+			end
     end
 
     def load_branch_info

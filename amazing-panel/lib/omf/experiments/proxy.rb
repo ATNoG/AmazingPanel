@@ -163,6 +163,7 @@ module OMF::Experiments::Controller
       generate_id() 
       info("Experiment #{@id} EID generated: #{@eid}")      
  
+      info("author=#{@author}, commit=#{@experiment.repository.current.commit}, Generated EID=#{@eid}")
       @experiment.repository.current.create_author_file(@author, @experiment.repository.current.commit, @eid)
       info("Created author_file for Experiment #{@id}")
 
@@ -258,6 +259,10 @@ module OMF::Experiments::Controller
 
     def status_experiment_action()
       author_data = @experiment.repository.current.load_author_file(@author)
+      if author_data.nil?
+				return false
+			end
+
       @eid = author_data['experiment']['eid']
       return check_experiment_status(start_state())
     end
