@@ -88,7 +88,7 @@ module OMF::Experiments
         return c
       end
 
-      def self.writeDefinition(uri, code)
+      def self.writeDefinition(uri, code, appFile)
         unless code.nil? or uri.nil?
           if uri.index(':')
             r_path = Pathname.new("#{APP_CONFIG['oedl_repository']}/#{uri.gsub(/[:]/,'/')}.rb")
