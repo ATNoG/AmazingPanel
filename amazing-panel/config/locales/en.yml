@@ -21,6 +21,9 @@ en:
       updated: "System Image was successfully updated."
       destroy: "System Image was successfully deleted."
       no_baseline: "No baseline"
+    applications:
+      must_be_tar_file: "Package must be a tar file"
+      updated: "Application updated"
     testbed:
       status: "Status in about %{interval} seconds."
     experiments:

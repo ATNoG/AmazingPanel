@@ -8,7 +8,12 @@
 
 <% content_for :sub_actions do %> 
   <%= sub_toolbar do %>
-    <% unless (@experiment.status == 0) %>
+		<% unless (@experiment.prepared?) %>
+      <%= add_image_action(experiment_path(@experiment)+"?prepared",
+                           'clear.png', 'Skip images load', { :method => "put" }) %>
+		<% end %>
+
+    <% unless (@experiment.not_init?) %>
       <%= add_image_action(experiment_path(@experiment)+"?reset",
                            'clear.png', 'Reset', { :method => "put" }) %>
     <% end %>

@@ -85,20 +85,32 @@ module OMF::Experiments
         else
           eval(code, c.getBinding())
         end
-        return c
+        
+				return c
       end
 
       def self.writeDefinition(uri, code, appFile)
+				name = uri
         unless code.nil? or uri.nil?
           if uri.index(':')
-            r_path = Pathname.new("#{APP_CONFIG['oedl_repository']}/#{uri.gsub(/[:]/,'/')}.rb")
-            FileUtils.mkdir_p(r_path.parent)
-            File.open(r_path, 'w') do |file|
-              file.write(code)
-            end
+						name = uri.gsub(/[:]/,'/')
+					end	
+
+					# Write application definition
+          r_path = Pathname.new("#{APP_CONFIG['oedl_repository']}/#{name}.rb")            
+					FileUtils.mkdir_p(r_path.parent)
+          File.open(r_path, 'w') do |file|
+            file.write(code)
           end
+
+					# Write tar package
+          tar_path = Pathname.new("#{APP_CONFIG['oedl_repository']}/#{name}.tar")            
+          File.open(tar_path, 'w') do |file|
+            file.write(appFile.read)
+          end          
           return true
-        end
+        
+				end
         return false
       end
 

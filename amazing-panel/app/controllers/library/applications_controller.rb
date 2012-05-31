@@ -26,8 +26,16 @@ class Library::ApplicationsController < Library::OEDLController
   end
 
   def update
+		if File.extname(params[:package].original_filename) != ".tar"
+    	flash["error"] = t("amazing.applications.must_be_tar_file")
+    	redirect_to edit_application_path(:id => params[:id])
+			return;
+		end
+
     uri = user_repository(params[:id])
     ScriptHandler.writeDefinition(uri, params[:code], params[:package])
+    
+		flash["success"] = t("amazing.applications.updated")
     redirect_to application_path(:id => params[:id])
   end
 

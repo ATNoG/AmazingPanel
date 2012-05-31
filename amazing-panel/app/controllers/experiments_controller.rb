@@ -81,8 +81,9 @@ class ExperimentsController < ApplicationController
   def update
     @experiment.set_proxy_author(current_user)
     if params.key?('reset')
-      #@experiment = Experiment.find(params[:id])
-      @experiment.update_attributes(:status => 0)
+      @experiment.update_attributes(:status => Status::UNINITIALIZED)
+		elsif params.key?('prepared')
+      @experiment.update_attributes(:status => Status::FINISHED_AND_PREPARED)
     end
     redirect_to(experiment_url(@experiment))
   end
