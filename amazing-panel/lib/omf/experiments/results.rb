@@ -34,11 +34,11 @@ module OMF
         def select_model_by_metric(app, metrics, &block)
           ts = Array.new()
           Data.connection.tables.each do |t|
-            if (app.select {|e| t.include?(e) }).length > 0
-            if (metrics.select {|mt| t.include?(mt[:name]) }).length > 0
-                  ts.push(t)
-              end
-            end
+            #if (app.select {|e| t.include?(e) }).length > 0
+               if (metrics.select {|mt| t.include?(mt[:name]) }).length > 0
+                    ts.push(t)
+               end
+            #end
           end
           ts.each do |table|
             Data.reset_column_information()
