@@ -103,11 +103,15 @@ module OMF::Experiments
             file.write(code)
           end
 
+					if appFile.nil?
+						return true
+					end
+
 					# Write tar package
           tar_path = Pathname.new("#{APP_CONFIG['oedl_repository']}/#{name}.tar")            
           File.open(tar_path, 'w') do |file|
             file.write(appFile.read)
-          end          
+          end
           return true
         
 				end
