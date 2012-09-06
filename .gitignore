@@ -1,3 +1,7 @@
+.bundle
+db/*.sqlite3
+log/*.log
+tmp/**/*
 *.swp
 *~
-amazing-panel/public/images/projects/*
+public/images/projects/*
